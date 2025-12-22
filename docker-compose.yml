@@ -1,0 +1,30 @@
+
+services:
+  app:
+    image: node:23
+    container_name: play-tab-app
+    working_dir: /app
+    ports:
+      - "5175:5173"
+    volumes:
+      - .:/app
+    environment:
+      - TZ=Asia/Tokyo
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://admin:password@db:27017/play-tab?authSource=admin
+    entrypoint: ["/bin/sh", "-c", "npm run dev -- --host 0.0.0.0"]
+
+  db:
+    image: mongo:8
+    container_name: play-tab-db
+    volumes:
+      - mongodb_data:/data/db
+      - ./db:/docker-entrypoint-initdb.d
+    environment:
+      - TZ=Asia/Tokyo
+      - MONGO_INITDB_DATABASE=play-tab
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+volumes:
+  mongodb_data:
