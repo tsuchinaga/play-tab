@@ -3,22 +3,26 @@
     let { form } = $props();
 </script>
 
-<h1>ログイン</h1>
+<div class="form-container">
+    <h1>ログイン</h1>
 
-{#if form?.error}
-    <p style="color: red;">{form.error}</p>
-{/if}
+    {#if form?.error}
+        <p class="error-message">{form.error}</p>
+    {/if}
 
-<form method="POST" use:enhance>
-    <div>
-        <label for="loginId">ログインID</label>
-        <input type="text" id="loginId" name="loginId" required value={form?.loginId ?? ''} />
+    <form method="POST" use:enhance>
+        <div class="form-group">
+            <label for="loginId">ログインID</label>
+            <input type="text" id="loginId" name="loginId" required value={form?.loginId ?? ''} />
+        </div>
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit" class="btn-primary">ログイン</button>
+    </form>
+
+    <div class="form-footer">
+        <a href="/register">新規登録はこちら</a>
     </div>
-    <div>
-        <label for="password">パスワード</label>
-        <input type="password" id="password" name="password" required />
-    </div>
-    <button type="submit">ログイン</button>
-</form>
-
-<a href="/register">新規登録はこちら</a>
+</div>
