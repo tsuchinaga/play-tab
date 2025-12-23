@@ -8,6 +8,10 @@ declare global {
 				id: string;
 				loginId: string;
 			};
+			user?: {
+				id: string;
+				loginId: string;
+			};
 		}
 		// interface PageData {}
 		// interface PageState {}

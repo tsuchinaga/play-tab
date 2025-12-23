@@ -20,6 +20,13 @@ try {
     print('[init] sessions へのインデックス追加に失敗しました:', e.message);
 }
 
+// Ensure users collection has an unique index on loginId
+try {
+    db.users.createIndex({loginId: 1}, {unique: true});
+} catch (e) {
+    print('[init] users へのインデックス追加に失敗しました:', e.message);
+}
+
 // Seed default administrator if not exists
 (function seedAdministrator() {
     let existing = db.administrators.findOne({loginId: 'admin'});
@@ -39,4 +46,24 @@ try {
     });
 
     print('[init] administrators: デフォルトの管理者を登録しました (loginId=admin, password=password)');
+})();
+
+// Seed default user if not exists
+(function seedUser() {
+    let existing = db.users.findOne({loginId: 'testuser'});
+    if (existing) {
+        print('[init] users: 既に登録済みのユーザーのためスキップします');
+        return;
+    }
+
+    // bcrypt hash for string 'password'
+    db.users.insertOne({
+        loginId: 'testuser',
+        hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    });
+
+    print('[init] users: デフォルトのユーザーを登録しました (loginId=user, password=password)');
 })();

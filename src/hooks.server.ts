@@ -8,6 +8,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const sessionData = await getSession(sessionId);
 		if (sessionData) {
 			event.locals.admin = sessionData.admin;
+			event.locals.user = sessionData.user;
 		}
 	}
 
