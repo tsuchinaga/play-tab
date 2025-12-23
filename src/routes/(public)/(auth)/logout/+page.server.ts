@@ -3,8 +3,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { getSession, updateSession } from '$lib/db/session';
 
 export const load: PageServerLoad = async () => {
-    // ログアウトページに直接アクセスした場合はホームへリダイレクト
-    throw redirect(303, '/home');
+    // ログアウトページに直接アクセスした場合はトップへリダイレクト
+    throw redirect(303, '/');
 };
 
 export const actions: Actions = {
@@ -22,6 +22,6 @@ export const actions: Actions = {
         }
 
         // ログインページへリダイレクト
-        throw redirect(303, '/login');
+        throw redirect(303, '/');
     }
 };

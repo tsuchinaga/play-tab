@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (locals.user) {
-        throw redirect(303, '/home');
+        throw redirect(303, '/');
     }
 };
 
