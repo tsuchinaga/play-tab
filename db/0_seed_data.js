@@ -59,6 +59,7 @@ try {
     // bcrypt hash for string 'password'
     db.users.insertOne({
         loginId: 'testuser',
+        username: 'テストユーザー',
         hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
         isDeleted: false,
         createdAt: new Date(),

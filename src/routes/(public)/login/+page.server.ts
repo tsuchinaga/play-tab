@@ -35,7 +35,8 @@ export const actions: Actions = {
         let sessionId = cookies.get('sessionId');
         const userData = {
             id: user._id.toString(),
-            loginId: user.loginId
+            loginId: user.loginId,
+            username: user.username
         };
 
         if (sessionId) {

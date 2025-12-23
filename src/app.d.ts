@@ -11,6 +11,7 @@ declare global {
 			user?: {
 				id: string;
 				loginId: string;
+				username: string;
 			};
 		}
 		// interface PageData {}
