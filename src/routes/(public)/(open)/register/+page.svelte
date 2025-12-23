@@ -3,6 +3,10 @@
     let { form } = $props();
 </script>
 
+<svelte:head>
+	<title>新規登録 | Play Tab</title>
+</svelte:head>
+
 <div class="form-container">
     <h1>新規登録</h1>
 

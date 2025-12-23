@@ -2,6 +2,10 @@
     let { data } = $props();
 </script>
 
+<svelte:head>
+	<title>管理者ホーム | Play Tab Admin</title>
+</svelte:head>
+
 <h1>管理者ホーム</h1>
 <p>ようこそ、{data.admin?.loginId}さん</p>
 

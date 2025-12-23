@@ -3,6 +3,10 @@
     let { form } = $props();
 </script>
 
+<svelte:head>
+	<title>ログイン | Play Tab</title>
+</svelte:head>
+
 <div class="form-container">
     <h1>ログイン</h1>
 

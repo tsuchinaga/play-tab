@@ -2,6 +2,10 @@
     let { form } = $props();
 </script>
 
+<svelte:head>
+	<title>管理者ログイン | Play Tab Admin</title>
+</svelte:head>
+
 <div class="admin-form-container">
     <h1>管理者ログイン</h1>
 
