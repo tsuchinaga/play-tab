@@ -29,6 +29,8 @@
 		"vitest-browser-svelte": "^2.0.1"
 	},
 	"dependencies": {
+		"@coderline/alphatab": "^1.7.1",
+		"@coderline/alphatab-vite": "^1.7.1",
 		"bcrypt": "^6.0.0",
 		"mongodb": "^7.0.0"
 	}
