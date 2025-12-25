@@ -6,9 +6,9 @@
 </script>
 
 <svelte:head>
-    <title>新規TAB譜登録 | Play Tab</title>
+    <title>TAB譜編集 | Play Tab</title>
 </svelte:head>
 
 <div use:enhance>
-    <TabEditor {data} {form} isEdit={false} />
+    <TabEditor {data} {form} isEdit={true} />
 </div>

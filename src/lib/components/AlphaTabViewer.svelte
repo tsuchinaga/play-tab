@@ -16,8 +16,7 @@
         const settings: alphaTab.SettingsJson = {
             core: { fontDirectory: "/font/" },
             player: {
-                scrollMode: 'off',
-                scrollElement: element
+                scrollMode: 'on'
             }
         };
 
@@ -47,10 +46,9 @@
 <style>
     .alphatab-container {
         width: 100%;
-        height: 100%;
-        overflow: auto;
         background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
+        overflow: auto;
+        padding: 15px 0;
+        height: 600px;
     }
 </style>

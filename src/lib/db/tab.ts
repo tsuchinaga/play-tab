@@ -45,3 +45,23 @@ export async function getTabsByUserId(userId: ObjectId, query: { name?: string, 
 
     return await db.collection('tabs').find(filter).sort({ _id: 1 }).toArray();
 }
+
+export async function getTabById(id: ObjectId) {
+    const db = await getDb();
+    return await db.collection('tabs').findOne({ _id: id });
+}
+
+export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt'>) {
+    const db = await getDb();
+    const now = new Date();
+    const result = await db.collection('tabs').updateOne(
+        { _id: id, userId: userId },
+        {
+            $set: {
+                ...tab,
+                updatedAt: now
+            }
+        }
+    );
+    return result;
+}
