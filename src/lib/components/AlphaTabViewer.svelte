@@ -5,22 +5,27 @@
     interface Props {
         tex?: string;
         tracks?: number[] | 'all';
+        api?: alphaTab.AlphaTabApi | null;
     }
 
-    let { tex = '', tracks = 'all' } = $props<Props>();
+    let { tex = '', tracks = 'all', api = $bindable(null) } = $props<Props>();
 
     let element: HTMLElement;
-    let api: alphaTab.AlphaTabApi | null = null;
+    let scrollElement: HTMLElement;
 
     onMount(() => {
         const settings: alphaTab.SettingsJson = {
             core: { fontDirectory: "/font/" },
             player: {
-                scrollMode: 'on'
+                playerMode: alphaTab.PlayerMode.EnabledAutomatic,
+                enableCursor: true,
+                soundFont: "/soundfont/sonivox.sf2",
+                scrollElement: scrollElement
             }
         };
 
         api = new alphaTab.AlphaTabApi(element, settings);
+
         if (tex) {
             api.tex(tex, tracks);
         }
@@ -39,7 +44,7 @@
     });
 </script>
 
-<div class="alphatab-container">
+<div class="alphatab-container" bind:this={scrollElement}>
     <div bind:this={element}></div>
 </div>
 

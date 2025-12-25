@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import TabEditor from '$lib/components/TabEditor.svelte';
 
     let { data, form } = $props();
@@ -9,6 +8,6 @@
     <title>新規TAB譜登録 | Play Tab</title>
 </svelte:head>
 
-<div use:enhance>
+<div>
     <TabEditor {data} {form} isEdit={false} />
 </div>

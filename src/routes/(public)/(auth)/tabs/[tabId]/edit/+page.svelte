@@ -9,6 +9,6 @@
     <title>TAB譜編集 | Play Tab</title>
 </svelte:head>
 
-<div use:enhance>
+<div>
     <TabEditor {data} {form} isEdit={true} />
 </div>

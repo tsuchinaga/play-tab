@@ -1,5 +1,6 @@
 <script lang="ts">
-    import AlphaTabViewer from '$lib/components/AlphaTabViewer.svelte';
+    import { enhance } from '$app/forms';
+    import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
 
     let { data, form, isEdit = false } = $props();
 
@@ -93,7 +94,7 @@ ${track.tex}`).join('\n')}`);
         <h1>{isEdit ? 'TAB譜編集' : '新規TAB譜登録'}</h1>
     </div>
 
-    <form method="POST" class="tab-form">
+    <form method="POST" class="tab-form" use:enhance>
         {#if form?.message}
             <div class="error-message">{form.message}</div>
         {/if}
@@ -237,7 +238,7 @@ ${track.tex}`).join('\n')}`);
                             <span>プレビュー</span>
                         </div>
                         <div class="preview-container">
-                            <AlphaTabViewer tex={fullTex} tracks={visibleTrackIndices} />
+                            <AlphaTabPlayer tex={fullTex} tracks={visibleTrackIndices} defaultOpen={false} />
                         </div>
                     </div>
                 {/if}
