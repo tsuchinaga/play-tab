@@ -19,6 +19,16 @@
             minute: '2-digit'
         });
     }
+
+    function handleDelete(id: string, name: string) {
+        if (confirm(`TAB譜「${name}」を本当に削除してもよろしいですか？`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/tabs/${id}/delete`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 
 <svelte:head>
@@ -30,6 +40,12 @@
         <h1>TAB譜管理</h1>
         <a href="/tabs/new" class="btn-primary add-button">新規登録</a>
     </div>
+
+    {#if data.message}
+        <div class="message {data.messageType}">
+            {data.message}
+        </div>
+    {/if}
 
     <div class="search-form-container">
         <form method="GET" class="search-form">
@@ -47,6 +63,7 @@
                 </select>
             </div>
             <button type="submit" class="btn-search">検索</button>
+            <a href="/tabs" class="btn-outline">クリア</a>
         </form>
     </div>
 
@@ -82,7 +99,7 @@
                         <td>{tab.rating ?? ''}</td>
                         <td class="actions">
                             <a href="/tabs/{tab.id}/edit" class="btn-outline">編集</a>
-                            <button class="btn-danger-outline">削除</button>
+                            <button type="button" class="btn-danger-outline" onclick={() => handleDelete(tab.id, tab.name)}>削除</button>
                         </td>
                     </tr>
                 {/each}
@@ -92,10 +109,35 @@
 </div>
 
 <style>
+    .btn-outline {
+        text-decoration: none;
+        display: inline-block;
+        line-height: 1.5;
+    }
+
     .add-button {
         width: auto;
         padding: 0.5rem 1.5rem;
         text-decoration: none;
         text-align: center;
+    }
+
+    .message {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
     }
 </style>

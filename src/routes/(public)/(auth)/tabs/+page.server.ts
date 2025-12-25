@@ -9,6 +9,20 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
     const tabs = await getTabsByUserId(userId, { name, visibility });
 
+    const success = url.searchParams.get('success');
+    const error = url.searchParams.get('error');
+    const targetName = url.searchParams.get('name');
+    let message = '';
+    let messageType: 'success' | 'error' | '' = '';
+
+    if (success === 'deleted') {
+        message = 'TAB譜を削除しました。';
+        messageType = 'success';
+    } else if (error === 'delete_failed') {
+        message = `TAB譜「${targetName}」の削除に失敗しました。`;
+        messageType = 'error';
+    }
+
     return {
         tabs: tabs.map(tab => ({
             id: tab._id!.toString(),
@@ -17,6 +31,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
             createdAt: tab.createdAt,
             views: (tab as any).views ?? null,
             rating: (tab as any).rating ?? null
-        }))
+        })),
+        message,
+        messageType
     };
 };

@@ -72,6 +72,7 @@ export const actions: Actions = {
             return fail(400, { message: '名前を入力してください', name, visibility, bpm, trackCount, tracks });
         }
 
+        let success = false;
         try {
             const result = await updateTab(
                 tabId,
@@ -87,11 +88,14 @@ export const actions: Actions = {
             if (result.matchedCount === 0) {
                 return fail(404, { message: 'TAB譜が見つからないか、編集権限がありません' });
             }
+            success = true;
         } catch (e) {
             console.error(e);
             return fail(500, { message: '保存に失敗しました', name, visibility, bpm, trackCount, tracks });
         }
 
-        throw redirect(303, '/tabs');
+        if (success) {
+            throw redirect(303, '/tabs');
+        }
     }
 };

@@ -144,6 +144,36 @@ try {
             ],
             createdAt: new Date(),
             updatedAt: new Date()
+        },
+        {
+            userId: user1._id,
+            name: 'メジャースケール',
+            visibility: 'public',
+            bpm: 120,
+            tracks: [
+                {
+                    name: 'Guitar',
+                    instrument: 'Electric Guitar Clean',
+                    tuning: 'E4 B3 G3 D3 A2 E2',
+                    isVisible: true,
+                    tex: '3.5 5.5 2.4 3.4 |\n' +
+                        '5.4 2.3 4.3 5.3 |\n' +
+                        '5.3 4.3 2.3 5.4 |\n' +
+                        '3.4 2.4 5.5 3.5\n'
+                },
+                {
+                    name: 'Bass',
+                    instrument: 'Slap Bass 1',
+                    tuning: 'G2 D2 A1 E1',
+                    isVisible: true,
+                    tex: '3.3 5.3 2.2 3.2 |\n' +
+                        '5.2 2.1 4.1 5.1 |\n' +
+                        '5.1 4.1 2.1 5.2 |\n' +
+                        '3.2 2.2 5.3 3.3\n'
+                }
+            ],
+            createdAt: new Date(),
+            updatedAt: new Date()
         }
     ];
 

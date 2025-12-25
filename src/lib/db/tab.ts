@@ -65,3 +65,9 @@ export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '
     );
     return result;
 }
+
+export async function deleteTab(id: ObjectId, userId: ObjectId) {
+    const db = await getDb();
+    const result = await db.collection('tabs').deleteOne({ _id: id, userId: userId });
+    return result;
+}
