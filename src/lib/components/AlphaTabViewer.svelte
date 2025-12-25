@@ -48,7 +48,7 @@
         width: 100%;
         background: #fff;
         overflow: auto;
-        padding: 15px 0;
         height: 600px;
+        box-sizing: border-box;
     }
 </style>
