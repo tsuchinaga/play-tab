@@ -27,6 +27,15 @@ try {
     print('[init] users へのインデックス追加に失敗しました:', e.message);
 }
 
+// Ensure tabs collection has indexes
+try {
+    db.tabs.createIndex({userId: 1});
+    db.tabs.createIndex({name: 1});
+    db.tabs.createIndex({visibility: 1});
+} catch (e) {
+    print('[init] tabs へのインデックス追加に失敗しました:', e.message);
+}
+
 // Seed default administrator if not exists
 (function seedAdministrator() {
     let existing = db.administrators.findOne({loginId: 'admin'});

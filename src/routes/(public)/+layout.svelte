@@ -10,6 +10,7 @@
 			</div>
 			<nav>
 				{#if data.user}
+					<a href="/tabs">TAB譜</a>
 					<span>{data.user.username}</span>
 					<form method="POST" action="/logout">
 						<button type="submit" class="link-button">ログアウト</button>
@@ -177,5 +178,171 @@
 
 	:global(.form-footer a:hover) {
 		text-decoration: underline;
+	}
+
+	/* 検索フォーム */
+	:global(.search-form-container) {
+		background-color: #fff;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+
+	:global(.search-form) {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		align-items: flex-end;
+	}
+
+	:global(.search-group) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	:global(.search-group label) {
+		font-size: 0.9rem;
+		font-weight: bold;
+		color: #495057;
+	}
+
+	:global(.search-group input),
+	:global(.search-group select) {
+		padding: 0.5rem;
+		border: 1px solid #ced4da;
+		border-radius: 4px;
+		min-width: 200px;
+	}
+
+	:global(.btn-search) {
+		padding: 0.5rem 1.5rem;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		height: 38px; /* input/selectと高さを合わせる */
+	}
+
+	:global(.btn-search:hover) {
+		background-color: #0069d9;
+	}
+
+	/* 一覧画面（テーブル）共通スタイル */
+	:global(.list-container) {
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+
+	:global(.list-header) {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+	}
+
+	:global(.list-header h1) {
+		margin: 0;
+		font-size: 1.75rem;
+		color: #333;
+	}
+
+	:global(.table-wrapper) {
+		background: white;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+
+	:global(.list-table) {
+		width: 100%;
+		border-collapse: collapse;
+		text-align: left;
+	}
+
+	:global(.list-table th),
+	:global(.list-table td) {
+		padding: 1rem;
+		border-bottom: 1px solid #dee2e6;
+	}
+
+	:global(.list-table th) {
+		background-color: #f8f9fa;
+		font-weight: bold;
+		color: #495057;
+	}
+
+	:global(.list-table tr:last-child td) {
+		border-bottom: none;
+	}
+
+	/* ステータスバッジ */
+	:global(.status-badge) {
+		display: inline-block;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	:global(.status-public) {
+		background-color: #e7f3ff;
+		color: #007bff;
+	}
+
+	:global(.status-private) {
+		background-color: #f8d7da;
+		color: #dc3545;
+	}
+
+	:global(.status-limited) {
+		background-color: #fff3cd;
+		color: #856404;
+	}
+
+	/* 操作ボタン */
+	:global(.actions) {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	:global(.btn-outline) {
+		display: inline-block;
+		padding: 0.4rem 0.8rem;
+		border: 1px solid #007bff;
+		color: #007bff;
+		background: none;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 0.9rem;
+		transition: all 0.2s;
+		cursor: pointer;
+	}
+
+	:global(.btn-outline:hover) {
+		background-color: #007bff;
+		color: white;
+	}
+
+	:global(.btn-danger-outline) {
+		display: inline-block;
+		padding: 0.4rem 0.8rem;
+		border: 1px solid #dc3545;
+		color: #dc3545;
+		background: none;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 0.9rem;
+		transition: all 0.2s;
+		cursor: pointer;
+	}
+
+	:global(.btn-danger-outline:hover) {
+		background-color: #dc3545;
+		color: white;
 	}
 </style>
