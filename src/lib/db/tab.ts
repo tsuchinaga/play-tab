@@ -30,3 +30,18 @@ export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt'
     });
     return result;
 }
+
+export async function getTabsByUserId(userId: ObjectId, query: { name?: string, visibility?: string } = {}) {
+    const db = await getDb();
+    const filter: any = { userId };
+
+    if (query.name) {
+        filter.name = { $regex: query.name, $options: 'i' };
+    }
+
+    if (query.visibility) {
+        filter.visibility = query.visibility;
+    }
+
+    return await db.collection('tabs').find(filter).sort({ _id: 1 }).toArray();
+}

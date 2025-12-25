@@ -65,15 +65,96 @@ try {
         return;
     }
 
-    // bcrypt hash for string 'password'
-    db.users.insertOne({
-        loginId: 'testuser',
-        username: 'テストユーザー',
-        hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
-        isDeleted: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    });
+    [
+        {loginId: 'user1', username: 'テストユーザー1'},
+        {loginId: 'user2', username: 'テストユーザー2'},
+        {loginId: 'user3', username: 'テストユーザー3'}
+    ].forEach(user => {
+        // bcrypt hash for string 'password'
+        db.users.insertOne({
+            loginId: user.loginId,
+            username: user.username,
+            hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
+            isDeleted: false,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+    })
 
     print('[init] users: デフォルトのユーザーを登録しました (loginId=user, password=password)');
+})();
+
+// Seed default tabs if not exists
+(function seedTabs() {
+    let user1 = db.users.findOne({loginId: 'user1'});
+    if (!user1) {
+        print('[init] tabs: user1 が見つからないため、タブ譜の登録をスキップします');
+        return;
+    }
+
+    let tabs = [
+        {
+            userId: user1._id,
+            name: 'ギタークロマチック',
+            visibility: 'public',
+            bpm: 120,
+            tracks: [
+                {
+                    name: 'Guitar',
+                    instrument: 'Electric Guitar Clean',
+                    tuning: 'E4 B3 G3 D3 A2 E2',
+                    isVisible: true,
+                    tex: '1.6 2.6 3.6 4.6 |\n' +
+                        '1.5 2.5 3.5 4.5 |\n' +
+                        '1.4 2.4 3.4 4.4 |\n' +
+                        '1.3 2.3 3.3 4.3 |\n' +
+                        '1.2 2.2 3.2 4.2 |\n' +
+                        '1.1 2.1 3.1 4.1 |\n' +
+                        '4.1 3.1 2.1 1.1 |\n' +
+                        '4.2 3.2 2.2 1.2 |\n' +
+                        '4.3 3.3 2.3 1.3 |\n' +
+                        '4.4 3.4 2.4 1.4 |\n' +
+                        '4.5 3.5 2.5 1.5 |\n' +
+                        '4.6 3.6 2.6 1.6'
+                }
+            ],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        },
+        {
+            userId: user1._id,
+            name: 'ベースクロマチック',
+            visibility: 'public',
+            bpm: 120,
+            tracks: [
+                {
+                    name: 'Bass',
+                    instrument: 'Electric Bass Finger',
+                    tuning: 'G2 D2 A1 E1',
+                    isVisible: true,
+                    tex: '1.4 2.4 3.4 4.4 |\n' +
+                        '1.3 2.3 3.3 4.3 |\n' +
+                        '1.2 2.2 3.2 4.2 |\n' +
+                        '1.1 2.1 3.1 4.1 |\n' +
+                        '4.1 3.1 2.1 1.1 |\n' +
+                        '4.2 3.2 2.2 1.2 |\n' +
+                        '4.3 3.3 2.3 1.3 |\n' +
+                        '4.4 3.4 2.4 1.4 |'
+                }
+            ],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        }
+    ];
+
+    tabs.forEach(tab => {
+        let existing = db.tabs.findOne({userId: tab.userId, name: tab.name});
+        if (existing) {
+            print(`[init] tabs: 既に登録済みのタブ譜のためスキップします (name=${tab.name})`);
+            return;
+        }
+
+        db.tabs.insertOne(tab);
+        print(`[init] tabs: デフォルトのタブ譜を登録しました (name=${tab.name})`);
+    });
 })();

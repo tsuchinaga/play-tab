@@ -1,40 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
 
+    let { data } = $props();
+
     // 公開状況の定義
     const statusMap = {
         public: { label: '公開', class: 'status-public' },
         private: { label: '非公開', class: 'status-private' },
-        limited: { label: '限定公開', class: 'status-limited' }
+        unlisted: { label: '限定公開', class: 'status-limited' }
     };
-
-    // ダミーデータ
-    const tabs = [
-        {
-            id: '1',
-            name: 'Sample Tab 1',
-            status: 'public',
-            createdAt: new Date('2023-12-01T10:00:00'),
-            views: null,
-            rating: null
-        },
-        {
-            id: '2',
-            name: 'Sample Tab 2',
-            status: 'private',
-            createdAt: new Date('2023-12-05T15:30:00'),
-            views: null,
-            rating: null
-        },
-        {
-            id: '3',
-            name: 'Sample Tab 3',
-            status: 'limited',
-            createdAt: new Date('2023-12-10T09:15:00'),
-            views: null,
-            rating: null
-        }
-    ];
 
     function formatDate(date: Date) {
         return date.toLocaleString('ja-JP', {
@@ -69,7 +43,7 @@
                     <option value="">すべて</option>
                     <option value="public" selected={$page.url.searchParams.get('status') === 'public'}>公開</option>
                     <option value="private" selected={$page.url.searchParams.get('status') === 'private'}>非公開</option>
-                    <option value="limited" selected={$page.url.searchParams.get('status') === 'limited'}>限定公開</option>
+                    <option value="unlisted" selected={$page.url.searchParams.get('status') === 'unlisted'}>限定公開</option>
                 </select>
             </div>
             <button type="submit" class="btn-search">検索</button>
@@ -90,7 +64,7 @@
                 </tr>
             </thead>
             <tbody>
-                {#each tabs as tab}
+                {#each data.tabs as tab}
                     <tr>
                         <td>{tab.name}</td>
                         <td>
@@ -98,7 +72,7 @@
                                 <span class="status-badge status-public">公開</span>
                             {:else if tab.status === 'private'}
                                 <span class="status-badge status-private">非公開</span>
-                            {:else if tab.status === 'limited'}
+                            {:else if tab.status === 'unlisted'}
                                 <span class="status-badge status-limited">限定公開</span>
                             {/if}
                         </td>
