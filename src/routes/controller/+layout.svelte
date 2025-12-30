@@ -148,4 +148,39 @@
 		margin-bottom: 1rem;
 		font-size: 0.9rem;
 	}
+
+	/* 一覧画面（テーブル）共通スタイル */
+	:global(.admin-list-container) {
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+
+	:global(.admin-list-table) {
+		width: 100%;
+		border-collapse: collapse;
+		text-align: left;
+		border: 1px solid #dee2e6;
+	}
+
+	:global(.admin-list-table th),
+	:global(.admin-list-table td) {
+		padding: 0.75rem;
+		border: 1px solid #dee2e6;
+	}
+
+	:global(.admin-list-table th) {
+		background-color: #f8f9fa;
+		font-weight: bold;
+		color: #343a40;
+	}
+
+	:global(.admin-list-table th.sortable) {
+		cursor: pointer;
+		user-select: none;
+		white-space: nowrap;
+	}
+
+	:global(.admin-list-table th.sortable:hover) {
+		background-color: #e9ecef;
+	}
 </style>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
 
     let { data } = $props();
 
@@ -28,6 +29,29 @@
             document.body.appendChild(form);
             form.submit();
         }
+    }
+
+    function toggleSort(field: string) {
+        const url = new URL($page.url);
+        const currentSortBy = url.searchParams.get('sortBy');
+        const currentSortOrder = url.searchParams.get('sortOrder');
+
+        if (currentSortBy === field) {
+            url.searchParams.set('sortOrder', currentSortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            url.searchParams.set('sortBy', field);
+            url.searchParams.set('sortOrder', 'asc');
+        }
+
+        goto(url.toString());
+    }
+
+    function getSortIcon(field: string) {
+        const currentSortBy = $page.url.searchParams.get('sortBy');
+        const currentSortOrder = $page.url.searchParams.get('sortOrder');
+
+        if (currentSortBy !== field) return '↕';
+        return currentSortOrder === 'asc' ? '↑' : '↓';
     }
 </script>
 
@@ -71,12 +95,12 @@
         <table class="list-table">
             <thead>
                 <tr>
-                    <th>名前</th>
-                    <th>公開状況</th>
+                    <th onclick={() => toggleSort('name')} class="sortable">名前 {getSortIcon('name')}</th>
+                    <th onclick={() => toggleSort('visibility')} class="sortable">公開状況 {getSortIcon('visibility')}</th>
                     <th>バージョン</th>
-                    <th>作成日時</th>
-                    <th>閲覧回数</th>
-                    <th>評価</th>
+                    <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
+                    <th onclick={() => toggleSort('views')} class="sortable">閲覧回数 {getSortIcon('views')}</th>
+                    <th onclick={() => toggleSort('rating')} class="sortable">評価 {getSortIcon('rating')}</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -94,7 +118,7 @@
                             {/if}
                         </td>
                         <td></td>
-                        <td>{formatDate(tab.createdAt)}</td>
+                        <td>{formatDate(tab.updatedAt)}</td>
                         <td>{tab.views ?? ''}</td>
                         <td>{tab.rating ?? ''}</td>
                         <td class="actions">

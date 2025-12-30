@@ -276,6 +276,16 @@
 		color: #495057;
 	}
 
+	:global(.list-table th.sortable) {
+		cursor: pointer;
+		user-select: none;
+		white-space: nowrap;
+	}
+
+	:global(.list-table th.sortable:hover) {
+		background-color: #e9ecef;
+	}
+
 	:global(.list-table tr:last-child td) {
 		border-bottom: none;
 	}

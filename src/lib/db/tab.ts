@@ -31,7 +31,7 @@ export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt'
     return result;
 }
 
-export async function getTabsByUserId(userId: ObjectId, query: { name?: string, visibility?: string } = {}) {
+export async function getTabsByUserId(userId: ObjectId, query: { name?: string, visibility?: string, sortBy?: string, sortOrder?: 'asc' | 'desc' } = {}) {
     const db = await getDb();
     const filter: any = { userId };
 
@@ -43,7 +43,36 @@ export async function getTabsByUserId(userId: ObjectId, query: { name?: string, 
         filter.visibility = query.visibility;
     }
 
-    return await db.collection('tabs').find(filter).sort({ _id: 1 }).toArray();
+    const sort: any = {};
+    if (query.sortBy === 'visibility') {
+        const order = query.sortOrder === 'desc' ? -1 : 1;
+        return await db.collection('tabs').aggregate([
+            { $match: filter },
+            {
+                $addFields: {
+                    visibilityOrder: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ['$visibility', 'public'] }, then: 1 },
+                                { case: { $eq: ['$visibility', 'unlisted'] }, then: 2 },
+                                { case: { $eq: ['$visibility', 'private'] }, then: 3 }
+                            ],
+                            default: 4
+                        }
+                    }
+                }
+            },
+            { $sort: { visibilityOrder: order as 1 | -1, _id: 1 } }
+        ]).toArray();
+    }
+
+    if (query.sortBy) {
+        sort[query.sortBy] = query.sortOrder === 'desc' ? -1 : 1;
+    } else {
+        sort._id = 1;
+    }
+
+    return await db.collection('tabs').find(filter).sort(sort).toArray();
 }
 
 export async function getTabById(id: ObjectId) {
