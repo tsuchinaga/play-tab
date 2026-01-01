@@ -1,0 +1,73 @@
+<script lang="ts">
+    import { enhance } from '$app/forms';
+    import type { PageData, ActionData } from './$types';
+
+    export let data: PageData;
+    export let form: ActionData;
+
+    let errorElement: HTMLElement;
+    $: if (form?.error && errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+</script>
+
+<svelte:head>
+    <title>プロフィール編集 | Play Tab</title>
+</svelte:head>
+
+<div class="list-container">
+    <div class="list-header">
+        <h1>プロフィール編集</h1>
+    </div>
+
+    <div class="form-wrapper">
+        {#if form?.error}
+            <p class="error-message" bind:this={errorElement}>{form.error}</p>
+        {/if}
+
+        <form method="POST" use:enhance>
+            <div class="form-card">
+                <div class="form-group row">
+                    <label for="username">ユーザー名</label>
+                    <div class="input-container">
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={form?.username ?? data.user.username}
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="password">パスワード</label>
+                    <div class="input-container">
+                        <input type="password" id="password" name="password" placeholder="変更する場合のみ入力" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="confirmPassword">確認用パスワード</label>
+                    <div class="input-container">
+                        <input type="password" id="confirmPassword" name="confirmPassword" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/user" class="btn-secondary">キャンセル</a>
+                <button type="submit" class="btn-primary form-submit">保存する</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+</style>

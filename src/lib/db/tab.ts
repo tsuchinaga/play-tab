@@ -207,3 +207,8 @@ export async function getTabHistoryByVersion(tabId: ObjectId, version: string) {
     return await db.collection('tab_histories')
         .findOne({ tabId, version }) as unknown as TabHistory | null;
 }
+
+export async function countPublicTabsByUserId(userId: ObjectId) {
+    const db = await getDb();
+    return await db.collection('tabs').countDocuments({ userId, visibility: 'public' });
+}

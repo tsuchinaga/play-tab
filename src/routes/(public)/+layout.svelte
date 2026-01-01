@@ -11,7 +11,7 @@
 			<nav>
 				{#if data.user}
 					<a href="/tabs">TAB譜</a>
-					<span>{data.user.username}</span>
+					<a href="/user">{data.user.username}</a>
 					<form method="POST" action="/logout">
 						<button type="submit" class="link-button">ログアウト</button>
 					</form>
@@ -85,6 +85,15 @@
 	footer p {
 		margin: 0;
 		color: #6c757d;
+	}
+
+	nav a {
+		text-decoration: none;
+		color: #007bff;
+	}
+
+	nav a:hover {
+		text-decoration: underline;
 	}
 
 	button.link-button {
@@ -229,6 +238,84 @@
 
 	:global(.btn-search:hover) {
 		background-color: #0069d9;
+	}
+
+	:global(.btn-primary.form-submit) {
+		width: 140px;
+		padding: 10px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		font-weight: bold;
+		cursor: pointer;
+		text-align: center;
+		transition: background-color 0.2s;
+	}
+
+	:global(.btn-primary.form-submit:hover) {
+		background-color: #0069d9;
+	}
+
+	:global(.btn-secondary) {
+		display: inline-block;
+		width: 140px;
+		padding: 10px;
+		background-color: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		font-weight: bold;
+		text-decoration: none;
+		cursor: pointer;
+		text-align: center;
+		transition: background-color 0.2s;
+	}
+
+	:global(.btn-secondary:hover) {
+		background-color: #5a6268;
+	}
+
+	:global(.form-group.row) {
+		display: flex;
+		align-items: center;
+		margin-bottom: 1rem;
+		gap: 20px;
+	}
+
+	:global(.form-group.row label) {
+		width: 120px;
+		font-weight: bold;
+		color: #495057;
+		margin-bottom: 0;
+		display: block;
+	}
+
+	:global(.input-container) {
+		flex: 1;
+	}
+
+	:global(.input-container input),
+	:global(.input-container select),
+	:global(.input-container textarea) {
+		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #dee2e6;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-family: inherit;
+		font-size: 1rem;
+	}
+
+	:global(.form-card) {
+		background: #fff;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		border: 1px solid #dee2e6;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
 	}
 
 	/* 一覧画面（テーブル）共通スタイル */

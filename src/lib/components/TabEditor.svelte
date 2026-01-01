@@ -98,7 +98,7 @@ ${track.tex}`).join('\n')}`);
 </script>
 
 <div class="tabs-editor-container">
-    <div class="form-header">
+    <div class="list-header">
         <h1>{readonly ? 'TAB譜履歴表示' : (isEdit ? 'TAB譜編集' : '新規TAB譜登録')}</h1>
     </div>
 
@@ -106,7 +106,7 @@ ${track.tex}`).join('\n')}`);
         {#if form?.message}
             <div class="error-message" bind:this={errorElement}>{form.message}</div>
         {/if}
-        <div class="form-top">
+        <div class="form-top form-card">
             <div class="form-group row">
                 <label for="name">名前</label>
                 <div class="input-container">
@@ -260,7 +260,7 @@ ${track.tex}`).join('\n')}`);
             </div>
         </div>
 
-        <div class="version-section">
+        <div class="version-section form-card">
             <h3>バージョン</h3>
             <div class="form-group row">
                 <label for="version">バージョン</label>
@@ -281,7 +281,7 @@ ${track.tex}`).join('\n')}`);
                 <a href="/tabs/{data.tab._id}/histories" class="btn-secondary">キャンセル</a>
             {:else}
                 <a href="/tabs" class="btn-secondary">キャンセル</a>
-                <button type="submit" class="btn-primary">{isEdit ? '更新する' : '登録する'}</button>
+                <button type="submit" class="btn-primary form-submit">{isEdit ? '更新する' : '登録する'}</button>
             {/if}
         </div>
     </form>
@@ -294,12 +294,16 @@ ${track.tex}`).join('\n')}`);
         padding: 20px;
     }
 
-    .form-header {
-        margin-bottom: 20px;
+    .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
     }
 
-    .form-header h1 {
-        font-size: 1.5rem;
+    .list-header h1 {
+        margin: 0;
+        font-size: 1.75rem;
         color: #333;
     }
 
@@ -318,28 +322,17 @@ ${track.tex}`).join('\n')}`);
     }
 
     .form-top {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border: 1px solid #dee2e6;
         display: flex;
         flex-direction: column;
         gap: 15px;
     }
 
     .form-group.row {
-        display: flex;
-        align-items: center;
         gap: 20px;
     }
 
     .form-group.row label {
         width: 120px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 8px;
     }
 
     .form-group.row label.track-label {
@@ -366,7 +359,6 @@ ${track.tex}`).join('\n')}`);
         padding: 8px 12px;
         border: 1px solid #ced4da;
         border-radius: 4px;
-        font-size: 1rem;
     }
 
     .track-inputs {
@@ -498,11 +490,6 @@ ${track.tex}`).join('\n')}`);
     }
 
     .version-section {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border: 1px solid #dee2e6;
         display: flex;
         flex-direction: column;
         gap: 15px;
@@ -521,38 +508,5 @@ ${track.tex}`).join('\n')}`);
         justify-content: center;
         gap: 15px;
         margin-top: 10px;
-    }
-
-    .btn-primary {
-        width: 140px;
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        text-align: center;
-    }
-
-    .btn-primary:hover {
-        background-color: #0069d9;
-    }
-
-    .btn-secondary {
-        width: 140px;
-        padding: 10px;
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
-        text-decoration: none;
-        cursor: pointer;
-        text-align: center;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
     }
 </style>
