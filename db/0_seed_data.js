@@ -132,6 +132,7 @@ try {
                         '4.6 3.6 2.6 1.6'
                 }
             ],
+            alphaTabVersion: '1.7.1',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -157,6 +158,7 @@ try {
                         '4.4 3.4 2.4 1.4 |'
                 }
             ],
+            alphaTabVersion: '1.7.1',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -188,6 +190,7 @@ try {
                         '3.2 2.2 5.3 3.3\n'
                 }
             ],
+            alphaTabVersion: '1.7.1',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()

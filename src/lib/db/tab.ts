@@ -1,5 +1,16 @@
 import { getDb } from './client';
 import type { ObjectId } from 'mongodb';
+import fs from 'fs';
+import path from 'path';
+
+let ALPHA_TAB_VERSION = 'unknown';
+try {
+    const pkgPath = path.resolve('node_modules/@coderline/alphatab/package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    ALPHA_TAB_VERSION = pkg.version;
+} catch (e) {
+    console.error('Failed to get alphaTab version:', e);
+}
 
 export interface Track {
     name: string;
@@ -16,6 +27,7 @@ export interface Tab {
     visibility: 'public' | 'unlisted' | 'private';
     bpm: number;
     tracks: Track[];
+    alphaTabVersion: string;
     version: string;
     createdAt: Date;
     updatedAt: Date;
@@ -53,13 +65,14 @@ async function getNextVersion(tabId?: ObjectId) {
     return `${yyyymmdd}-${nextNumber.toString().padStart(3, '0')}`;
 }
 
-export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt' | 'version'>, versionComment: string = '新規登録', version?: string) {
+export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion'>, versionComment: string = '新規登録', version?: string) {
     const db = await getDb();
     const now = new Date();
     const finalVersion = version || await getNextVersion();
 
     const tabData = {
         ...tab,
+        alphaTabVersion: ALPHA_TAB_VERSION,
         version: finalVersion,
         createdAt: now,
         updatedAt: now
@@ -126,7 +139,7 @@ export async function getTabById(id: ObjectId) {
     return await db.collection('tabs').findOne({ _id: id });
 }
 
-export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version'>, versionComment: string, version?: string) {
+export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion'>, versionComment: string, version?: string) {
     const db = await getDb();
     const now = new Date();
     const finalVersion = version || await getNextVersion(id);
@@ -146,6 +159,7 @@ export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '
         {
             $set: {
                 ...tab,
+                alphaTabVersion: ALPHA_TAB_VERSION,
                 version: finalVersion,
                 updatedAt: now
             }
