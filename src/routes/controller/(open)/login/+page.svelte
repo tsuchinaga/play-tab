@@ -1,5 +1,12 @@
 <script lang="ts">
     let { form } = $props();
+
+    let errorElement = $state<HTMLElement | null>(null);
+    $effect(() => {
+        if (form?.error && errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 </script>
 
 <svelte:head>
@@ -10,7 +17,7 @@
     <h1>管理者ログイン</h1>
 
     {#if form?.error}
-        <p class="admin-error-message">{form.error}</p>
+        <p class="admin-error-message" bind:this={errorElement}>{form.error}</p>
     {/if}
 
     <form method="POST">

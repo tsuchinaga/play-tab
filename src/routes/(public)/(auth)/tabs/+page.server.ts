@@ -30,6 +30,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
             id: tab._id!.toString(),
             name: tab.name,
             status: tab.visibility,
+            version: tab.version,
             updatedAt: tab.updatedAt,
             views: (tab as any).views ?? null,
             rating: (tab as any).rating ?? null

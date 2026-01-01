@@ -15,6 +15,8 @@ export const actions: Actions = {
         const visibility = formData.get('visibility') as 'public' | 'unlisted' | 'private';
         const bpm = parseInt(formData.get('bpm') as string);
         const trackCount = parseInt(formData.get('trackCount') as string);
+        const version = formData.get('version') as string || undefined;
+        const versionComment = formData.get('versionComment') as string;
 
         const tracks: Track[] = [];
         for (let i = 0; i < trackCount; i++) {
@@ -44,10 +46,11 @@ export const actions: Actions = {
                 visibility,
                 bpm,
                 tracks
-            });
-        } catch (e) {
+            }, versionComment, version);
+        } catch (e: any) {
             console.error(e);
-            return fail(500, { message: '保存に失敗しました', name, visibility, bpm, trackCount, tracks });
+            const message = e.message === 'DUPLICATE_VERSION' ? 'このバージョンは既に存在します' : '保存に失敗しました';
+            return fail(e.message === 'DUPLICATE_VERSION' ? 400 : 500, { message, name, visibility, bpm, trackCount, tracks, versionComment });
         }
 
         throw redirect(303, '/tabs');

@@ -50,6 +50,8 @@ export const actions: Actions = {
         const visibility = formData.get('visibility') as 'public' | 'unlisted' | 'private';
         const bpm = parseInt(formData.get('bpm') as string);
         const trackCount = parseInt(formData.get('trackCount') as string);
+        const version = formData.get('version') as string || undefined;
+        const versionComment = formData.get('versionComment') as string;
 
         const tracks: Track[] = [];
         for (let i = 0; i < trackCount; i++) {
@@ -82,16 +84,19 @@ export const actions: Actions = {
                     visibility,
                     bpm,
                     tracks
-                }
+                },
+                versionComment,
+                version
             );
 
             if (result.matchedCount === 0) {
                 return fail(404, { message: 'TAB譜が見つからないか、編集権限がありません' });
             }
             success = true;
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            return fail(500, { message: '保存に失敗しました', name, visibility, bpm, trackCount, tracks });
+            const message = e.message === 'DUPLICATE_VERSION' ? 'このバージョンは既に存在します' : '保存に失敗しました';
+            return fail(e.message === 'DUPLICATE_VERSION' ? 400 : 500, { message, name, visibility, bpm, trackCount, tracks });
         }
 
         if (success) {

@@ -11,6 +11,7 @@
     let tracks = $state(form?.tracks ?? data.tab?.tracks ?? [{ name: 'Guitar', instrument: 'Electric Guitar Clean', tuning: 'E4 B3 G3 D3 A2 E2', tex: '1.1*4', isVisible: true }]);
     let selectedTrackIndex = $state(0);
     let viewMode = $state('split'); // 'tex' | 'split' | 'preview'
+    let versionComment = $state(form?.versionComment ?? (isEdit ? '' : '新規登録'));
 
     // data.tab.tracks では isVisible という名前だが、このコンポーネント内では visible という名前を使っている箇所があったので統一する
     // サーバーサイドからのデータに合わせて isVisible に統一する
@@ -73,6 +74,13 @@
     });
 
     const currentTrack = $derived(tracks[selectedTrackIndex]);
+    
+    let errorElement = $state<HTMLElement | null>(null);
+    $effect(() => {
+        if (form?.message && errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 
     const visibleTrackIndices = $derived(
         tracks.map((track, index) => track.isVisible ? index : -1).filter(index => index !== -1)
@@ -96,7 +104,7 @@ ${track.tex}`).join('\n')}`);
 
     <form method="POST" class="tab-form" use:enhance>
         {#if form?.message}
-            <div class="error-message">{form.message}</div>
+            <div class="error-message" bind:this={errorElement}>{form.message}</div>
         {/if}
         <div class="form-top">
             <div class="form-group row">
@@ -242,6 +250,22 @@ ${track.tex}`).join('\n')}`);
                         </div>
                     </div>
                 {/if}
+            </div>
+        </div>
+
+        <div class="version-section">
+            <h3>バージョン</h3>
+            <div class="form-group row">
+                <label for="version">バージョン</label>
+                <div class="input-container">
+                    <input type="text" id="version" name="version" placeholder="自動生成" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="versionComment">内容</label>
+                <div class="input-container">
+                    <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} />
+                </div>
             </div>
         </div>
 
@@ -460,6 +484,25 @@ ${track.tex}`).join('\n')}`);
     .preview-container {
         flex: 1;
         background: #fff;
+    }
+
+    .version-section {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .version-section h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
     }
 
     .form-actions {

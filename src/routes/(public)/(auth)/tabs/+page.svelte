@@ -117,7 +117,7 @@
                                 <span class="status-badge status-limited">限定公開</span>
                             {/if}
                         </td>
-                        <td></td>
+                        <td>{tab.version || ''}</td>
                         <td>{formatDate(tab.updatedAt)}</td>
                         <td>{tab.views ?? ''}</td>
                         <td>{tab.rating ?? ''}</td>

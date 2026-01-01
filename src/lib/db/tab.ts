@@ -16,18 +16,64 @@ export interface Tab {
     visibility: 'public' | 'unlisted' | 'private';
     bpm: number;
     tracks: Track[];
+    version: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt'>) {
+export interface TabHistory extends Omit<Tab, '_id'> {
+    _id?: ObjectId;
+    tabId: ObjectId;
+    version_comment: string;
+}
+
+async function getNextVersion(tabId?: ObjectId) {
     const db = await getDb();
     const now = new Date();
-    const result = await db.collection('tabs').insertOne({
+    const yyyymmdd = now.getFullYear().toString() +
+        (now.getMonth() + 1).toString().padStart(2, '0') +
+        now.getDate().toString().padStart(2, '0');
+
+    let nextNumber = 1;
+
+    if (tabId) {
+        const lastHistory = await db.collection('tab_histories')
+            .find({ tabId, version: { $regex: `^${yyyymmdd}-` } })
+            .sort({ version: -1 })
+            .limit(1)
+            .toArray();
+
+        if (lastHistory.length > 0) {
+            const lastVersion = lastHistory[0].version;
+            const lastNumber = parseInt(lastVersion.split('-')[1]);
+            nextNumber = lastNumber + 1;
+        }
+    }
+
+    return `${yyyymmdd}-${nextNumber.toString().padStart(3, '0')}`;
+}
+
+export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt' | 'version'>, versionComment: string = '新規登録', version?: string) {
+    const db = await getDb();
+    const now = new Date();
+    const finalVersion = version || await getNextVersion();
+
+    const tabData = {
         ...tab,
+        version: finalVersion,
         createdAt: now,
         updatedAt: now
+    };
+
+    const result = await db.collection('tabs').insertOne(tabData);
+    const tabId = result.insertedId;
+
+    await db.collection('tab_histories').insertOne({
+        ...tabData,
+        tabId,
+        version_comment: versionComment
     });
+
     return result;
 }
 
@@ -80,18 +126,44 @@ export async function getTabById(id: ObjectId) {
     return await db.collection('tabs').findOne({ _id: id });
 }
 
-export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt'>) {
+export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version'>, versionComment: string, version?: string) {
     const db = await getDb();
     const now = new Date();
+    const finalVersion = version || await getNextVersion(id);
+
+    // バージョンの重複チェック
+    const existingHistory = await db.collection('tab_histories').findOne({
+        tabId: id,
+        version: finalVersion
+    });
+
+    if (existingHistory) {
+        throw new Error('DUPLICATE_VERSION');
+    }
+
     const result = await db.collection('tabs').updateOne(
         { _id: id, userId: userId },
         {
             $set: {
                 ...tab,
+                version: finalVersion,
                 updatedAt: now
             }
         }
     );
+
+    if (result.matchedCount > 0) {
+        const currentTab = await db.collection('tabs').findOne({ _id: id });
+        if (currentTab) {
+            const { _id, ...historyData } = currentTab;
+            await db.collection('tab_histories').insertOne({
+                ...historyData,
+                tabId: id,
+                version_comment: versionComment
+            });
+        }
+    }
+
     return result;
 }
 

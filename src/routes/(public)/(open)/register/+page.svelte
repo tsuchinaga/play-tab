@@ -1,6 +1,13 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     let { form } = $props();
+
+    let errorElement = $state<HTMLElement | null>(null);
+    $effect(() => {
+        if (form?.error && errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 </script>
 
 <svelte:head>
@@ -11,7 +18,7 @@
     <h1>新規登録</h1>
 
     {#if form?.error}
-        <p class="error-message">{form.error}</p>
+        <p class="error-message" bind:this={errorElement}>{form.error}</p>
     {/if}
 
     <form method="POST" use:enhance>

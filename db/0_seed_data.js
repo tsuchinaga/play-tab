@@ -36,6 +36,15 @@ try {
     print('[init] tabs へのインデックス追加に失敗しました:', e.message);
 }
 
+// Ensure tab_histories collection has indexes
+try {
+    db.tab_histories.createIndex({tabId: 1});
+    db.tab_histories.createIndex({version: 1});
+    db.tab_histories.createIndex({tabId: 1, version: 1}, {unique: true});
+} catch (e) {
+    print('[init] tab_histories へのインデックス追加に失敗しました:', e.message);
+}
+
 // Seed default administrator if not exists
 (function seedAdministrator() {
     let existing = db.administrators.findOne({loginId: 'admin'});
@@ -92,6 +101,11 @@ try {
         return;
     }
 
+    const date = new Date();
+    const yyyymmdd = date.getFullYear().toString() +
+        (date.getMonth() + 1).toString().padStart(2, '0') +
+        date.getDate().toString().padStart(2, '0');
+
     let tabs = [
         {
             userId: user1._id,
@@ -118,6 +132,7 @@ try {
                         '4.6 3.6 2.6 1.6'
                 }
             ],
+            version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
         },
@@ -142,6 +157,7 @@ try {
                         '4.4 3.4 2.4 1.4 |'
                 }
             ],
+            version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
         },
@@ -172,6 +188,7 @@ try {
                         '3.2 2.2 5.3 3.3\n'
                 }
             ],
+            version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
         }
@@ -185,6 +202,12 @@ try {
         }
 
         db.tabs.insertOne(tab);
+        let inserted = db.tabs.findOne({userId: tab.userId, name: tab.name});
+        db.tab_histories.insertOne({
+            ...tab,
+            tabId: inserted._id,
+            version_comment: '新規登録'
+        });
         print(`[init] tabs: デフォルトのタブ譜を登録しました (name=${tab.name})`);
     });
 })();
