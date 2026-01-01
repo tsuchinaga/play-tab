@@ -172,3 +172,24 @@ export async function deleteTab(id: ObjectId, userId: ObjectId) {
     const result = await db.collection('tabs').deleteOne({ _id: id, userId: userId });
     return result;
 }
+
+export async function getTabHistoriesByTabId(tabId: ObjectId, query: { sortBy?: string, sortOrder?: 'asc' | 'desc' } = {}) {
+    const db = await getDb();
+    const sort: any = {};
+    if (query.sortBy) {
+        sort[query.sortBy] = query.sortOrder === 'desc' ? -1 : 1;
+    } else {
+        sort.version = -1;
+    }
+
+    return await db.collection('tab_histories')
+        .find({ tabId })
+        .sort(sort)
+        .toArray() as unknown as TabHistory[];
+}
+
+export async function getTabHistoryByVersion(tabId: ObjectId, version: string) {
+    const db = await getDb();
+    return await db.collection('tab_histories')
+        .findOne({ tabId, version }) as unknown as TabHistory | null;
+}

@@ -97,7 +97,6 @@
                 <tr>
                     <th onclick={() => toggleSort('name')} class="sortable">名前 {getSortIcon('name')}</th>
                     <th onclick={() => toggleSort('visibility')} class="sortable">公開状況 {getSortIcon('visibility')}</th>
-                    <th>バージョン</th>
                     <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
                     <th onclick={() => toggleSort('views')} class="sortable">閲覧回数 {getSortIcon('views')}</th>
                     <th onclick={() => toggleSort('rating')} class="sortable">評価 {getSortIcon('rating')}</th>
@@ -107,7 +106,16 @@
             <tbody>
                 {#each data.tabs as tab}
                     <tr>
-                        <td>{tab.name}</td>
+                        <td>
+                            <div class="name-cell">
+                                <span class="tab-name">{tab.name}</span>
+                                {#if tab.version}
+                                    <div class="version-badge-container">
+                                        <span class="version-badge">v{tab.version}</span>
+                                    </div>
+                                {/if}
+                            </div>
+                        </td>
                         <td>
                             {#if tab.status === 'public'}
                                 <span class="status-badge status-public">公開</span>
@@ -117,11 +125,11 @@
                                 <span class="status-badge status-limited">限定公開</span>
                             {/if}
                         </td>
-                        <td>{tab.version || ''}</td>
                         <td>{formatDate(tab.updatedAt)}</td>
                         <td>{tab.views ?? ''}</td>
                         <td>{tab.rating ?? ''}</td>
                         <td class="actions">
+                            <a href="/tabs/{tab.id}/histories" class="btn-outline">履歴</a>
                             <a href="/tabs/{tab.id}/edit" class="btn-outline">編集</a>
                             <button type="button" class="btn-danger-outline" onclick={() => handleDelete(tab.id, tab.name)}>削除</button>
                         </td>
@@ -163,5 +171,33 @@
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
+    }
+
+    .actions {
+        white-space: nowrap;
+    }
+
+    .name-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .tab-name {
+        font-weight: 500;
+    }
+
+    .version-badge-container {
+        display: block;
+    }
+
+    .version-badge {
+        font-size: 0.75rem;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 1px 6px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        display: inline-block;
     }
 </style>

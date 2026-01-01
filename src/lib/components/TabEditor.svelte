@@ -2,16 +2,16 @@
     import { enhance } from '$app/forms';
     import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
 
-    let { data, form, isEdit = false } = $props();
+    let { data, form, isEdit = false, readonly = false } = $props();
 
-    let name = $state(form?.name ?? data.tab?.name ?? '');
-    let visibility = $state(form?.visibility ?? data.tab?.visibility ?? 'private');
-    let bpm = $state(form?.bpm ?? data.tab?.bpm ?? 120);
-    let trackCount = $state(form?.trackCount ?? data.tab?.tracks?.length ?? 1);
-    let tracks = $state(form?.tracks ?? data.tab?.tracks ?? [{ name: 'Guitar', instrument: 'Electric Guitar Clean', tuning: 'E4 B3 G3 D3 A2 E2', tex: '1.1*4', isVisible: true }]);
+    let name = $state(form?.name ?? data.tab?.name ?? data.history?.name ?? '');
+    let visibility = $state(form?.visibility ?? data.tab?.visibility ?? data.history?.visibility ?? 'private');
+    let bpm = $state(form?.bpm ?? data.tab?.bpm ?? data.history?.bpm ?? 120);
+    let trackCount = $state(form?.trackCount ?? data.tab?.tracks?.length ?? data.history?.tracks?.length ?? 1);
+    let tracks = $state(form?.tracks ?? data.tab?.tracks ?? data.history?.tracks ?? [{ name: 'Guitar', instrument: 'Electric Guitar Clean', tuning: 'E4 B3 G3 D3 A2 E2', tex: '1.1*4', isVisible: true }]);
     let selectedTrackIndex = $state(0);
     let viewMode = $state('split'); // 'tex' | 'split' | 'preview'
-    let versionComment = $state(form?.versionComment ?? (isEdit ? '' : '新規登録'));
+    let versionComment = $state(form?.versionComment ?? data.history?.version_comment ?? (isEdit ? '' : '新規登録'));
 
     // data.tab.tracks では isVisible という名前だが、このコンポーネント内では visible という名前を使っている箇所があったので統一する
     // サーバーサイドからのデータに合わせて isVisible に統一する
@@ -99,7 +99,7 @@ ${track.tex}`).join('\n')}`);
 
 <div class="tabs-editor-container">
     <div class="form-header">
-        <h1>{isEdit ? 'TAB譜編集' : '新規TAB譜登録'}</h1>
+        <h1>{readonly ? 'TAB譜履歴表示' : (isEdit ? 'TAB譜編集' : '新規TAB譜登録')}</h1>
     </div>
 
     <form method="POST" class="tab-form" use:enhance>
@@ -110,44 +110,47 @@ ${track.tex}`).join('\n')}`);
             <div class="form-group row">
                 <label for="name">名前</label>
                 <div class="input-container">
-                    <input type="text" id="name" name="name" bind:value={name} required placeholder="曲名など" />
+                    <input type="text" id="name" name="name" bind:value={name} required placeholder="曲名など" {readonly} />
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="visibility">公開設定</label>
                 <div class="input-container">
-                    <select id="visibility" name="visibility" bind:value={visibility}>
+                    <select id="visibility" name="visibility" bind:value={visibility} disabled={readonly}>
                         <option value="public">公開</option>
                         <option value="unlisted">限定公開</option>
                         <option value="private">非公開</option>
                     </select>
+                    {#if readonly}
+                        <input type="hidden" name="visibility" value={visibility} />
+                    {/if}
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="bpm">BPM</label>
                 <div class="input-container">
-                    <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required />
+                    <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required {readonly} />
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="trackCount">トラック数</label>
                 <div class="input-container">
-                    <input type="number" id="trackCount" name="trackCount" bind:value={trackCount} min="1" max="6" required />
+                    <input type="number" id="trackCount" name="trackCount" bind:value={trackCount} min="1" max="6" required {readonly} />
                 </div>
             </div>
 
             {#each tracks as track, i}
                 <div class="form-group row">
                     <label for="track-{i}" class="track-label">
-                        <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" />
+                        <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" disabled={readonly} />
                         <input type="hidden" name="isVisible-{i}" value={track.isVisible} />
                     </label>
                     <div class="input-container track-inputs">
-                        <input type="text" name="trackName-{i}" bind:value={track.name} placeholder="トラック名" />
-                        <select name="instrument-{i}" bind:value={track.instrument} onchange={() => handleInstrumentChange(i)}>
+                        <input type="text" name="trackName-{i}" bind:value={track.name} placeholder="トラック名" {readonly} />
+                        <select name="instrument-{i}" bind:value={track.instrument} onchange={() => handleInstrumentChange(i)} disabled={readonly}>
                             {#each instrumentGroups as group}
                                 <optgroup label={group.label}>
                                     {#each group.options as instrument}
@@ -156,7 +159,10 @@ ${track.tex}`).join('\n')}`);
                                 </optgroup>
                             {/each}
                         </select>
-                        <input type="text" name="tuning-{i}" bind:value={track.tuning} placeholder="チューニング (例: E4 B3 G3 D3 A2 E2)" title="チューニング" />
+                        {#if readonly}
+                            <input type="hidden" name="instrument-{i}" value={track.instrument} />
+                        {/if}
+                        <input type="text" name="tuning-{i}" bind:value={track.tuning} placeholder="チューニング (例: E4 B3 G3 D3 A2 E2)" title="チューニング" {readonly} />
                         <button 
                             type="button" 
                             class="btn-select" 
@@ -229,6 +235,7 @@ ${track.tex}`).join('\n')}`);
                             name="tex-{selectedTrackIndex}"
                             bind:value={tracks[selectedTrackIndex].tex}
                             spellcheck="false"
+                            {readonly}
                         ></textarea>
                         {#each tracks as track, i}
                             {#if i !== selectedTrackIndex}
@@ -258,20 +265,24 @@ ${track.tex}`).join('\n')}`);
             <div class="form-group row">
                 <label for="version">バージョン</label>
                 <div class="input-container">
-                    <input type="text" id="version" name="version" placeholder="自動生成" />
+                    <input type="text" id="version" name="version" placeholder="自動生成" value={readonly ? data.history?.version : ''} {readonly} />
                 </div>
             </div>
             <div class="form-group row">
                 <label for="versionComment">内容</label>
                 <div class="input-container">
-                    <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} />
+                    <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} {readonly} />
                 </div>
             </div>
         </div>
 
         <div class="form-actions">
-            <a href="/tabs" class="btn-secondary">キャンセル</a>
-            <button type="submit" class="btn-primary">{isEdit ? '更新する' : '登録する'}</button>
+            {#if readonly}
+                <a href="/tabs/{data.tab._id}/histories" class="btn-secondary">キャンセル</a>
+            {:else}
+                <a href="/tabs" class="btn-secondary">キャンセル</a>
+                <button type="submit" class="btn-primary">{isEdit ? '更新する' : '登録する'}</button>
+            {/if}
         </div>
     </form>
 </div>
