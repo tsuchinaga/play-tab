@@ -136,7 +136,17 @@ export async function getTabsByUserId(userId: ObjectId, query: { name?: string, 
 
 export async function getTabById(id: ObjectId) {
     const db = await getDb();
-    return await db.collection('tabs').findOne({ _id: id });
+    const tab = await db.collection('tabs').findOne({ _id: id });
+    if (!tab) return null;
+
+    const user = await db.collection('users').findOne({ _id: tab.userId });
+    return {
+        ...tab,
+        user: user ? {
+            _id: user._id,
+            username: user.username
+        } : null
+    };
 }
 
 export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion'>, versionComment: string, version?: string) {

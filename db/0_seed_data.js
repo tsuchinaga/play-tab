@@ -181,7 +181,7 @@ try {
                 },
                 {
                     name: 'Bass',
-                    instrument: 'Slap Bass 1',
+                    instrument: 'Electric Bass Finger',
                     tuning: 'G2 D2 A1 E1',
                     isVisible: true,
                     tex: '3.3 5.3 2.2 3.2 |\n' +
