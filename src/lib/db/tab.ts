@@ -284,3 +284,73 @@ export async function searchPublicTabs(query: { name?: string, instruments?: str
 
     return await db.collection('tabs').aggregate(pipeline).toArray();
 }
+
+export async function getRecentPublicTabs(limit: number = 5) {
+    const db = await getDb();
+    const pipeline: any[] = [
+        { $match: { visibility: 'public' } },
+        { $sort: { updatedAt: -1, _id: -1 } },
+        { $limit: limit },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user'
+            }
+        },
+        { $unwind: '$user' },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                instruments: 1,
+                updatedAt: 1,
+                createdAt: 1,
+                'user._id': 1,
+                'user.username': 1
+            }
+        }
+    ];
+    return await db.collection('tabs').aggregate(pipeline).toArray();
+}
+
+export async function getTopFavoritedPublicTabs(limit: number = 5) {
+    const db = await getDb();
+    const pipeline: any[] = [
+        { $match: { visibility: 'public' } },
+        {
+            $lookup: {
+                from: 'tab_summaries',
+                localField: '_id',
+                foreignField: 'tabId',
+                as: 'summary'
+            }
+        },
+        { $unwind: { path: '$summary', preserveNullAndEmptyArrays: true } },
+        { $addFields: { favoriteCount: { $ifNull: ['$summary.favoriteCount', 0] } } },
+        { $sort: { favoriteCount: -1, createdAt: -1, _id: -1 } },
+        { $limit: limit },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user'
+            }
+        },
+        { $unwind: '$user' },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                instruments: 1,
+                updatedAt: 1,
+                favoriteCount: 1,
+                'user._id': 1,
+                'user.username': 1
+            }
+        }
+    ];
+    return await db.collection('tabs').aggregate(pipeline).toArray();
+}
