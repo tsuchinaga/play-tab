@@ -45,7 +45,7 @@
     {#if data.registeredTabs.length > 0}
         <section style="margin-top: 40px;">
             <div class="list-header">
-                <h1>登録しているTAB譜</h1>
+                <h1>最近更新したTAB譜</h1>
             </div>
             <div class="table-wrapper">
                 <table class="list-table">
@@ -73,7 +73,7 @@
     {#if data.favoriteTabs.length > 0}
         <section style="margin-top: 40px;">
             <div class="list-header">
-                <h1>お気に入り登録しているTAB譜</h1>
+                <h1>最近お気に入り登録したTAB譜</h1>
             </div>
             <div class="table-wrapper">
                 <table class="list-table">
@@ -82,7 +82,6 @@
                             <th>曲名</th>
                             <th>投稿者</th>
                             <th>楽器</th>
-                            <th>更新日</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,7 +90,6 @@
                                 <td><a href="/tab/{f._id}">{f.name}</a></td>
                                 <td><a href="/user/{f.creator._id}">{f.creator.username}</a></td>
                                 <td>{f.instruments.join(', ')}</td>
-                                <td>{formatDate(f.updatedAt)}</td>
                             </tr>
                         {/each}
                     </tbody>

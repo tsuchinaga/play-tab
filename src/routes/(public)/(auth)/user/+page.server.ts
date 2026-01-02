@@ -23,12 +23,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 
     let registeredTabs = [];
     if (user.registeredTabsVisibility === 'public' || (user.registeredTabsVisibility === 'logged_in' && isLogin)) {
-        registeredTabs = await getTabsByUserId(userId, { visibility: 'public', sortBy: 'updatedAt', sortOrder: 'desc' });
+        registeredTabs = await getTabsByUserId(userId, { visibility: 'public', sortBy: 'updatedAt', sortOrder: 'desc', limit: 5 });
     }
 
     let favoriteTabs = [];
     if (user.favoritedTabsVisibility === 'public' || (user.favoritedTabsVisibility === 'logged_in' && isLogin)) {
-        favoriteTabs = await getFavoriteTabsByUserId(userId, { sortBy: 'updatedAt', sortOrder: 'desc' });
+        favoriteTabs = await getFavoriteTabsByUserId(userId, { sortBy: '_id', sortOrder: 'desc', limit: 5 });
     }
 
     return {

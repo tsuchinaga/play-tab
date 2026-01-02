@@ -40,6 +40,7 @@ export async function getFavoriteTabsByUserId(
     query: {
         sortBy?: string;
         sortOrder?: 'asc' | 'desc';
+        limit?: number;
     } = {}
 ) {
     const db = await getDb();
@@ -49,7 +50,8 @@ export async function getFavoriteTabsByUserId(
         name: 'tab.name',
         username: 'creator.username',
         updatedAt: 'tab.updatedAt',
-        favoritedAt: 'createdAt'
+        favoritedAt: 'createdAt',
+        _id: '_id'
     };
 
     const sortField = sortMap[sortBy] || 'createdAt';
@@ -79,6 +81,10 @@ export async function getFavoriteTabsByUserId(
             $sort: { [sortField]: sortValue }
         }
     ];
+
+    if (query.limit) {
+        pipeline.push({ $limit: query.limit });
+    }
 
     return await db.collection('favorite_tabs').aggregate(pipeline).toArray();
 }

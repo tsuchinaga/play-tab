@@ -267,7 +267,7 @@ ${track.tex}`).join('\n')}`);
         <div class="public-settings-section form-card">
             <h3>公開設定</h3>
             <div class="form-group row">
-                <label for="texPublicSetting">texの公開設定</label>
+                <label for="texPublicSetting">texの公開</label>
                 <div class="input-container">
                     <select id="texPublicSetting" name="texPublicSetting" bind:value={texPublicSetting} disabled={readonly}>
                         <option value="private">非公開</option>
@@ -281,7 +281,7 @@ ${track.tex}`).join('\n')}`);
             </div>
 
             <div class="form-group row">
-                <label for="historyPublicSetting">バージョン履歴の公開設定</label>
+                <label for="historyPublicSetting">バージョン履歴の公開</label>
                 <div class="input-container">
                     <select id="historyPublicSetting" name="historyPublicSetting" bind:value={historyPublicSetting} disabled={readonly}>
                         <option value="private">非公開</option>

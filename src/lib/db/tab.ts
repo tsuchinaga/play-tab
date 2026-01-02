@@ -98,7 +98,7 @@ export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt'
     return result;
 }
 
-export async function getTabsByUserId(userId: ObjectId, query: { name?: string, visibility?: string, sortBy?: string, sortOrder?: 'asc' | 'desc' } = {}) {
+export async function getTabsByUserId(userId: ObjectId, query: { name?: string, visibility?: string, sortBy?: string, sortOrder?: 'asc' | 'desc', limit?: number } = {}) {
     const db = await getDb();
     const filter: any = { userId };
 
@@ -149,6 +149,10 @@ export async function getTabsByUserId(userId: ObjectId, query: { name?: string, 
         pipeline.push({ $sort: { [query.sortBy]: sortOrder, _id: 1 } });
     } else {
         pipeline.push({ $sort: { _id: 1 } });
+    }
+
+    if (query.limit) {
+        pipeline.push({ $limit: query.limit });
     }
 
     return await db.collection('tabs').aggregate(pipeline).toArray();

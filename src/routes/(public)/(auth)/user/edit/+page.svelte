@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="registeredTabsVisibility">登録TABの公開設定</label>
+                    <label for="registeredTabsVisibility">更新したTAB譜の公開</label>
                     <div class="input-container">
                         <select id="registeredTabsVisibility" name="registeredTabsVisibility">
                             <option value="private" selected={data.user.registeredTabsVisibility === 'private'}>非公開</option>
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="favoritedTabsVisibility">お気に入りTABの公開設定</label>
+                    <label for="favoritedTabsVisibility">お気に入りしたTAB譜の公開</label>
                     <div class="input-container">
                         <select id="favoritedTabsVisibility" name="favoritedTabsVisibility">
                             <option value="private" selected={data.user.favoritedTabsVisibility === 'private'}>非公開</option>
