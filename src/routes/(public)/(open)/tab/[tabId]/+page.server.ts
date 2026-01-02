@@ -20,14 +20,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
     // 公開設定のチェック (public または unlisted のみ表示可能)
     if (tab.visibility === 'private') {
-        if (!locals.user || tab.userId.toString() !== locals.user._id.toString()) {
+        if (!locals.user || tab.userId.toString() !== locals.user.id.toString()) {
             throw error(403, 'このTAB譜は非公開です');
         }
     }
 
     let favorite = false;
     if (locals.user) {
-        favorite = await isFavorite(tabId, locals.user._id);
+        favorite = await isFavorite(tabId, new ObjectId(locals.user.id));
     }
 
     return {
@@ -50,7 +50,7 @@ export const actions: Actions = {
             throw error(404, 'TAB譜が見つかりません');
         }
 
-        await addFavorite(tabId, locals.user._id);
+        await addFavorite(tabId, new ObjectId(locals.user.id));
         return { success: true };
     },
     removeFavorite: async ({ params, locals }) => {
@@ -65,7 +65,7 @@ export const actions: Actions = {
             throw error(404, 'TAB譜が見つかりません');
         }
 
-        await removeFavorite(tabId, locals.user._id);
+        await removeFavorite(tabId, new ObjectId(locals.user.id));
         return { success: true };
     }
 };

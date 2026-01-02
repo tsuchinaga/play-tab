@@ -11,6 +11,7 @@
 			<nav>
 				{#if data.user}
 					<a href="/tabs">TAB譜</a>
+					<a href="/favorites">お気に入り</a>
 					<a href="/user">{data.user.username}</a>
 					<form method="POST" action="/logout">
 						<button type="submit" class="link-button">ログアウト</button>

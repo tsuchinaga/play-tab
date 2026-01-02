@@ -23,6 +23,7 @@ try {
 // Ensure users collection has an unique index on loginId
 try {
     db.users.createIndex({loginId: 1}, {unique: true});
+    db.users.createIndex({username: 1});
 } catch (e) {
     print('[init] users へのインデックス追加に失敗しました:', e.message);
 }
@@ -32,8 +33,17 @@ try {
     db.tabs.createIndex({userId: 1});
     db.tabs.createIndex({name: 1});
     db.tabs.createIndex({visibility: 1});
+    db.tabs.createIndex({updatedAt: 1});
 } catch (e) {
     print('[init] tabs へのインデックス追加に失敗しました:', e.message);
+}
+
+// Ensure favorite_tabs collection has indexes
+try {
+    db.favorite_tabs.createIndex({userId: 1, createdAt: -1});
+    db.favorite_tabs.createIndex({userId: 1, tabId: 1}, {unique: true});
+} catch (e) {
+    print('[init] favorite_tabs へのインデックス追加に失敗しました:', e.message);
 }
 
 // Ensure tab_histories collection has indexes
