@@ -32,8 +32,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
             status: tab.visibility,
             version: tab.version,
             updatedAt: tab.updatedAt,
-            views: (tab as any).views ?? null,
-            rating: (tab as any).rating ?? null
+            viewCount: (tab as any).viewCount ?? 0,
+            favoriteCount: (tab as any).favoriteCount ?? 0
         })),
         message,
         messageType

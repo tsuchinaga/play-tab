@@ -98,8 +98,8 @@
                     <th onclick={() => toggleSort('name')} class="sortable">名前 {getSortIcon('name')}</th>
                     <th onclick={() => toggleSort('visibility')} class="sortable">公開状況 {getSortIcon('visibility')}</th>
                     <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
-                    <th onclick={() => toggleSort('views')} class="sortable">閲覧回数 {getSortIcon('views')}</th>
-                    <th onclick={() => toggleSort('rating')} class="sortable">評価 {getSortIcon('rating')}</th>
+                    <th onclick={() => toggleSort('viewCount')} class="sortable">閲覧数 {getSortIcon('viewCount')}</th>
+                    <th onclick={() => toggleSort('favoriteCount')} class="sortable">お気に入り数 {getSortIcon('favoriteCount')}</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -126,8 +126,8 @@
                             {/if}
                         </td>
                         <td>{formatDate(tab.updatedAt)}</td>
-                        <td>{tab.views ?? ''}</td>
-                        <td>{tab.rating ?? ''}</td>
+                        <td>{tab.viewCount}</td>
+                        <td>{tab.favoriteCount}</td>
                         <td class="actions">
                             <a href="/tabs/{tab.id}/histories" class="btn-outline">履歴</a>
                             <a href="/tabs/{tab.id}/edit" class="btn-outline">編集</a>

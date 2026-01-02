@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 import { getTabById } from '$lib/db/tab';
 import { isFavorite, addFavorite, removeFavorite } from '$lib/db/favorite';
+import { increaseViewCount } from '$lib/db/tab_summary';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -24,6 +25,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             throw error(403, 'このTAB譜は非公開です');
         }
     }
+
+    await increaseViewCount(tabId);
 
     let favorite = false;
     if (locals.user) {

@@ -1,5 +1,6 @@
 import { getDb } from './client';
 import { ObjectId } from 'mongodb';
+import { increaseFavoriteCount, decreaseFavoriteCount } from './tab_summary';
 
 export async function isFavorite(tabId: ObjectId, userId: ObjectId): Promise<boolean> {
     const db = await getDb();
@@ -17,6 +18,7 @@ export async function addFavorite(tabId: ObjectId, userId: ObjectId): Promise<vo
         userId,
         createdAt: new Date()
     });
+    await increaseFavoriteCount(tabId);
 }
 
 export async function removeFavorite(tabId: ObjectId, userId: ObjectId): Promise<void> {
@@ -25,6 +27,7 @@ export async function removeFavorite(tabId: ObjectId, userId: ObjectId): Promise
         tabId,
         userId
     });
+    await decreaseFavoriteCount(tabId);
 }
 
 export async function getFavoriteTabsByUserId(

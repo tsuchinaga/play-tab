@@ -55,6 +55,15 @@ try {
     print('[init] tab_histories へのインデックス追加に失敗しました:', e.message);
 }
 
+// Ensure tab_summaries collection has indexes
+try {
+    db.tab_summaries.createIndex({tabId: 1}, {unique: true});
+    db.tab_summaries.createIndex({viewCount: 1});
+    db.tab_summaries.createIndex({favoriteCount: 1});
+} catch (e) {
+    print('[init] tab_summaries へのインデックス追加に失敗しました:', e.message);
+}
+
 // Seed default administrator if not exists
 (function seedAdministrator() {
     let existing = db.administrators.findOne({loginId: 'admin'});
@@ -220,6 +229,11 @@ try {
             ...tab,
             tabId: inserted._id,
             version_comment: '新規登録'
+        });
+        db.tab_summaries.insertOne({
+            tabId: inserted._id,
+            viewCount: 0,
+            favoriteCount: 0
         });
         print(`[init] tabs: デフォルトのタブ譜を登録しました (name=${tab.name})`);
     });

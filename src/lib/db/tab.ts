@@ -2,6 +2,7 @@ import { getDb } from './client';
 import type { ObjectId } from 'mongodb';
 import fs from 'fs';
 import path from 'path';
+import { createTabSummary } from './tab_summary';
 
 let ALPHA_TAB_VERSION = 'unknown';
 try {
@@ -87,6 +88,8 @@ export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt'
         version_comment: versionComment
     });
 
+    await createTabSummary(tabId);
+
     return result;
 }
 
@@ -102,36 +105,48 @@ export async function getTabsByUserId(userId: ObjectId, query: { name?: string, 
         filter.visibility = query.visibility;
     }
 
-    const sort: any = {};
+    const sortOrder = query.sortOrder === 'desc' ? -1 : 1;
+    const pipeline: any[] = [
+        { $match: filter },
+        {
+            $lookup: {
+                from: 'tab_summaries',
+                localField: '_id',
+                foreignField: 'tabId',
+                as: 'summary'
+            }
+        },
+        {
+            $addFields: {
+                viewCount: { $ifNull: [{ $arrayElemAt: ['$summary.viewCount', 0] }, 0] },
+                favoriteCount: { $ifNull: [{ $arrayElemAt: ['$summary.favoriteCount', 0] }, 0] }
+            }
+        }
+    ];
+
     if (query.sortBy === 'visibility') {
-        const order = query.sortOrder === 'desc' ? -1 : 1;
-        return await db.collection('tabs').aggregate([
-            { $match: filter },
-            {
-                $addFields: {
-                    visibilityOrder: {
-                        $switch: {
-                            branches: [
-                                { case: { $eq: ['$visibility', 'public'] }, then: 1 },
-                                { case: { $eq: ['$visibility', 'unlisted'] }, then: 2 },
-                                { case: { $eq: ['$visibility', 'private'] }, then: 3 }
-                            ],
-                            default: 4
-                        }
+        pipeline.push({
+            $addFields: {
+                visibilityOrder: {
+                    $switch: {
+                        branches: [
+                            { case: { $eq: ['$visibility', 'public'] }, then: 1 },
+                            { case: { $eq: ['$visibility', 'unlisted'] }, then: 2 },
+                            { case: { $eq: ['$visibility', 'private'] }, then: 3 }
+                        ],
+                        default: 4
                     }
                 }
-            },
-            { $sort: { visibilityOrder: order as 1 | -1, _id: 1 } }
-        ]).toArray();
-    }
-
-    if (query.sortBy) {
-        sort[query.sortBy] = query.sortOrder === 'desc' ? -1 : 1;
+            }
+        });
+        pipeline.push({ $sort: { visibilityOrder: sortOrder, _id: 1 } });
+    } else if (query.sortBy) {
+        pipeline.push({ $sort: { [query.sortBy]: sortOrder, _id: 1 } });
     } else {
-        sort._id = 1;
+        pipeline.push({ $sort: { _id: 1 } });
     }
 
-    return await db.collection('tabs').find(filter).sort(sort).toArray();
+    return await db.collection('tabs').aggregate(pipeline).toArray();
 }
 
 export async function getTabById(id: ObjectId) {
