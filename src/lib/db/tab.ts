@@ -3,6 +3,7 @@ import type { ObjectId } from 'mongodb';
 import fs from 'fs';
 import path from 'path';
 import { createTabSummary } from './tab_summary';
+import { getCoarseInstruments } from '../instruments';
 
 let ALPHA_TAB_VERSION = 'unknown';
 try {
@@ -28,6 +29,7 @@ export interface Tab {
     visibility: 'public' | 'unlisted' | 'private';
     bpm: number;
     tracks: Track[];
+    instruments: string[];
     alphaTabVersion: string;
     version: string;
     createdAt: Date;
@@ -66,13 +68,14 @@ async function getNextVersion(tabId?: ObjectId) {
     return `${yyyymmdd}-${nextNumber.toString().padStart(3, '0')}`;
 }
 
-export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion'>, versionComment: string = '新規登録', version?: string) {
+export async function createTab(tab: Omit<Tab, '_id' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion' | 'instruments'>, versionComment: string = '新規登録', version?: string) {
     const db = await getDb();
     const now = new Date();
     const finalVersion = version || await getNextVersion();
 
     const tabData = {
         ...tab,
+        instruments: getCoarseInstruments(tab.tracks.map(t => t.instrument)),
         alphaTabVersion: ALPHA_TAB_VERSION,
         version: finalVersion,
         createdAt: now,
@@ -164,7 +167,7 @@ export async function getTabById(id: ObjectId) {
     };
 }
 
-export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion'>, versionComment: string, version?: string) {
+export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion' | 'instruments'>, versionComment: string, version?: string) {
     const db = await getDb();
     const now = new Date();
     const finalVersion = version || await getNextVersion(id);
@@ -184,6 +187,7 @@ export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '
         {
             $set: {
                 ...tab,
+                instruments: getCoarseInstruments(tab.tracks.map(t => t.instrument)),
                 alphaTabVersion: ALPHA_TAB_VERSION,
                 version: finalVersion,
                 updatedAt: now
@@ -236,4 +240,47 @@ export async function getTabHistoryByVersion(tabId: ObjectId, version: string) {
 export async function countPublicTabsByUserId(userId: ObjectId) {
     const db = await getDb();
     return await db.collection('tabs').countDocuments({ userId, visibility: 'public' });
+}
+
+export async function searchPublicTabs(query: { name?: string, instruments?: string[], sortBy?: string, sortOrder?: 'asc' | 'desc' } = {}) {
+    const db = await getDb();
+    const filter: any = { visibility: 'public' };
+
+    if (query.name) {
+        filter.name = { $regex: query.name, $options: 'i' };
+    }
+
+    if (query.instruments && query.instruments.length > 0) {
+        filter.instruments = { $in: query.instruments };
+    }
+
+    const sortOrder = query.sortOrder === 'desc' ? -1 : 1;
+    const sortBy = query.sortBy || 'updatedAt';
+    const sort: any = { [sortBy]: sortOrder, _id: 1 };
+
+    const pipeline: any[] = [
+        { $match: filter },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user'
+            }
+        },
+        { $unwind: '$user' },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                instruments: 1,
+                updatedAt: 1,
+                'user._id': 1,
+                'user.username': 1
+            }
+        },
+        { $sort: sort }
+    ];
+
+    return await db.collection('tabs').aggregate(pipeline).toArray();
 }

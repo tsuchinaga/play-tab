@@ -73,21 +73,27 @@
 
     <div class="search-form-container">
         <form method="GET" class="search-form">
-            <div class="search-group">
+            <div class="form-group row">
                 <label for="name">名前</label>
-                <input type="text" id="name" name="name" value={$page.url.searchParams.get('name') || ''} placeholder="名前で検索..." />
+                <div class="input-container">
+                    <input type="text" id="name" name="name" value={$page.url.searchParams.get('name') || ''} placeholder="名前で検索..." />
+                </div>
             </div>
-            <div class="search-group">
+            <div class="form-group row">
                 <label for="status">公開状況</label>
-                <select id="status" name="status">
-                    <option value="">すべて</option>
-                    <option value="public" selected={$page.url.searchParams.get('status') === 'public'}>公開</option>
-                    <option value="private" selected={$page.url.searchParams.get('status') === 'private'}>非公開</option>
-                    <option value="unlisted" selected={$page.url.searchParams.get('status') === 'unlisted'}>限定公開</option>
-                </select>
+                <div class="input-container">
+                    <select id="status" name="status">
+                        <option value="">すべて</option>
+                        <option value="public" selected={$page.url.searchParams.get('status') === 'public'}>公開</option>
+                        <option value="private" selected={$page.url.searchParams.get('status') === 'private'}>非公開</option>
+                        <option value="unlisted" selected={$page.url.searchParams.get('status') === 'unlisted'}>限定公開</option>
+                    </select>
+                </div>
             </div>
-            <button type="submit" class="btn-search">検索</button>
-            <a href="/tabs" class="btn-outline">クリア</a>
+            <div class="form-actions">
+                <button type="submit" class="btn-search">検索</button>
+                <a href="/tabs" class="btn-clear">クリア</a>
+            </div>
         </form>
     </div>
 

@@ -34,6 +34,7 @@ try {
     db.tabs.createIndex({name: 1});
     db.tabs.createIndex({visibility: 1});
     db.tabs.createIndex({updatedAt: 1});
+    db.tabs.createIndex({instruments: 1});
 } catch (e) {
     print('[init] tabs へのインデックス追加に失敗しました:', e.message);
 }
@@ -151,6 +152,7 @@ try {
                         '4.6 3.6 2.6 1.6'
                 }
             ],
+            instruments: ['Guitar'],
             alphaTabVersion: '1.7.1',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
@@ -177,6 +179,7 @@ try {
                         '4.4 3.4 2.4 1.4 |'
                 }
             ],
+            instruments: ['Bass'],
             alphaTabVersion: '1.7.1',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
@@ -209,6 +212,7 @@ try {
                         '3.2 2.2 5.3 3.3\n'
                 }
             ],
+            instruments: ['Guitar', 'Bass'],
             alphaTabVersion: '1.7.1',
             version: yyyymmdd + '-001',
             createdAt: new Date(),

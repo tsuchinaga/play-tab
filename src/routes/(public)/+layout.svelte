@@ -9,6 +9,7 @@
 				<a href="/">Play Tab</a>
 			</div>
 			<nav>
+				<a href="/search">検索</a>
 				{#if data.user}
 					<a href="/tabs">TAB譜</a>
 					<a href="/favorites">お気に入り</a>
@@ -202,43 +203,54 @@
 
 	:global(.search-form) {
 		display: flex;
-		gap: 1rem;
-		flex-wrap: wrap;
-		align-items: flex-end;
-	}
-
-	:global(.search-group) {
-		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		align-items: stretch;
 	}
 
-	:global(.search-group label) {
-		font-size: 0.9rem;
-		font-weight: bold;
-		color: #495057;
-	}
-
-	:global(.search-group input),
-	:global(.search-group select) {
-		padding: 0.5rem;
-		border: 1px solid #ced4da;
-		border-radius: 4px;
-		min-width: 200px;
+	:global(.search-form .form-actions) {
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+		margin-top: 1rem;
 	}
 
 	:global(.btn-search) {
-		padding: 0.5rem 1.5rem;
+		width: 100px;
+		height: 38px;
 		background-color: #007bff;
 		color: white;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
-		height: 38px; /* input/selectと高さを合わせる */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		box-sizing: border-box;
 	}
 
 	:global(.btn-search:hover) {
 		background-color: #0069d9;
+	}
+
+	:global(.btn-clear) {
+		width: 100px;
+		height: 38px;
+		background-color: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		text-decoration: none;
+		box-sizing: border-box;
+	}
+
+	:global(.btn-clear:hover) {
+		background-color: #5a6268;
 	}
 
 	:global(.btn-primary.form-submit) {

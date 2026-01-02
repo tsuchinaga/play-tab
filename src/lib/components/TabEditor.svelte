@@ -1,6 +1,7 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
+    import { instrumentGroups } from '$lib/instruments';
 
     let { data, form, isEdit = false, readonly = false } = $props();
 
@@ -21,29 +22,6 @@
         });
     }
 
-    const instrumentGroups = [
-        {
-            label: 'Guitar',
-            options: [
-                "Electric Guitar Clean",
-                "Electric Guitar Jazz",
-                "Overdriven Guitar",
-                "Distortion Guitar",
-                "Acoustic Guitar Nylon",
-                "Acoustic Guitar Steel"
-            ]
-        },
-        {
-            label: 'Bass',
-            options: [
-                "Electric Bass Finger",
-                "Electric Bass Pick",
-                "Slap Bass 1",
-                "Slap Bass 2",
-                "Acoustic Bass"
-            ]
-        }
-    ];
 
     const username = $derived(data.user?.username || 'Guest');
 
