@@ -71,7 +71,7 @@
                         <td>{history.version_comment}</td>
                         <td>{formatDate(history.updatedAt)}</td>
                         <td class="actions">
-                            <a href="/tabs/{data.tab._id}/{history.version}/view" class="btn-outline">表示</a>
+                            <a href="/tabs/{data.tab._id}/histories/{history.version}" class="btn-outline">表示</a>
                         </td>
                     </tr>
                 {/each}
