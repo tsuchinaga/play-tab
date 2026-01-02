@@ -114,7 +114,7 @@
                     <tr>
                         <td>
                             <div class="name-cell">
-                                <span class="tab-name">{tab.name}</span>
+                                <a href="/tab/{tab.id}" class="tab-name">{tab.name}</a>
                                 {#if tab.version}
                                     <div class="version-badge-container">
                                         <span class="version-badge">v{tab.version}</span>
@@ -191,6 +191,12 @@
 
     .tab-name {
         font-weight: 500;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .tab-name:hover {
+        text-decoration: underline;
     }
 
     .version-badge-container {
