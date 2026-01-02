@@ -10,7 +10,7 @@
     let trackCount = $state(form?.trackCount ?? data.tab?.tracks?.length ?? data.history?.tracks?.length ?? 1);
     let tracks = $state(form?.tracks ?? data.tab?.tracks ?? data.history?.tracks ?? [{ name: 'Guitar', instrument: 'Electric Guitar Clean', tuning: 'E4 B3 G3 D3 A2 E2', tex: '1.1*4', isVisible: true }]);
     let selectedTrackIndex = $state(0);
-    let viewMode = $state('split'); // 'tex' | 'split' | 'preview'
+    let viewMode = $state('split'); // 'full-tex' | 'tex' | 'split' | 'preview'
     let versionComment = $state(form?.versionComment ?? data.history?.version_comment ?? (isEdit ? '' : '新規登録'));
 
     // data.tab.tracks では isVisible という名前だが、このコンポーネント内では visible という名前を使っている箇所があったので統一する
@@ -89,7 +89,7 @@
     const fullTex = $derived(`\\title "${name}"
 \\artist "${username}"
 \\tempo ${bpm}
-.
+
 ${tracks.map(track => `\\track "${track.name}"
 \\instrument "${track.instrument}"
 \\tuning (${track.tuning}) {hide}
@@ -179,6 +179,18 @@ ${track.tex}`).join('\n')}`);
         <div class="view-mode-selector">
             <button 
                 type="button" 
+                class:active={viewMode === 'full-tex'} 
+                onclick={() => viewMode = 'full-tex'}
+                title="tex全文"
+            >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
+                    <path d="M3 7.6v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8"></path>
+                    <path d="M15 2v5h5"></path>
+                </svg>
+            </button>
+            <button 
+                type="button" 
                 class:active={viewMode === 'tex'} 
                 onclick={() => viewMode = 'tex'}
                 title="texのみ"
@@ -224,9 +236,21 @@ ${track.tex}`).join('\n')}`);
             </button>
         </div>
 
-        <div class="editor-main" class:tex-only={viewMode === 'tex'} class:preview-only={viewMode === 'preview'}>
+        <div class="editor-main" class:full-tex-only={viewMode === 'full-tex'} class:tex-only={viewMode === 'tex'} class:preview-only={viewMode === 'preview'}>
+            {#if viewMode === 'full-tex'}
+                <div class="full-tex-editor">
+                    <div class="tex-header">
+                        <span>tex全文</span>
+                    </div>
+                    <textarea 
+                        readonly
+                        value={fullTex}
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+            {/if}
             <div class="editor-left">
-                {#if viewMode !== 'preview'}
+                {#if viewMode !== 'preview' && viewMode !== 'full-tex'}
                     <div class="tex-editor">
                         <div class="tex-header">
                             <span>{currentTrack?.name || `トラック ${selectedTrackIndex + 1}`} トラック の編集</span>
@@ -247,7 +271,7 @@ ${track.tex}`).join('\n')}`);
             </div>
             
             <div class="editor-right">
-                {#if viewMode !== 'tex'}
+                {#if viewMode !== 'tex' && viewMode !== 'full-tex'}
                     <div class="preview-editor">
                         <div class="preview-header">
                             <span>プレビュー</span>
@@ -409,12 +433,21 @@ ${track.tex}`).join('\n')}`);
         gap: 20px;
     }
 
+    .editor-main.full-tex-only {
+        grid-template-columns: 1fr;
+    }
+
     .editor-main.tex-only {
         grid-template-columns: 1fr;
     }
 
     .editor-main.preview-only {
         grid-template-columns: 1fr;
+    }
+
+    .editor-main.full-tex-only .editor-left,
+    .editor-main.full-tex-only .editor-right {
+        display: none;
     }
 
     .editor-main.tex-only .editor-right {
@@ -487,6 +520,34 @@ ${track.tex}`).join('\n')}`);
     .preview-container {
         flex: 1;
         background: #fff;
+    }
+
+    .full-tex-editor {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .full-tex-editor textarea {
+        flex: 1;
+        width: 100%;
+        padding: 15px;
+        border: none;
+        resize: none;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1rem;
+        line-height: 1.5;
+        min-height: 600px;
+        background-color: #f8f9fa;
+        box-sizing: border-box;
+        display: block;
+    }
+
+    .full-tex-editor textarea:focus {
+        outline: none;
     }
 
     .version-section {
