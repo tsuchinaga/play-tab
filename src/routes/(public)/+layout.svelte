@@ -11,6 +11,7 @@
 				</div>
 				<nav>
 					<a href="/search">検索</a>
+					<a href="/usage">使い方</a>
 				</nav>
 			</div>
 			<div class="header-right">
