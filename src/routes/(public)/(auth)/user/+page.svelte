@@ -1,10 +1,11 @@
 <script lang="ts">
     import type { PageData } from './$types';
 
-    export let data: PageData;
-    const { user, publicTabCount } = data;
+    let { data } = $props();
+    const { user, publicTabCount, favoriteCount } = data;
 
-    const formatDate = (date: Date) => {
+    const formatDate = (date: Date | string) => {
+        if (!date) return '';
         const d = new Date(date);
         const y = d.getFullYear();
         const m = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -33,10 +34,72 @@
             <span class="value">{formatDate(user.createdAt)}</span>
         </div>
         <div class="profile-item">
-            <span class="label">TAB譜の数</span>
+            <span class="label">公開TAB譜数</span>
             <span class="value">{publicTabCount}</span>
         </div>
+        <div class="profile-item">
+            <span class="label">お気に入り数</span>
+            <span class="value">{favoriteCount}</span>
+        </div>
     </div>
+
+    {#if data.registeredTabs.length > 0}
+        <section style="margin-top: 40px;">
+            <div class="list-header">
+                <h1>登録しているTAB譜</h1>
+            </div>
+            <div class="table-wrapper">
+                <table class="list-table">
+                    <thead>
+                        <tr>
+                            <th>曲名</th>
+                            <th>楽器</th>
+                            <th>更新日</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each data.registeredTabs as tab}
+                            <tr>
+                                <td><a href="/tab/{tab._id}">{tab.name}</a></td>
+                                <td>{tab.instruments.join(', ')}</td>
+                                <td>{formatDate(tab.updatedAt)}</td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {/if}
+
+    {#if data.favoriteTabs.length > 0}
+        <section style="margin-top: 40px;">
+            <div class="list-header">
+                <h1>お気に入り登録しているTAB譜</h1>
+            </div>
+            <div class="table-wrapper">
+                <table class="list-table">
+                    <thead>
+                        <tr>
+                            <th>曲名</th>
+                            <th>投稿者</th>
+                            <th>楽器</th>
+                            <th>更新日</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each data.favoriteTabs as f}
+                            <tr>
+                                <td><a href="/tab/{f._id}">{f.name}</a></td>
+                                <td><a href="/user/{f.creator._id}">{f.creator.username}</a></td>
+                                <td>{f.instruments.join(', ')}</td>
+                                <td>{formatDate(f.updatedAt)}</td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {/if}
 </div>
 
 <style>

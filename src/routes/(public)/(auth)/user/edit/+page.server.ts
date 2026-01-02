@@ -18,7 +18,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
     return {
         user: {
-            username: user.username
+            username: user.username,
+            registeredTabsVisibility: user.registeredTabsVisibility,
+            favoritedTabsVisibility: user.favoritedTabsVisibility
         }
     };
 };
@@ -33,12 +35,18 @@ export const actions: Actions = {
         const username = data.get('username') as string;
         const password = data.get('password') as string;
         const confirmPassword = data.get('confirmPassword') as string;
+        const registeredTabsVisibility = data.get('registeredTabsVisibility') as 'private' | 'logged_in' | 'public';
+        const favoritedTabsVisibility = data.get('favoritedTabsVisibility') as 'private' | 'logged_in' | 'public';
 
         if (!username) {
             return fail(400, { username, error: 'ユーザー名は必須です' });
         }
 
-        const updateData: any = { username };
+        const updateData: any = {
+            username,
+            registeredTabsVisibility,
+            favoritedTabsVisibility
+        };
 
         if (password) {
             if (password !== confirmPassword) {

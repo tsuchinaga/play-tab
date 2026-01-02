@@ -30,6 +30,11 @@ export async function removeFavorite(tabId: ObjectId, userId: ObjectId): Promise
     await decreaseFavoriteCount(tabId);
 }
 
+export async function countFavoriteTabsByUserId(userId: ObjectId): Promise<number> {
+    const db = await getDb();
+    return await db.collection('favorite_tabs').countDocuments({ userId });
+}
+
 export async function getFavoriteTabsByUserId(
     userId: ObjectId,
     query: {

@@ -53,6 +53,28 @@
                         <input type="password" id="confirmPassword" name="confirmPassword" />
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <label for="registeredTabsVisibility">登録TABの公開設定</label>
+                    <div class="input-container">
+                        <select id="registeredTabsVisibility" name="registeredTabsVisibility">
+                            <option value="private" selected={data.user.registeredTabsVisibility === 'private'}>非公開</option>
+                            <option value="logged_in" selected={data.user.registeredTabsVisibility === 'logged_in'}>ログイン済みユーザーにのみ公開</option>
+                            <option value="public" selected={data.user.registeredTabsVisibility === 'public'}>公開</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="favoritedTabsVisibility">お気に入りTABの公開設定</label>
+                    <div class="input-container">
+                        <select id="favoritedTabsVisibility" name="favoritedTabsVisibility">
+                            <option value="private" selected={data.user.favoritedTabsVisibility === 'private'}>非公開</option>
+                            <option value="logged_in" selected={data.user.favoritedTabsVisibility === 'logged_in'}>ログイン済みユーザーにのみ公開</option>
+                            <option value="public" selected={data.user.favoritedTabsVisibility === 'public'}>公開</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div class="form-actions">
