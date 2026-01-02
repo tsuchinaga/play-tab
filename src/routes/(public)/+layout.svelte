@@ -5,23 +5,29 @@
 <div class="app">
 	<header>
 		<div class="header-content">
-			<div class="site-name">
-				<a href="/">Play Tab</a>
+			<div class="header-left">
+				<div class="site-name">
+					<a href="/">Play Tab</a>
+				</div>
+				<nav>
+					<a href="/search">検索</a>
+				</nav>
 			</div>
-			<nav>
-				<a href="/search">検索</a>
-				{#if data.user}
-					<a href="/tabs">TAB譜</a>
-					<a href="/favorites">お気に入り</a>
-					<a href="/user">{data.user.username}</a>
-					<form method="POST" action="/logout">
-						<button type="submit" class="link-button">ログアウト</button>
-					</form>
-				{:else}
-					<a href="/login">ログイン</a>
-					<a href="/register">登録</a>
-				{/if}
-			</nav>
+			<div class="header-right">
+				<nav>
+					{#if data.user}
+						<a href="/tabs">TAB譜</a>
+						<a href="/favorites">お気に入り</a>
+						<a href="/user">{data.user.username}</a>
+						<form method="POST" action="/logout">
+							<button type="submit" class="link-button">ログアウト</button>
+						</form>
+					{:else}
+						<a href="/login">ログイン</a>
+						<a href="/register">登録</a>
+					{/if}
+				</nav>
+			</div>
 		</div>
 	</header>
 
@@ -54,6 +60,12 @@
 		max-width: 1200px;
 		margin: 0 auto;
 		width: 100%;
+	}
+
+	.header-left, .header-right {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
 	}
 
 	.site-name a {
