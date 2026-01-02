@@ -131,6 +131,8 @@ try {
             userId: user1._id,
             name: 'ギタークロマチック',
             visibility: 'public',
+            texPublicSetting: 'public',
+            historyPublicSetting: 'public',
             bpm: 120,
             tracks: [
                 {
@@ -162,6 +164,8 @@ try {
             userId: user1._id,
             name: 'ベースクロマチック',
             visibility: 'public',
+            texPublicSetting: 'public',
+            historyPublicSetting: 'public',
             bpm: 120,
             tracks: [
                 {
@@ -189,6 +193,8 @@ try {
             userId: user1._id,
             name: 'メジャースケール',
             visibility: 'public',
+            texPublicSetting: 'public',
+            historyPublicSetting: 'public',
             bpm: 120,
             tracks: [
                 {

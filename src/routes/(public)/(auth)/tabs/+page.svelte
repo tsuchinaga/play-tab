@@ -135,7 +135,7 @@
                         <td>{tab.viewCount}</td>
                         <td>{tab.favoriteCount}</td>
                         <td class="actions">
-                            <a href="/tabs/{tab.id}/histories" class="btn-outline">履歴</a>
+                            <a href="/tabs/{tab.id}/versions" class="btn-outline">履歴</a>
                             <a href="/tabs/{tab.id}/edit" class="btn-outline">編集</a>
                             <button type="button" class="btn-danger-outline" onclick={() => handleDelete(tab.id, tab.name)}>削除</button>
                         </td>

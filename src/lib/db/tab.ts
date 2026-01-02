@@ -27,6 +27,8 @@ export interface Tab {
     userId: ObjectId;
     name: string;
     visibility: 'public' | 'unlisted' | 'private';
+    texPublicSetting: 'private' | 'login' | 'public';
+    historyPublicSetting: 'private' | 'login' | 'public';
     bpm: number;
     tracks: Track[];
     instruments: string[];
@@ -159,12 +161,14 @@ export async function getTabById(id: ObjectId) {
 
     const user = await db.collection('users').findOne({ _id: tab.userId });
     return {
+        texPublicSetting: 'private',
+        historyPublicSetting: 'private',
         ...tab,
         user: user ? {
             _id: user._id,
             username: user.username
         } : null
-    };
+    } as any;
 }
 
 export async function updateTab(id: ObjectId, userId: ObjectId, tab: Omit<Tab, '_id' | 'userId' | 'createdAt' | 'updatedAt' | 'version' | 'alphaTabVersion' | 'instruments'>, versionComment: string, version?: string) {
@@ -225,16 +229,28 @@ export async function getTabHistoriesByTabId(tabId: ObjectId, query: { sortBy?: 
         sort.version = -1;
     }
 
-    return await db.collection('tab_histories')
+    return (await db.collection('tab_histories')
         .find({ tabId })
         .sort(sort)
-        .toArray() as unknown as TabHistory[];
+        .toArray()).map(history => ({
+            texPublicSetting: 'private',
+            historyPublicSetting: 'private',
+            ...history
+        })) as unknown as TabHistory[];
 }
 
 export async function getTabHistoryByVersion(tabId: ObjectId, version: string) {
     const db = await getDb();
-    return await db.collection('tab_histories')
-        .findOne({ tabId, version }) as unknown as TabHistory | null;
+    const history = await db.collection('tab_histories')
+        .findOne({ tabId, version });
+    
+    if (!history) return null;
+
+    return {
+        texPublicSetting: 'private',
+        historyPublicSetting: 'private',
+        ...history
+    } as unknown as TabHistory;
 }
 
 export async function countPublicTabsByUserId(userId: ObjectId) {

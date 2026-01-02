@@ -7,6 +7,8 @@
 
     let name = $state(form?.name ?? data.tab?.name ?? data.history?.name ?? '');
     let visibility = $state(form?.visibility ?? data.tab?.visibility ?? data.history?.visibility ?? 'private');
+    let texPublicSetting = $state(form?.texPublicSetting ?? data.tab?.texPublicSetting ?? data.history?.texPublicSetting ?? 'private');
+    let historyPublicSetting = $state(form?.historyPublicSetting ?? data.tab?.historyPublicSetting ?? data.history?.historyPublicSetting ?? 'private');
     let bpm = $state(form?.bpm ?? data.tab?.bpm ?? data.history?.bpm ?? 120);
     let trackCount = $state(form?.trackCount ?? data.tab?.tracks?.length ?? data.history?.tracks?.length ?? 1);
     let tracks = $state(form?.tracks ?? data.tab?.tracks ?? data.history?.tracks ?? [{ name: 'Guitar', instrument: 'Electric Guitar Clean', tuning: 'E4 B3 G3 D3 A2 E2', tex: '1.1*4', isVisible: true }]);
@@ -262,6 +264,37 @@ ${track.tex}`).join('\n')}`);
             </div>
         </div>
 
+        <div class="public-settings-section form-card">
+            <h3>公開設定</h3>
+            <div class="form-group row">
+                <label for="texPublicSetting">texの公開設定</label>
+                <div class="input-container">
+                    <select id="texPublicSetting" name="texPublicSetting" bind:value={texPublicSetting} disabled={readonly}>
+                        <option value="private">非公開</option>
+                        <option value="login">ログイン済みユーザーにのみ公開</option>
+                        <option value="public">公開</option>
+                    </select>
+                    {#if readonly}
+                        <input type="hidden" name="texPublicSetting" value={texPublicSetting} />
+                    {/if}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="historyPublicSetting">バージョン履歴の公開設定</label>
+                <div class="input-container">
+                    <select id="historyPublicSetting" name="historyPublicSetting" bind:value={historyPublicSetting} disabled={readonly}>
+                        <option value="private">非公開</option>
+                        <option value="login">ログイン済みユーザーにのみ公開</option>
+                        <option value="public">公開</option>
+                    </select>
+                    {#if readonly}
+                        <input type="hidden" name="historyPublicSetting" value={historyPublicSetting} />
+                    {/if}
+                </div>
+            </div>
+        </div>
+
         <div class="version-section form-card">
             <h3>バージョン</h3>
             <div class="form-group row">
@@ -280,7 +313,7 @@ ${track.tex}`).join('\n')}`);
 
         <div class="form-actions">
             {#if readonly}
-                <a href="/tabs/{data.tab._id}/histories" class="btn-secondary">キャンセル</a>
+                <a href="/tabs/{data.tab._id}/versions" class="btn-secondary">キャンセル</a>
             {:else}
                 <a href="/tabs" class="btn-secondary">キャンセル</a>
                 <button type="submit" class="btn-primary form-submit">{isEdit ? '更新する' : '登録する'}</button>
@@ -528,18 +561,21 @@ ${track.tex}`).join('\n')}`);
         outline: none;
     }
 
-    .version-section {
+    .version-section,
+    .public-settings-section {
         display: flex;
         flex-direction: column;
         gap: 15px;
     }
 
-    .version-section h3 {
+    .version-section h3,
+    .public-settings-section h3 {
         margin: 0;
         font-size: 1.1rem;
         color: #333;
         border-bottom: 1px solid #eee;
         padding-bottom: 10px;
+        margin-bottom: 10px;
     }
 
     .form-actions {

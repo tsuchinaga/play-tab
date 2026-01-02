@@ -1,26 +1,25 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
 
     let { data } = $props();
-    const { tab, user } = data;
-    const isFavorite = $derived(data.isFavorite);
+    const { tab, history } = data;
     let viewMode = $state('tab'); // 'tab' | 'tex'
 
     const visibleTrackIndices = $derived(
-        tab.tracks.map((track: any, index: number) => track.isVisible ? index : -1).filter((index: number) => index !== -1)
+        history.tracks.map((track: any, index: number) => track.isVisible ? index : -1).filter((index: number) => index !== -1)
     );
 
-    const fullTex = $derived(`\\title "${tab.name}"
+    const fullTex = $derived(`\\title "${history.name}"
 \\artist "${tab.user?.username || 'Guest'}"
-\\tempo ${tab.bpm}
+\\tempo ${history.bpm}
 
-${tab.tracks.map((track: any) => `\\track "${track.name}"
+${history.tracks.map((track: any) => `\\track "${track.name}"
 \\instrument "${track.instrument}"
 \\tuning (${track.tuning}) {hide}
 ${track.tex}`).join('\n')}`);
 
     function formatDate(dateString: string) {
+        if (!dateString) return '';
         const date = new Date(dateString);
         return date.toLocaleString('ja-JP', {
             year: 'numeric',
@@ -33,27 +32,14 @@ ${track.tex}`).join('\n')}`);
 </script>
 
 <svelte:head>
-    <title>{tab.name} | Play Tab</title>
+    <title>{history.name} (v{history.version}) | Play Tab</title>
 </svelte:head>
 
 <div class="list-container">
     <div class="list-header">
-        <h1>{tab.name}</h1>
+        <h1>{history.name} <span class="version-badge">v{history.version}</span></h1>
         <div class="header-actions">
-            {#if data.canViewHistory}
-                <a href="/tab/{tab._id}/versions" class="btn-outline">バージョン履歴</a>
-            {/if}
-            {#if user}
-                {#if isFavorite}
-                    <form method="POST" action="?/removeFavorite" use:enhance>
-                        <button type="submit" class="btn-secondary">お気に入り解除</button>
-                    </form>
-                {:else}
-                    <form method="POST" action="?/addFavorite" use:enhance>
-                        <button type="submit" class="btn-primary">お気に入り登録</button>
-                    </form>
-                {/if}
-            {/if}
+            <a href="/tab/{tab._id}/versions" class="btn-secondary">履歴一覧に戻る</a>
         </div>
     </div>
 
@@ -69,15 +55,23 @@ ${track.tex}`).join('\n')}`);
             </span>
         </div>
         <div class="info-row">
-            <span class="label">BPM</span>
-            <span class="value">{tab.bpm}</span>
+            <span class="label">バージョン</span>
+            <span class="value">{history.version}</span>
         </div>
-        {#if tab.tracks.length > 0}
+        <div class="info-row">
+            <span class="label">更新コメント</span>
+            <span class="value">{history.version_comment}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">BPM</span>
+            <span class="value">{history.bpm}</span>
+        </div>
+        {#if history.tracks.length > 0}
             <div class="info-row">
                 <span class="label">楽器</span>
                 <div class="value">
                     <ul class="instruments-list">
-                        {#each tab.tracks as track}
+                        {#each history.tracks as track}
                             <li>
                                 {track.name} <span class="instrument-badge">{track.instrument} ({track.tuning})</span>
                             </li>
@@ -88,7 +82,7 @@ ${track.tex}`).join('\n')}`);
         {/if}
         <div class="info-row">
             <span class="label">更新日時</span>
-            <span class="value">{formatDate(tab.updatedAt)}</span>
+            <span class="value">{formatDate(history.updatedAt)}</span>
         </div>
     </div>
 
@@ -138,39 +132,20 @@ ${track.tex}`).join('\n')}`);
 </div>
 
 <style>
+    .version-badge {
+        font-size: 1rem;
+        background: #6c757d;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+
     .header-actions {
         display: flex;
         gap: 10px;
         align-items: center;
-    }
-
-    .header-actions button {
-        margin: 0;
-        width: 140px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 16px;
-        height: 40px;
-        border: 1px solid #007bff;
-        background: transparent;
-        color: #007bff;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-    }
-
-    .btn-outline:hover {
-        background: #007bff;
-        color: white;
     }
 
     .tab-info-card {

@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         throw error(403, 'このTAB譜を閲覧する権限がありません');
     }
 
-    const history = await getTabHistoryByVersion(tabId, params.tabHistoryId);
+    const history = await getTabHistoryByVersion(tabId, params.version);
     if (!history) {
         throw error(404, '指定されたバージョンの履歴が見つかりません');
     }

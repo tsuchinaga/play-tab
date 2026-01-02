@@ -61,18 +61,16 @@
                     <th onclick={() => toggleSort('version')} class="sortable">バージョン {getSortIcon('version')}</th>
                     <th>コメント</th>
                     <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
-                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
                 {#each data.histories as history}
                     <tr>
-                        <td>{history.version}</td>
+                        <td>
+                            <a href="/tabs/{data.tab._id}/versions/{history.version}">{history.version}</a>
+                        </td>
                         <td>{history.version_comment}</td>
                         <td>{formatDate(history.updatedAt)}</td>
-                        <td class="actions">
-                            <a href="/tabs/{data.tab._id}/histories/{history.version}" class="btn-outline">表示</a>
-                        </td>
                     </tr>
                 {/each}
             </tbody>

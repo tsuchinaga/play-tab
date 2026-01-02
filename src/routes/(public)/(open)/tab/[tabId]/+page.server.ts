@@ -33,10 +33,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         favorite = await isFavorite(tabId, new ObjectId(locals.user.id));
     }
 
+    const canViewTex = tab.texPublicSetting === 'public' || 
+                       (tab.texPublicSetting === 'login' && !!locals.user) || 
+                       (locals.user && tab.userId.toString() === locals.user.id.toString());
+    
+    const canViewHistory = tab.historyPublicSetting === 'public' || 
+                           (tab.historyPublicSetting === 'login' && !!locals.user) || 
+                           (locals.user && tab.userId.toString() === locals.user.id.toString());
+
     return {
         tab: JSON.parse(JSON.stringify(tab)),
         user: locals.user,
-        isFavorite: favorite
+        isFavorite: favorite,
+        canViewTex,
+        canViewHistory
     };
 };
 
