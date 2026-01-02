@@ -41,6 +41,19 @@
                 </div>
 
                 <div class="form-group row">
+                    <label for="email">メールアドレス</label>
+                    <div class="input-container">
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={form?.email ?? data.user.email}
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group row">
                     <label for="password">パスワード</label>
                     <div class="input-container">
                         <input type="password" id="password" name="password" placeholder="変更する場合のみ入力" />

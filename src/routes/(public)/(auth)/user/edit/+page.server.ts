@@ -19,6 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     return {
         user: {
             username: user.username,
+            email: user.email,
             registeredTabsVisibility: user.registeredTabsVisibility,
             favoritedTabsVisibility: user.favoritedTabsVisibility
         }
@@ -33,24 +34,29 @@ export const actions: Actions = {
 
         const data = await request.formData();
         const username = data.get('username') as string;
+        const email = data.get('email') as string;
         const password = data.get('password') as string;
         const confirmPassword = data.get('confirmPassword') as string;
         const registeredTabsVisibility = data.get('registeredTabsVisibility') as 'private' | 'logged_in' | 'public';
         const favoritedTabsVisibility = data.get('favoritedTabsVisibility') as 'private' | 'logged_in' | 'public';
 
         if (!username) {
-            return fail(400, { username, error: 'ユーザー名は必須です' });
+            return fail(400, { username, email, error: 'ユーザー名は必須です' });
+        }
+        if (!email) {
+            return fail(400, { username, email, error: 'メールアドレスは必須です' });
         }
 
         const updateData: any = {
             username,
+            email,
             registeredTabsVisibility,
             favoritedTabsVisibility
         };
 
         if (password) {
             if (password !== confirmPassword) {
-                return fail(400, { username, error: 'パスワードと確認用パスワードが一致しません' });
+                return fail(400, { username, email, error: 'パスワードと確認用パスワードが一致しません' });
             }
             updateData.hashedPassword = await bcrypt.hash(password, 10);
         }

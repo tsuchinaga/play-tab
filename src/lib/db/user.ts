@@ -5,6 +5,7 @@ export interface User {
     _id?: ObjectId;
     loginId: string;
     username: string;
+    email: string;
     hashedPassword: string;
     isDeleted: boolean;
     createdAt: Date;
@@ -33,7 +34,7 @@ export async function findUserById(id: ObjectId) {
     return user;
 }
 
-export async function createUser(user: { loginId: string; username: string; hashedPassword: string }) {
+export async function createUser(user: { loginId: string; username: string; email: string; hashedPassword: string }) {
     const db = await getDb();
     const result = await db.collection<User>('users').insertOne({
         ...user,
@@ -46,7 +47,7 @@ export async function createUser(user: { loginId: string; username: string; hash
     return result;
 }
 
-export async function updateUser(id: ObjectId, user: Partial<Pick<User, 'username' | 'hashedPassword' | 'registeredTabsVisibility' | 'favoritedTabsVisibility'>>) {
+export async function updateUser(id: ObjectId, user: Partial<Pick<User, 'username' | 'email' | 'hashedPassword' | 'registeredTabsVisibility' | 'favoritedTabsVisibility'>>) {
     const db = await getDb();
     const result = await db.collection<User>('users').updateOne(
         { _id: id },

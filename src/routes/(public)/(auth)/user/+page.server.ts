@@ -34,6 +34,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     return {
         user: {
             username: user.username,
+            email: user.email,
             createdAt: user.createdAt
         },
         publicTabCount,

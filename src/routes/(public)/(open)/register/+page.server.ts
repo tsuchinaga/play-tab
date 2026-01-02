@@ -14,24 +14,25 @@ export const actions: Actions = {
         const data = await request.formData();
         const loginId = data.get('loginId') as string;
         const username = data.get('username') as string;
+        const email = data.get('email') as string;
         const password = data.get('password') as string;
         const confirmPassword = data.get('confirmPassword') as string;
 
-        if (!loginId || !username || !password || !confirmPassword) {
-            return fail(400, { loginId, username, error: 'すべての項目を入力してください' });
+        if (!loginId || !username || !email || !password || !confirmPassword) {
+            return fail(400, { loginId, username, email, error: 'すべての項目を入力してください' });
         }
 
         if (password !== confirmPassword) {
-            return fail(400, { loginId, username, error: 'パスワードと確認用パスワードが一致しません' });
+            return fail(400, { loginId, username, email, error: 'パスワードと確認用パスワードが一致しません' });
         }
 
         const existingUser = await findUserByLoginId(loginId);
         if (existingUser) {
-            return fail(400, { loginId, username, error: 'このログインIDは既に使用されています' });
+            return fail(400, { loginId, username, email, error: 'このログインIDは既に使用されています' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        await createUser({ loginId, username, hashedPassword });
+        await createUser({ loginId, username, email, hashedPassword });
 
         throw redirect(303, '/login');
     }

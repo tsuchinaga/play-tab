@@ -95,14 +95,15 @@ try {
     }
 
     [
-        {loginId: 'user1', username: 'テストユーザー1'},
-        {loginId: 'user2', username: 'テストユーザー2'},
-        {loginId: 'user3', username: 'テストユーザー3'}
+        {loginId: 'user1', username: 'テストユーザー1', email: 'user1@example.com'},
+        {loginId: 'user2', username: 'テストユーザー2', email: 'user2@example.com'},
+        {loginId: 'user3', username: 'テストユーザー3', email: 'user3@example.com'}
     ].forEach(user => {
         // bcrypt hash for string 'password'
         db.users.insertOne({
             loginId: user.loginId,
             username: user.username,
+            email: user.email,
             hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
             isDeleted: false,
             createdAt: new Date(),

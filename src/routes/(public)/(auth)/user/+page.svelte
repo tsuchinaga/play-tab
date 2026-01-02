@@ -30,6 +30,10 @@
             <span class="value">{user.username}</span>
         </div>
         <div class="profile-item">
+            <span class="label">メールアドレス</span>
+            <span class="value">{user.email}</span>
+        </div>
+        <div class="profile-item">
             <span class="label">登録日</span>
             <span class="value">{formatDate(user.createdAt)}</span>
         </div>
