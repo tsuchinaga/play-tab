@@ -249,3 +249,30 @@ try {
         print(`[init] tabs: デフォルトのタブ譜を登録しました (name=${tab.name})`);
     });
 })();
+
+// Ensure announcements collection has indexes
+try {
+    db.announcements.createIndex({createdAt: -1});
+} catch (e) {
+    print('[init] announcements へのインデックス追加に失敗しました:', e.message);
+}
+
+// Seed default announcements if not exists
+(function seedAnnouncements() {
+    let count = db.announcements.countDocuments();
+    if (count > 0) {
+        print('[init] announcements: 既にデータが存在するためスキップします');
+        return;
+    }
+
+    db.announcements.insertMany([
+        {
+            title: 'Play Tabへようこそ！',
+            content: 'Play Tabは、ギターやベースのTAB譜を管理・共有するためのサービスです。',
+            createdAt: new Date('2026-01-03T00:00:00Z'),
+            updatedAt: new Date('2026-01-03T00:00:00Z')
+        }
+    ]);
+
+    print('[init] announcements: デフォルトのお知らせを登録しました');
+})();
