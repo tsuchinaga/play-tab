@@ -1,7 +1,8 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 import { getTabById } from '$lib/db/tab';
-import type { PageServerLoad } from './$types';
+import { isFavorite, addFavorite, removeFavorite } from '$lib/db/favorite';
+import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     let tabId: ObjectId;
@@ -24,8 +25,47 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         }
     }
 
+    let favorite = false;
+    if (locals.user) {
+        favorite = await isFavorite(tabId, locals.user._id);
+    }
+
     return {
         tab: JSON.parse(JSON.stringify(tab)),
-        user: locals.user
+        user: locals.user,
+        isFavorite: favorite
     };
+};
+
+export const actions: Actions = {
+    addFavorite: async ({ params, locals }) => {
+        if (!locals.user) {
+            throw redirect(303, '/login');
+        }
+
+        let tabId: ObjectId;
+        try {
+            tabId = new ObjectId(params.tabId);
+        } catch (e) {
+            throw error(404, 'TAB譜が見つかりません');
+        }
+
+        await addFavorite(tabId, locals.user._id);
+        return { success: true };
+    },
+    removeFavorite: async ({ params, locals }) => {
+        if (!locals.user) {
+            throw redirect(303, '/login');
+        }
+
+        let tabId: ObjectId;
+        try {
+            tabId = new ObjectId(params.tabId);
+        } catch (e) {
+            throw error(404, 'TAB譜が見つかりません');
+        }
+
+        await removeFavorite(tabId, locals.user._id);
+        return { success: true };
+    }
 };

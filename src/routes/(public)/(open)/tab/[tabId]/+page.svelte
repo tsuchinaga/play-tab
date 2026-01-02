@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
 
     let { data } = $props();
     const { tab, user } = data;
+    const isFavorite = $derived(data.isFavorite);
 
     const visibleTrackIndices = $derived(
         tab.tracks.map((track: any, index: number) => track.isVisible ? index : -1).filter((index: number) => index !== -1)
@@ -36,6 +38,19 @@ ${track.tex}`).join('\n')}`);
 <div class="list-container">
     <div class="list-header">
         <h1>{tab.name}</h1>
+        {#if user}
+            <div class="header-actions">
+                {#if isFavorite}
+                    <form method="POST" action="?/removeFavorite" use:enhance>
+                        <button type="submit" class="btn-secondary">お気に入り解除</button>
+                    </form>
+                {:else}
+                    <form method="POST" action="?/addFavorite" use:enhance>
+                        <button type="submit" class="btn-primary">お気に入り登録</button>
+                    </form>
+                {/if}
+            </div>
+        {/if}
     </div>
 
     <div class="tab-info-card form-card">
@@ -53,10 +68,6 @@ ${track.tex}`).join('\n')}`);
             <span class="label">BPM</span>
             <span class="value">{tab.bpm}</span>
         </div>
-        <div class="info-row">
-            <span class="label">更新日時</span>
-            <span class="value">{formatDate(tab.updatedAt)}</span>
-        </div>
         {#if tab.tracks.length > 0}
             <div class="info-row">
                 <span class="label">楽器</span>
@@ -64,13 +75,17 @@ ${track.tex}`).join('\n')}`);
                     <ul class="instruments-list">
                         {#each tab.tracks as track}
                             <li>
-                                {track.name} <span class="instrument-badge">{track.instrument}</span>
+                                {track.name} <span class="instrument-badge">{track.instrument} ({track.tuning})</span>
                             </li>
                         {/each}
                     </ul>
                 </div>
             </div>
         {/if}
+        <div class="info-row">
+            <span class="label">更新日時</span>
+            <span class="value">{formatDate(tab.updatedAt)}</span>
+        </div>
     </div>
 
     <div class="player-container">
@@ -79,6 +94,21 @@ ${track.tex}`).join('\n')}`);
 </div>
 
 <style>
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .header-actions button {
+        margin: 0;
+        width: 140px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .tab-info-card {
         margin-bottom: 2rem;
         display: flex;

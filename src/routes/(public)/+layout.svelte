@@ -265,6 +265,7 @@
 		color: white;
 		border: none;
 		border-radius: 4px;
+		font-size: 1rem;
 		font-weight: bold;
 		text-decoration: none;
 		cursor: pointer;
