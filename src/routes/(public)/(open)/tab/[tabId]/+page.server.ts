@@ -5,7 +5,7 @@ import { isFavorite, addFavorite, removeFavorite } from '$lib/db/favorite';
 import { increaseViewCount } from '$lib/db/tab_summary';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params, locals, cookies }) => {
     let tabId: ObjectId;
     try {
         tabId = new ObjectId(params.tabId);
@@ -26,7 +26,43 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         }
     }
 
-    await increaseViewCount(tabId);
+    // 閲覧数の更新連打防止 (クッキーを使用)
+    const now = Date.now();
+    const viewedTabsCookie = cookies.get('viewed_tabs');
+    let viewedTabs: { id: string, viewedAt: number }[] = [];
+    
+    try {
+        if (viewedTabsCookie) {
+            const parsed = JSON.parse(viewedTabsCookie);
+            if (Array.isArray(parsed)) {
+                // 24時間以上前の記録を除外
+                viewedTabs = parsed.filter(item => 
+                    typeof item === 'object' && 
+                    item.id && 
+                    item.viewedAt && 
+                    now - item.viewedAt < 1000 * 60 * 60 * 24
+                );
+            }
+        }
+    } catch (e) {
+        // パース失敗時は空配列
+        viewedTabs = [];
+    }
+
+    const currentTabEntry = viewedTabs.find(item => item.id === tabId.toString());
+    
+    if (!currentTabEntry) {
+        await increaseViewCount(tabId);
+        viewedTabs.push({ id: tabId.toString(), viewedAt: now });
+        
+        // クッキーを更新
+        cookies.set('viewed_tabs', JSON.stringify(viewedTabs), {
+            path: '/',
+            maxAge: 60 * 60 * 24,
+            httpOnly: true,
+            sameSite: 'lax'
+        });
+    }
 
     let favorite = false;
     if (locals.user) {
