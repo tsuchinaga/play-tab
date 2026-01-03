@@ -6,10 +6,10 @@ services:
     container_name: play-tab-app
     restart: unless-stopped
     environment:
-      - TZ=Asia/Tokyo
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:password@db:27017/play-tab?authSource=admin
-      - ORIGIN=https://play-tab.tsuchinaga.com
+      - TZ=${TZ:-Asia/Tokyo}
+      - NODE_ENV=${NODE_ENV:-production}
+      - MONGODB_URI=${MONGODB_URI}
+      - ORIGIN=${ORIGIN}
 
   db:
     image: mongo:8
@@ -19,10 +19,10 @@ services:
       - mongodb_data:/data/db
       - ./db:/docker-entrypoint-initdb.d
     environment:
-      - TZ=Asia/Tokyo
+      - TZ=${TZ:-Asia/Tokyo}
       - MONGO_INITDB_DATABASE=play-tab
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
   # Nginx reverse proxy (HTTPS termination)
   proxy:
@@ -32,7 +32,7 @@ services:
     depends_on:
       - web
     environment:
-      - DOMAIN=play-tab.tsuchinaga.com
+      - DOMAIN=${DOMAIN}
     ports:
       - "80:80"
       - "443:443"
@@ -52,8 +52,8 @@ services:
       - proxy
     environment:
       # 置き換え必須: あなたのドメインと通知用メールアドレス
-      - DOMAIN=play-tab.tsuchinaga.com
-      - EMAIL=woocun@gmail.com
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${EMAIL}
       # 任意: 更新チェック間隔（秒）デフォルト12時間
       # - SLEEP_SECONDS=43200
     volumes:

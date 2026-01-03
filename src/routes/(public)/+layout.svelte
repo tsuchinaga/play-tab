@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_COPYRIGHT_HOLDER } from '$env/static/public';
 	let { data, children } = $props();
 </script>
 
@@ -38,7 +39,7 @@
 	</main>
 
 	<footer>
-		<p>&copy; tsuchinaga.com</p>
+		<p>&copy; {PUBLIC_COPYRIGHT_HOLDER || 'Play Tab'}</p>
 	</footer>
 </div>
 
