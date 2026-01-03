@@ -88,7 +88,12 @@ try {
 
 // Seed default user if not exists
 (function seedUser() {
-    let existing = db.users.findOne({loginId: 'testuser'});
+    if (process.env.APP_ENV === 'production') {
+        print('[init] users: 本番環境のため、テストユーザーの登録をスキップします');
+        return;
+    }
+
+    let existing = db.users.findOne({loginId: 'user1'});
     if (existing) {
         print('[init] users: 既に登録済みのユーザーのためスキップします');
         return;
@@ -116,6 +121,11 @@ try {
 
 // Seed default tabs if not exists
 (function seedTabs() {
+    if (process.env.APP_ENV === 'production') {
+        print('[init] tabs: 本番環境のため、テストタブ譜の登録をスキップします');
+        return;
+    }
+
     let user1 = db.users.findOne({loginId: 'user1'});
     if (!user1) {
         print('[init] tabs: user1 が見つからないため、タブ譜の登録をスキップします');
@@ -259,6 +269,11 @@ try {
 
 // Seed default announcements if not exists
 (function seedAnnouncements() {
+    if (process.env.APP_ENV === 'production') {
+        print('[init] announcements: 本番環境のため、テスト用お知らせの登録をスキップします');
+        return;
+    }
+
     let count = db.announcements.countDocuments();
     if (count > 0) {
         print('[init] announcements: 既にデータが存在するためスキップします');
