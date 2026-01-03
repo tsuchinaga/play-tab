@@ -17,11 +17,21 @@
     let isLooping = $state(false);
     let isCountIn = $state(false);
     let isMetronome = $state(false);
+    let defaultBpm = $state(120);
+    let currentBpm = $state(120);
 
     $effect(() => {
         if (api) {
             const remover = api.playerStateChanged.on((args) => {
                 isPlaying = args.state === 1; // 1 is Playing in alphaTab.Synthesizer.PlayerState
+            });
+
+            const scoreLoadedRemover = api.scoreLoaded.on((score) => {
+                console.log('[AlphaTabPlayer] score loaded', score);
+                if (score.tempo > 0) {
+                    defaultBpm = score.tempo;
+                    currentBpm = score.tempo;
+                }
             });
             
             // 初期状態の同期
@@ -32,7 +42,14 @@
             return () => {
                 console.log('[AlphaTabPlayer] cleaning up events');
                 remover();
+                scoreLoadedRemover();
             };
+        }
+    });
+
+    $effect(() => {
+        if (api && defaultBpm > 0) {
+            api.playbackSpeed = currentBpm / defaultBpm;
         }
     });
 
@@ -125,6 +142,19 @@
                             <circle cx="16.8" cy="9.8" r="1.3" fill="currentColor"/>
                         </svg>
                     </button>
+                    <div class="tempo-controls">
+                        <svg class="icon bpm-icon" viewBox="0 0 24 24" width="18" height="18" title="BPM">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" fill="currentColor"/>
+                        </svg>
+                        <span class="bpm-label">{Math.round(currentBpm)}</span>
+                        <input type="range" min="60" max="240" bind:value={currentBpm} class="bpm-slider" />
+                        <button type="button" class="btn-reset" onclick={() => currentBpm = defaultBpm} title="BPMをリセット">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                <polyline points="3 3 3 8 8 8"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         {:else}
@@ -154,7 +184,7 @@
     }
 
     /* 再生中のカーソルと選択範囲のスタイル（再生中のみ適用） */
-    .is-playing :global(.at-cursor-bar) {
+    :global(.at-cursor-bar) {
         /* Defines the color of the bar background when a bar is played */
         background: rgba(255, 242, 0, 0.25);
     }
@@ -214,6 +244,54 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
+    }
+
+    .tempo-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 8px;
+        height: 36px;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        border-radius: 4px;
+    }
+
+    .bpm-icon {
+        color: #495057;
+        flex-shrink: 0;
+    }
+
+    .bpm-label {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #495057;
+        min-width: 28px;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .bpm-slider {
+        width: 120px;
+        cursor: pointer;
+    }
+
+    .btn-reset {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        padding: 2px;
+        cursor: pointer;
+        color: #6c757d;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+
+    .btn-reset:hover {
+        background: #e9ecef;
+        color: #007bff;
     }
 
     .btn-icon {
