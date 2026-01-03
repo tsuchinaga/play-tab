@@ -88,7 +88,8 @@ try {
 
 // Seed default user if not exists
 (function seedUser() {
-    if (process.env.APP_ENV === 'production') {
+    const appEnv = typeof process !== 'undefined' ? process.env.APP_ENV : '';
+    if (appEnv === 'production') {
         print('[init] users: 本番環境のため、テストユーザーの登録をスキップします');
         return;
     }
@@ -121,7 +122,8 @@ try {
 
 // Seed default tabs if not exists
 (function seedTabs() {
-    if (process.env.APP_ENV === 'production') {
+    const appEnv = typeof process !== 'undefined' ? process.env.APP_ENV : '';
+    if (appEnv === 'production') {
         print('[init] tabs: 本番環境のため、テストタブ譜の登録をスキップします');
         return;
     }
