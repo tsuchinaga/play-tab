@@ -47,7 +47,7 @@ services:
   # Certbot: 初回発行と更新を単一コンテナで実行する
   certbot:
     image: certbot/certbot:latest
-    container_name: certbot
+    container_name: play-tab-certbot
     restart: unless-stopped
     depends_on:
       - proxy
