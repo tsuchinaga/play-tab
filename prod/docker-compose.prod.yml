@@ -1,0 +1,70 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: prod/app/Dockerfile
+    container_name: play-tab-app
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Tokyo
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:password@db:27017/play-tab?authSource=admin
+      - ORIGIN=https://play-tab.tsuchinaga.com
+
+  db:
+    image: mongo:8
+    container_name: play-tab-db
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+      - ./db:/docker-entrypoint-initdb.d
+    environment:
+      - TZ=Asia/Tokyo
+      - MONGO_INITDB_DATABASE=play-tab
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  # Nginx reverse proxy (HTTPS termination)
+  proxy:
+    image: nginx:latest
+    container_name: play-tab-proxy
+    restart: unless-stopped
+    depends_on:
+      - web
+    environment:
+      - DOMAIN=play-tab.tsuchinaga.com
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/conf.d:/etc/nginx/conf.d
+      - certbot-webroot:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
+      - ./scripts:/scripts:ro
+    command: ["/bin/sh", "/scripts/nginx_bootstrap.sh"]
+
+  # Certbot: 初回発行と更新を単一コンテナで実行する
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    restart: unless-stopped
+    depends_on:
+      - proxy
+    environment:
+      # 置き換え必須: あなたのドメインと通知用メールアドレス
+      - DOMAIN=play-tab.tsuchinaga.com
+      - EMAIL=woocun@gmail.com
+      # 任意: 更新チェック間隔（秒）デフォルト12時間
+      # - SLEEP_SECONDS=43200
+    volumes:
+      - certbot-webroot:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - ./scripts:/scripts:ro
+    entrypoint: ["/bin/sh", "/scripts/certbot_issue_and_renew.sh"]
+
+volumes:
+  mongodb_data:
+  certbot-etc:
+  certbot-var:
+  certbot-webroot:
