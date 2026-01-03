@@ -7,6 +7,13 @@
     const isFavorite = $derived(data.isFavorite);
     let viewMode = $state('tab'); // 'tab' | 'tex'
 
+    // 公開状況の定義
+    const statusMap = {
+        public: { label: '公開', class: 'status-public' },
+        private: { label: '非公開', class: 'status-private' },
+        unlisted: { label: '限定公開', class: 'status-limited' }
+    };
+
     const visibleTrackIndices = $derived(
         tab.tracks.map((track: any, index: number) => track.isVisible ? index : -1).filter((index: number) => index !== -1)
     );
@@ -38,7 +45,16 @@ ${track.tex}`).join('\n')}`);
 
 <div class="list-container">
     <div class="list-header">
-        <h1>{tab.name}</h1>
+        <div class="title-with-badge">
+            <h1>{tab.name}</h1>
+            {#if tab.visibility === 'public'}
+                <span class="status-badge status-public">公開</span>
+            {:else if tab.visibility === 'unlisted'}
+                <span class="status-badge status-limited">限定公開</span>
+            {:else if tab.visibility === 'private'}
+                <span class="status-badge status-private">非公開</span>
+            {/if}
+        </div>
         <div class="header-actions">
             {#if data.canViewHistory}
                 <a href="/tab/{tab._id}/versions" class="btn-outline">バージョン履歴</a>
@@ -171,6 +187,12 @@ ${track.tex}`).join('\n')}`);
     .btn-outline:hover {
         background: #007bff;
         color: white;
+    }
+
+    .title-with-badge {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 
     .tab-info-card {
