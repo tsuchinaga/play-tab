@@ -29,6 +29,8 @@
             <label for="password">パスワード</label>
             <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit" class="btn-admin">ログイン</button>
+        <div class="form-actions" style="margin-top: 20px; display: flex; justify-content: center;">
+            <button type="submit" class="btn-admin form-submit">ログイン</button>
+        </div>
     </form>
 </div>

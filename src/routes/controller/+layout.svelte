@@ -10,6 +10,9 @@
 			</div>
 			<nav>
 				{#if data.admin}
+					<a href="/controller/users">ユーザー</a>
+					<a href="/controller/tabs">TAB譜</a>
+					<a href="/controller/administrators">管理者</a>
 					<span>{data.admin.loginId}</span>
 					<form method="POST" action="/controller/logout">
 						<button type="submit" class="link-button">ログアウト</button>
@@ -93,9 +96,10 @@
 		max-width: 400px;
 		margin: 2rem auto;
 		padding: 2rem;
-		border: 1px solid #495057;
-		border-radius: 4px;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
 		background-color: #fff;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	}
 
 	:global(.admin-form-container h1) {
@@ -112,28 +116,30 @@
 
 	:global(.admin-form-group label) {
 		display: block;
-		margin-bottom: 0.25rem;
-		font-size: 0.9rem;
+		margin-bottom: 0.5rem;
+		font-weight: bold;
 		color: #495057;
 	}
 
 	:global(.admin-form-group input) {
 		width: 100%;
-		padding: 0.4rem;
+		padding: 0.5rem;
 		border: 1px solid #ced4da;
-		border-radius: 2px;
+		border-radius: 4px;
 		box-sizing: border-box;
 	}
 
 	:global(.btn-admin) {
 		display: block;
 		width: 100%;
-		padding: 0.5rem;
+		padding: 0.75rem;
 		background-color: #343a40;
 		color: white;
 		border: none;
-		border-radius: 2px;
+		border-radius: 4px;
+		font-size: 1rem;
 		cursor: pointer;
+		transition: background-color 0.2s;
 	}
 
 	:global(.btn-admin:hover) {
@@ -141,46 +147,274 @@
 	}
 
 	:global(.admin-error-message) {
-		color: #721c24;
+		color: #dc3545;
 		background-color: #f8d7da;
 		border: 1px solid #f5c6cb;
-		padding: 0.5rem;
+		padding: 0.75rem;
+		border-radius: 4px;
 		margin-bottom: 1rem;
 		font-size: 0.9rem;
 	}
 
+	/* 検索フォーム */
+	:global(.search-form-container) {
+		background-color: #fff;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		padding: 1.5rem;
+		margin-bottom: 2rem;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+
+	:global(.search-form) {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	:global(.search-form .form-actions) {
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+		margin-top: 1rem;
+	}
+
+	:global(.btn-search) {
+		width: 100px;
+		height: 38px;
+		background-color: #343a40;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		box-sizing: border-box;
+	}
+
+	:global(.btn-search:hover) {
+		background-color: #23272b;
+	}
+
+	:global(.btn-clear) {
+		width: 100px;
+		height: 38px;
+		background-color: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		text-decoration: none;
+		box-sizing: border-box;
+	}
+
+	:global(.btn-clear:hover) {
+		background-color: #5a6268;
+	}
+
+	:global(.btn-admin.form-submit) {
+		width: 140px;
+		padding: 10px;
+		background-color: #343a40;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		font-weight: bold;
+		cursor: pointer;
+		text-align: center;
+		transition: background-color 0.2s;
+	}
+
+	:global(.btn-admin.form-submit:hover) {
+		background-color: #23272b;
+	}
+
+	:global(.btn-admin-secondary) {
+		display: inline-block;
+		width: 140px;
+		padding: 10px;
+		background-color: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		font-size: 1rem;
+		font-weight: bold;
+		text-decoration: none;
+		cursor: pointer;
+		text-align: center;
+		transition: background-color 0.2s;
+	}
+
+	:global(.btn-admin-secondary:hover) {
+		background-color: #5a6268;
+	}
+
+	:global(.form-group.row) {
+		display: flex;
+		align-items: center;
+		margin-bottom: 1rem;
+		gap: 20px;
+	}
+
+	:global(.form-group.row label) {
+		width: 120px;
+		font-weight: bold;
+		color: #495057;
+		margin-bottom: 0;
+		display: block;
+	}
+
+	:global(.input-container) {
+		flex: 1;
+	}
+
+	:global(.input-container input),
+	:global(.input-container select),
+	:global(.input-container textarea) {
+		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #dee2e6;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-family: inherit;
+		font-size: 1rem;
+	}
+
+	:global(.form-card) {
+		background: #fff;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		border: 1px solid #dee2e6;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+
 	/* 一覧画面（テーブル）共通スタイル */
-	:global(.admin-list-container) {
+	:global(.list-container) {
 		max-width: 1000px;
 		margin: 0 auto;
 	}
 
-	:global(.admin-list-table) {
-		width: 100%;
-		border-collapse: collapse;
-		text-align: left;
-		border: 1px solid #dee2e6;
+	:global(.list-header) {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
 	}
 
-	:global(.admin-list-table th),
-	:global(.admin-list-table td) {
-		padding: 0.75rem;
-		border: 1px solid #dee2e6;
-	}
-
-	:global(.admin-list-table th) {
-		background-color: #f8f9fa;
-		font-weight: bold;
+	:global(.list-header h1) {
+		margin: 0;
+		font-size: 1.75rem;
 		color: #343a40;
 	}
 
-	:global(.admin-list-table th.sortable) {
+	:global(.table-wrapper) {
+		background: white;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+
+	:global(.list-table) {
+		width: 100%;
+		border-collapse: collapse;
+		text-align: left;
+	}
+
+	:global(.list-table th),
+	:global(.list-table td) {
+		padding: 1rem;
+		border-bottom: 1px solid #dee2e6;
+	}
+
+	:global(.list-table th) {
+		background-color: #f8f9fa;
+		font-weight: bold;
+		color: #495057;
+	}
+
+	:global(.list-table th.sortable) {
 		cursor: pointer;
 		user-select: none;
 		white-space: nowrap;
 	}
 
-	:global(.admin-list-table th.sortable:hover) {
+	:global(.list-table th.sortable:hover) {
 		background-color: #e9ecef;
+	}
+
+	:global(.list-table tr:last-child td) {
+		border-bottom: none;
+	}
+
+	/* ステータスバッジ */
+	:global(.status-badge) {
+		display: inline-block;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	:global(.status-public) {
+		background-color: #e7f3ff;
+		color: #343a40;
+		border: 1px solid #343a40;
+	}
+
+	:global(.status-private) {
+		background-color: #f8d7da;
+		color: #dc3545;
+	}
+
+	/* 操作ボタン */
+	:global(.actions) {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	:global(.btn-admin-outline) {
+		display: inline-block;
+		padding: 0.4rem 0.8rem;
+		border: 1px solid #343a40;
+		color: #343a40;
+		background: none;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 0.9rem;
+		transition: all 0.2s;
+		cursor: pointer;
+	}
+
+	:global(.btn-admin-outline:hover) {
+		background-color: #343a40;
+		color: white;
+	}
+
+	:global(.btn-admin-danger-outline) {
+		display: inline-block;
+		padding: 0.4rem 0.8rem;
+		border: 1px solid #dc3545;
+		color: #dc3545;
+		background: none;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 0.9rem;
+		transition: all 0.2s;
+		cursor: pointer;
+	}
+
+	:global(.btn-admin-danger-outline:hover) {
+		background-color: #dc3545;
+		color: white;
 	}
 </style>

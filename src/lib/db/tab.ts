@@ -335,6 +335,53 @@ export async function getRecentPublicTabs(limit: number = 5) {
     return await db.collection('tabs').aggregate(pipeline).toArray();
 }
 
+export async function searchTabsAsAdmin(query: { name?: string; username?: string }) {
+    const db = await getDb();
+    const filter: any = {};
+    if (query.name) {
+        filter.name = { $regex: query.name, $options: 'i' };
+    }
+    
+    if (query.username) {
+        const users = await db.collection('users').find({
+            username: { $regex: query.username, $options: 'i' }
+        }).toArray();
+        const userIds = users.map(u => u._id);
+        filter.userId = { $in: userIds };
+    }
+
+    const tabs = await db.collection<Tab>('tabs').aggregate([
+        { $match: filter },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user'
+            }
+        },
+        { $unwind: '$user' },
+        {
+            $lookup: {
+                from: 'tab_summaries',
+                localField: '_id',
+                foreignField: 'tabId',
+                as: 'summary'
+            }
+        },
+        { $unwind: { path: '$summary', preserveNullAndEmptyArrays: true } },
+        {
+            $addFields: {
+                viewCount: { $ifNull: ['$summary.viewCount', 0] },
+                favoriteCount: { $ifNull: ['$summary.favoriteCount', 0] }
+            }
+        },
+        { $sort: { updatedAt: -1 } }
+    ]).toArray();
+
+    return tabs;
+}
+
 export async function getTopFavoritedPublicTabs(limit: number = 5) {
     const db = await getDb();
     const pipeline: any[] = [

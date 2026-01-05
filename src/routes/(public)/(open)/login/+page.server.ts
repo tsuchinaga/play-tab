@@ -32,6 +32,10 @@ export const actions: Actions = {
             return fail(401, { loginId, error: 'ログインIDまたはパスワードが正しくありません' });
         }
 
+        if (!user.isActive) {
+            return fail(401, { loginId, error: 'ログインIDまたはパスワードが正しくありません' });
+        }
+
         let sessionId = cookies.get('sessionId');
         const userData = {
             id: user._id.toString(),
