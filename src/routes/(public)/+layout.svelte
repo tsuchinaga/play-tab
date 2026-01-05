@@ -8,7 +8,10 @@
 		<div class="header-content">
 			<div class="header-left">
 				<div class="site-name">
-					<a href="/">Play Tab</a>
+					<a href="/">
+						<img src="/img/logo.png" alt="Logo" class="logo" />
+						Play Tab
+					</a>
 				</div>
 				<nav>
 					<a href="/search">検索</a>
@@ -76,6 +79,14 @@
 		font-weight: bold;
 		text-decoration: none;
 		color: #333;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.logo {
+		height: 40px;
+		width: auto;
 	}
 
 	nav {

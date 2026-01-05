@@ -80,7 +80,7 @@
 		margin-top: 0;
 		margin-bottom: 1.5rem;
 		padding-bottom: 0.5rem;
-		border-bottom: 2px solid #007bff;
+		border-bottom: 2px solid #f07c22;
 		color: #333;
 		font-size: 1.5rem;
 	}
