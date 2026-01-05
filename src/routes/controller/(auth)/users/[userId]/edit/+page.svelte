@@ -47,8 +47,8 @@
         </div>
         
         <div class="form-actions">
-            <button type="submit" class="btn-admin form-submit">更新</button>
             <a href="/controller/users" class="btn-admin-secondary">キャンセル</a>
+            <button type="submit" class="btn-admin form-submit">更新</button>
         </div>
     </form>
 </div>
