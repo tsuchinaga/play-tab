@@ -12,6 +12,7 @@
 				{#if data.admin}
 					<a href="/controller/users">ユーザー</a>
 					<a href="/controller/tabs">TAB譜</a>
+					<a href="/controller/announcements">お知らせ</a>
 					<a href="/controller/administrators">管理者</a>
 					<span>{data.admin.loginId}</span>
 					<form method="POST" action="/controller/logout">
