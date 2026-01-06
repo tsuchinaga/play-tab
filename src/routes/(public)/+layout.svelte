@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { env } from '$env/dynamic/public';
 	let { data, children } = $props();
 </script>
 
@@ -42,7 +41,7 @@
 	</main>
 
 	<footer>
-		<p>&copy; {env.PUBLIC_COPYRIGHT_HOLDER || 'Play Tab'}</p>
+		<p>&copy; {data.PUBLIC_COPYRIGHT_HOLDER || 'Play Tab'}</p>
 	</footer>
 </div>
 

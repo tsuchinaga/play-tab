@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
+import { env } from '$env/dynamic/private';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_URI = env.MONGODB_URI || 'mongodb://localhost:27017';
 const DB_NAME = 'play-tab';
 
 let client: MongoClient;

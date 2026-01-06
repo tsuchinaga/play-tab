@@ -1,4 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
 import { findUserByLoginId } from '$lib/db/user';
 import { createSession, getSession, updateSession } from '$lib/db/session';
@@ -61,7 +62,7 @@ export const actions: Actions = {
             path: '/',
             httpOnly: true,
             sameSite: 'strict',
-            secure: process.env.NODE_ENV === 'production',
+            secure: !dev,
             maxAge: 60 * 60 * 24 * 7 // 7 days
         });
 
