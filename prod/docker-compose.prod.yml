@@ -10,6 +10,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - MONGODB_URI=${MONGODB_URI}
       - ORIGIN=${ORIGIN}
+      - PUBLIC_COPYRIGHT_HOLDER=${PUBLIC_COPYRIGHT_HOLDER}
 
   db:
     image: mongo:8
