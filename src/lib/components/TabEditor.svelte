@@ -548,7 +548,7 @@ ${track.tex}`).join('\n\n')}`);
                             <span>プレビュー</span>
                         </div>
                         <div class="preview-container">
-                            <AlphaTabPlayer tex={validatedTex} tracks={visibleTrackIndices} defaultOpen={false}/>
+                            <AlphaTabPlayer tex={validatedTex} tracks={visibleTrackIndices}/>
                         </div>
                     </div>
                 {/if}
