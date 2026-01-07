@@ -1,14 +1,12 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
-    import { onMount, untrack } from 'svelte';
-    import { browser } from '$app/environment';
+    import {enhance} from '$app/forms';
+    import {onMount, untrack} from 'svelte';
+    import {browser} from '$app/environment';
     import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
-    import { instrumentGroups } from '$lib/instruments';
+    import {instrumentGroups} from '$lib/instruments';
     import type * as alphaTabType from "@coderline/alphatab";
-    import type { EditorView } from 'codemirror';
-    import type { Diagnostic } from '@codemirror/lint';
 
-    let { data, form, isEdit = false, readonly = false } = $props();
+    let {data, form, isEdit = false, readonly = false} = $props();
 
     let alphaTabLib = $state<typeof alphaTabType | null>(null);
     let cm = $state<any>(null);
@@ -26,12 +24,12 @@
             ]);
             alphaTabLib = at;
             const [
-                { EditorView, basicSetup },
-                { EditorState },
-                { lintGutter, setDiagnostics, linter },
-                { oneDark }
+                {EditorView, basicSetup},
+                {EditorState},
+                {lintGutter, setDiagnostics, linter},
+                {oneDark}
             ] = cmModules;
-            cm = { EditorView, basicSetup, EditorState, lintGutter, setDiagnostics, linter, oneDark };
+            cm = {EditorView, basicSetup, EditorState, lintGutter, setDiagnostics, linter, oneDark};
         }
     });
 
@@ -41,11 +39,23 @@
     let historyPublicSetting = $state(form?.historyPublicSetting ?? data.tab?.historyPublicSetting ?? data.history?.historyPublicSetting ?? 'private');
     let bpm = $state(form?.bpm ?? data.tab?.bpm ?? data.history?.bpm ?? 120);
     let trackCount = $state(form?.trackCount ?? data.tab?.tracks?.length ?? data.history?.tracks?.length ?? 1);
-    let tracks = $state(form?.tracks ?? data.tab?.tracks ?? data.history?.tracks ?? [{ name: 'Guitar', instrument: 'Electric Guitar Clean', tuning: 'E4 B3 G3 D3 A2 E2', tex: '1.1*4', isVisible: true }]);
+    let tracks = $state(form?.tracks ?? data.tab?.tracks ?? data.history?.tracks ?? [{
+        name: 'Guitar',
+        instrument: 'Electric Guitar Clean',
+        tuning: 'E4 B3 G3 D3 A2 E2',
+        tex: '',
+        isVisible: true
+    }]);
     let selectedTrackIndex = $state(0);
     let viewMode = $state('split'); // 'full-tex' | 'tex' | 'split' | 'preview'
     let versionComment = $state(form?.versionComment ?? data.history?.version_comment ?? (isEdit ? '' : '新規登録'));
     let trackDiagnostics = $state<any[]>([]);
+    let fullTexDiagnostics = $state<any[]>([]);
+
+    const hasErrors = $derived(
+        trackDiagnostics.some(d => d.severity === 2) ||
+        fullTexDiagnostics.some(d => d.severity === 2)
+    );
 
     // data.tab.tracks では isVisible という名前だが、このコンポーネント内では visible という名前を使っている箇所があったので統一する
     // サーバーサイドからのデータに合わせて isVisible に統一する
@@ -68,12 +78,12 @@
     $effect(() => {
         if (tracks.length < trackCount) {
             for (let i = tracks.length; i < trackCount; i++) {
-                tracks.push({ 
-                    name: '', 
-                    instrument: 'Electric Guitar Clean', 
+                tracks.push({
+                    name: '',
+                    instrument: 'Electric Guitar Clean',
                     tuning: 'E4 B3 G3 D3 A2 E2',
-                    tex: '1.1*4', 
-                    isVisible: true 
+                    tex: '',
+                    isVisible: true
                 });
             }
         } else if (tracks.length > trackCount) {
@@ -85,26 +95,29 @@
     });
 
     const currentTrack = $derived(tracks[selectedTrackIndex]);
-    
+
     let errorElement = $state<HTMLElement | null>(null);
     $effect(() => {
         if (form?.message && errorElement) {
-            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            errorElement.scrollIntoView({behavior: 'smooth', block: 'center'});
         }
     });
 
     const visibleTrackIndices = $derived(
-        tracks.map((track, index) => track.isVisible ? index : -1).filter(index => index !== -1)
+        tracks
+            .filter(track => track.tex.trim() !== '')
+            .map((track, index) => track.isVisible ? index : -1)
+            .filter(index => index !== -1)
     );
 
     const fullTex = $derived(`\\title "${name}"
 \\artist "${username}"
 \\tempo ${bpm}
 
-${tracks.map(track => `\\track "${track.name}"
+${tracks.filter(track => track.tex.trim() !== '').map(track => `\\track "${track.name}"
 \\instrument "${track.instrument}"
 \\tuning (${track.tuning}) {hide}
-${track.tex}`).join('\n')}`);
+${track.tex}`).join('\n\n')}`);
 
     let validatedTex = $state(fullTex);
     let mainEditorContainer = $state<HTMLDivElement>();
@@ -116,11 +129,38 @@ ${track.tex}`).join('\n')}`);
     function scrollToOffset(offset: number) {
         if (mainEditorView) {
             mainEditorView.dispatch({
-                selection: { anchor: offset, head: offset },
+                selection: {anchor: offset, head: offset},
                 scrollIntoView: true
             });
             mainEditorView.focus();
         }
+    }
+
+    function scrollFullTexToOffset(offset: number) {
+        if (fullTexEditorView) {
+            fullTexEditorView.dispatch({
+                selection: {anchor: offset, head: offset},
+                scrollIntoView: true
+            });
+            fullTexEditorView.focus();
+        }
+    }
+
+    // 診断情報の変換
+    function convertDiagnostics(diagnostics: any[], docLength: number) {
+        return (diagnostics || []).map((d: any) => {
+            const from = Math.min(d.start ? d.start.offset : 0, docLength);
+            let to = d.end ? d.end.offset : from;
+            if (from === to && from < docLength) {
+                to = from + 1;
+            }
+            return {
+                from,
+                to: Math.min(to, docLength),
+                severity: d.severity === 2 ? 'error' : (d.severity === 1 ? 'warning' : 'info'),
+                message: d.message
+            };
+        });
     }
 
     // メインエディタのライフサイクル
@@ -145,8 +185,8 @@ ${track.tex}`).join('\n')}`);
                 cm.linter(null),
                 cm.lintGutter(),
                 cm.EditorView.theme({
-                    "&": { height: "100%" },
-                    ".cm-scroller": { overflow: "auto" }
+                    "&": {height: "100%"},
+                    ".cm-scroller": {overflow: "auto"}
                 })
             ]
         });
@@ -165,12 +205,7 @@ ${track.tex}`).join('\n')}`);
     // 診断情報の反映 (メインエディタ用)
     $effect(() => {
         if (mainEditorView && cm) {
-            const converted = (trackDiagnostics || []).map((d: any) => ({
-                from: d.start ? d.start.offset : 0,
-                to: d.end ? d.end.offset : (d.start ? d.start.offset : 0),
-                severity: d.severity === 1 ? 'error' : (d.severity === 2 ? 'warning' : 'info'),
-                message: d.message
-            }));
+            const converted = convertDiagnostics(trackDiagnostics, mainEditorView.state.doc.length);
             mainEditorView.dispatch(cm.setDiagnostics(mainEditorView.state, converted));
         }
     });
@@ -180,7 +215,7 @@ ${track.tex}`).join('\n')}`);
         const value = tracks[selectedTrackIndex].tex;
         if (mainEditorView && mainEditorView.state.doc.toString() !== value) {
             mainEditorView.dispatch({
-                changes: { from: 0, to: mainEditorView.state.doc.length, insert: value }
+                changes: {from: 0, to: mainEditorView.state.doc.length, insert: value}
             });
         }
     });
@@ -194,11 +229,13 @@ ${track.tex}`).join('\n')}`);
             extensions: [
                 cm.basicSetup,
                 cm.EditorState.readOnly.of(true),
-                cm.EditorView.editable.of(false),
+                cm.EditorView.editable.of(true),
                 cm.oneDark,
+                cm.linter(null),
+                cm.lintGutter(),
                 cm.EditorView.theme({
-                    "&": { height: "100%" },
-                    ".cm-scroller": { overflow: "auto" }
+                    "&": {height: "100%"},
+                    ".cm-scroller": {overflow: "auto"}
                 })
             ]
         });
@@ -219,8 +256,16 @@ ${track.tex}`).join('\n')}`);
         const value = fullTex;
         if (fullTexEditorView && fullTexEditorView.state.doc.toString() !== value) {
             fullTexEditorView.dispatch({
-                changes: { from: 0, to: fullTexEditorView.state.doc.length, insert: value }
+                changes: {from: 0, to: fullTexEditorView.state.doc.length, insert: value}
             });
+        }
+    });
+
+    // フルTexエディタの診断情報の同期
+    $effect(() => {
+        if (fullTexEditorView && cm) {
+            const converted = convertDiagnostics(fullTexDiagnostics, fullTexEditorView.state.doc.length);
+            fullTexEditorView.dispatch(cm.setDiagnostics(fullTexEditorView.state, converted));
         }
     });
 
@@ -228,22 +273,47 @@ ${track.tex}`).join('\n')}`);
         if (!alphaTabLib) return;
         const trackTex = currentTrack.tex;
         const currentFullTex = fullTex;
-        const importer = new alphaTabLib.importer.AlphaTexImporter();
+
+        // トラック個別のチェック
+        const trackImporter = new alphaTabLib.importer.AlphaTexImporter();
         try {
-            importer.initFromString(trackTex, new alphaTabLib.Settings());
-            importer.readScore();
-            validatedTex = currentFullTex;
+            if (trackTex.trim() !== '') {
+                trackImporter.initFromString(trackTex, new alphaTabLib.Settings());
+                trackImporter.readScore();
+            }
         } catch (e) {
-            console.log('[AlphaTex Error]', e);
+            console.log('[AlphaTex Track Error]', e);
         } finally {
-            const allDiagnostics = [
-                ...importer.lexerDiagnostics,
-                ...importer.parserDiagnostics,
-                ...importer.semanticDiagnostics
+            const allDiagnostics = trackTex.trim() === '' ? [] : [
+                ...trackImporter.lexerDiagnostics,
+                ...trackImporter.parserDiagnostics,
+                ...trackImporter.semanticDiagnostics
             ];
             trackDiagnostics = allDiagnostics.map(d => ({
-                start: d.start ? { line: d.start.line, col: d.start.col, offset: d.start.offset } : null,
-                end: d.end ? { line: d.end.line, col: d.end.col, offset: d.end.offset } : null,
+                start: d.start ? {line: d.start.line, col: d.start.col, offset: d.start.offset} : null,
+                end: d.end ? {line: d.end.line, col: d.end.col, offset: d.end.offset} : null,
+                severity: d.severity,
+                message: d.message
+            }));
+        }
+
+        // 全体のチェック
+        const fullImporter = new alphaTabLib.importer.AlphaTexImporter();
+        try {
+            fullImporter.initFromString(currentFullTex, new alphaTabLib.Settings());
+            fullImporter.readScore();
+            validatedTex = currentFullTex;
+        } catch (e) {
+            console.log('[AlphaTex Full Error]', e);
+        } finally {
+            const allDiagnostics = [
+                ...fullImporter.lexerDiagnostics,
+                ...fullImporter.parserDiagnostics,
+                ...fullImporter.semanticDiagnostics
+            ];
+            fullTexDiagnostics = allDiagnostics.map(d => ({
+                start: d.start ? {line: d.start.line, col: d.start.col, offset: d.start.offset} : null,
+                end: d.end ? {line: d.end.line, col: d.end.col, offset: d.end.offset} : null,
                 severity: d.severity,
                 message: d.message
             }));
@@ -257,7 +327,9 @@ ${track.tex}`).join('\n')}`);
         <h1>{readonly ? 'TAB譜履歴表示' : (isEdit ? 'TAB譜編集' : '新規TAB譜登録')}</h1>
     </div>
 
-    <form method="POST" class="tab-form" use:enhance>
+    <form method="POST" class="tab-form" use:enhance={({ cancel }) => {
+        if (hasErrors) cancel();
+    }}>
         {#if form?.message}
             <div class="error-message" bind:this={errorElement}>{form.message}</div>
         {/if}
@@ -265,7 +337,7 @@ ${track.tex}`).join('\n')}`);
             <div class="form-group row">
                 <label for="name">名前</label>
                 <div class="input-container">
-                    <input type="text" id="name" name="name" bind:value={name} required placeholder="曲名など" {readonly} />
+                    <input type="text" id="name" name="name" bind:value={name} required placeholder="曲名など" {readonly}/>
                 </div>
             </div>
 
@@ -278,7 +350,7 @@ ${track.tex}`).join('\n')}`);
                         <option value="private">非公開</option>
                     </select>
                     {#if readonly}
-                        <input type="hidden" name="visibility" value={visibility} />
+                        <input type="hidden" name="visibility" value={visibility}/>
                     {/if}
                 </div>
             </div>
@@ -286,26 +358,27 @@ ${track.tex}`).join('\n')}`);
             <div class="form-group row">
                 <label for="bpm">BPM</label>
                 <div class="input-container">
-                    <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required {readonly} />
+                    <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required {readonly}/>
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="trackCount">トラック数</label>
                 <div class="input-container">
-                    <input type="number" id="trackCount" name="trackCount" bind:value={trackCount} min="1" max="6" required {readonly} />
+                    <input type="number" id="trackCount" name="trackCount" bind:value={trackCount} min="1" max="6" required {readonly}/>
                 </div>
             </div>
 
             {#each tracks as track, i}
                 <div class="form-group row">
                     <label for="track-{i}" class="track-label">
-                        <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" disabled={readonly} />
-                        <input type="hidden" name="isVisible-{i}" value={track.isVisible} />
+                        <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" disabled={readonly}/>
+                        <input type="hidden" name="isVisible-{i}" value={track.isVisible}/>
                     </label>
                     <div class="input-container track-inputs">
-                        <input type="text" name="trackName-{i}" bind:value={track.name} placeholder="トラック名" {readonly} />
-                        <select name="instrument-{i}" bind:value={track.instrument} onchange={() => handleInstrumentChange(i)} disabled={readonly}>
+                        <input type="text" name="trackName-{i}" bind:value={track.name} placeholder="トラック名" {readonly}/>
+                        <select name="instrument-{i}" bind:value={track.instrument} onchange={() => handleInstrumentChange(i)}
+                                disabled={readonly}>
                             {#each instrumentGroups as group}
                                 <optgroup label={group.label}>
                                     {#each group.options as instrument}
@@ -315,14 +388,15 @@ ${track.tex}`).join('\n')}`);
                             {/each}
                         </select>
                         {#if readonly}
-                            <input type="hidden" name="instrument-{i}" value={track.instrument} />
+                            <input type="hidden" name="instrument-{i}" value={track.instrument}/>
                         {/if}
-                        <input type="text" name="tuning-{i}" bind:value={track.tuning} placeholder="チューニング (例: E4 B3 G3 D3 A2 E2)" title="チューニング" {readonly} />
-                        <button 
-                            type="button" 
-                            class="btn-select" 
-                            class:active={selectedTrackIndex === i}
-                            onclick={() => selectedTrackIndex = i}
+                        <input type="text" name="tuning-{i}" bind:value={track.tuning} placeholder="チューニング (例: E4 B3 G3 D3 A2 E2)"
+                               title="チューニング" {readonly}/>
+                        <button
+                                type="button"
+                                class="btn-select"
+                                class:active={selectedTrackIndex === i}
+                                onclick={() => selectedTrackIndex = i}
                         >
                             選択
                         </button>
@@ -332,25 +406,27 @@ ${track.tex}`).join('\n')}`);
         </div>
 
         <div class="view-mode-selector">
-            <button 
-                type="button" 
-                class:active={viewMode === 'full-tex'} 
-                onclick={() => viewMode = 'full-tex'}
-                title="tex全文"
+            <button
+                    type="button"
+                    class:active={viewMode === 'full-tex'}
+                    onclick={() => viewMode = 'full-tex'}
+                    title="tex全文"
             >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
                     <path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"></path>
                     <path d="M3 7.6v12.8c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h9.8"></path>
                     <path d="M15 2v5h5"></path>
                 </svg>
             </button>
-            <button 
-                type="button" 
-                class:active={viewMode === 'tex'} 
-                onclick={() => viewMode = 'tex'}
-                title="texのみ"
+            <button
+                    type="button"
+                    class:active={viewMode === 'tex'}
+                    onclick={() => viewMode = 'tex'}
+                    title="texのみ"
             >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -358,13 +434,14 @@ ${track.tex}`).join('\n')}`);
                     <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
             </button>
-            <button 
-                type="button" 
-                class:active={viewMode === 'split'} 
-                onclick={() => viewMode = 'split'}
-                title="texとプレビュー"
+            <button
+                    type="button"
+                    class:active={viewMode === 'split'}
+                    onclick={() => viewMode = 'split'}
+                    title="texとプレビュー"
             >
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
                     <path d="M2 6V19C2 19 5 17 12 17V4C5 4 2 6 2 6Z"></path>
                     <line x1="5" y1="8" x2="9" y2="8"></line>
                     <line x1="5" y1="11" x2="9" y2="11"></line>
@@ -375,13 +452,14 @@ ${track.tex}`).join('\n')}`);
                     <circle cx="17" cy="12.5" r="1"></circle>
                 </svg>
             </button>
-            <button 
-                type="button" 
-                class:active={viewMode === 'preview'} 
-                onclick={() => viewMode = 'preview'}
-                title="プレビューのみ"
+            <button
+                    type="button"
+                    class:active={viewMode === 'preview'}
+                    onclick={() => viewMode = 'preview'}
+                    title="プレビューのみ"
             >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <path d="M9 18V11l9-2v5"></path>
@@ -391,12 +469,32 @@ ${track.tex}`).join('\n')}`);
             </button>
         </div>
 
-        <div class="editor-main" class:full-tex-only={viewMode === 'full-tex'} class:tex-only={viewMode === 'tex'} class:preview-only={viewMode === 'preview'}>
+        <div class="editor-main" class:full-tex-only={viewMode === 'full-tex'} class:tex-only={viewMode === 'tex'}
+             class:preview-only={viewMode === 'preview'}>
             {#if viewMode === 'full-tex'}
                 <div class="full-tex-editor">
                     <div class="tex-header">
                         <span>tex全文</span>
+                        {#if fullTexDiagnostics.length > 0}
+                            <span class="error-count-badge">{fullTexDiagnostics.length}</span>
+                        {/if}
                     </div>
+                    {#if fullTexDiagnostics.length > 0}
+                        <div class="track-error-list">
+                            {#each fullTexDiagnostics as diag}
+                                <button
+                                        type="button"
+                                        class="track-error-item"
+                                        class:error={diag.severity === 2}
+                                        class:warning={diag.severity === 1}
+                                        onclick={() => scrollFullTexToOffset(diag.start?.offset || 0)}
+                                >
+                                    <span class="error-pos">Line {diag.start?.line}:</span>
+                                    <span class="error-msg">{diag.message}</span>
+                                </button>
+                            {/each}
+                        </div>
+                    {/if}
                     <div class="code-editor-container" bind:this={fullTexEditorContainer}></div>
                 </div>
             {/if}
@@ -412,12 +510,12 @@ ${track.tex}`).join('\n')}`);
                         {#if trackDiagnostics.length > 0}
                             <div class="track-error-list">
                                 {#each trackDiagnostics as diag}
-                                    <button 
-                                        type="button"
-                                        class="track-error-item" 
-                                        class:error={diag.severity === 1} 
-                                        class:warning={diag.severity === 2}
-                                        onclick={() => scrollToOffset(diag.start?.offset || 0)}
+                                    <button
+                                            type="button"
+                                            class="track-error-item"
+                                            class:error={diag.severity === 2}
+                                            class:warning={diag.severity === 1}
+                                            onclick={() => scrollToOffset(diag.start?.offset || 0)}
                                     >
                                         <span class="error-pos">Line {diag.start?.line}:</span>
                                         <span class="error-msg">{diag.message}</span>
@@ -426,16 +524,16 @@ ${track.tex}`).join('\n')}`);
                             </div>
                         {/if}
                         <div class="code-editor-container" bind:this={mainEditorContainer}></div>
-                        <input type="hidden" name="tex-{selectedTrackIndex}" value={tracks[selectedTrackIndex].tex} />
+                        <input type="hidden" name="tex-{selectedTrackIndex}" value={tracks[selectedTrackIndex].tex}/>
                         {#each tracks as track, i}
                             {#if i !== selectedTrackIndex}
-                                <input type="hidden" name="tex-{i}" value={track.tex} />
+                                <input type="hidden" name="tex-{i}" value={track.tex}/>
                             {/if}
                         {/each}
                     </div>
                 {/if}
             </div>
-            
+
             <div class="editor-right">
                 {#if viewMode !== 'tex' && viewMode !== 'full-tex'}
                     <div class="preview-editor">
@@ -443,7 +541,7 @@ ${track.tex}`).join('\n')}`);
                             <span>プレビュー</span>
                         </div>
                         <div class="preview-container">
-                            <AlphaTabPlayer tex={validatedTex} tracks={visibleTrackIndices} defaultOpen={false} />
+                            <AlphaTabPlayer tex={validatedTex} tracks={visibleTrackIndices} defaultOpen={false}/>
                         </div>
                     </div>
                 {/if}
@@ -461,7 +559,7 @@ ${track.tex}`).join('\n')}`);
                         <option value="public">公開</option>
                     </select>
                     {#if readonly}
-                        <input type="hidden" name="texPublicSetting" value={texPublicSetting} />
+                        <input type="hidden" name="texPublicSetting" value={texPublicSetting}/>
                     {/if}
                 </div>
             </div>
@@ -475,7 +573,7 @@ ${track.tex}`).join('\n')}`);
                         <option value="public">公開</option>
                     </select>
                     {#if readonly}
-                        <input type="hidden" name="historyPublicSetting" value={historyPublicSetting} />
+                        <input type="hidden" name="historyPublicSetting" value={historyPublicSetting}/>
                     {/if}
                 </div>
             </div>
@@ -486,13 +584,15 @@ ${track.tex}`).join('\n')}`);
             <div class="form-group row">
                 <label for="version">バージョン</label>
                 <div class="input-container">
-                    <input type="text" id="version" name="version" placeholder="自動生成" value={readonly ? data.history?.version : ''} {readonly} />
+                    <input type="text" id="version" name="version" placeholder="自動生成" value={readonly ? data.history?.version : ''}
+                           {readonly}/>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="versionComment">内容</label>
                 <div class="input-container">
-                    <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} {readonly} />
+                    <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required
+                           placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} {readonly}/>
                 </div>
             </div>
         </div>
@@ -502,7 +602,11 @@ ${track.tex}`).join('\n')}`);
                 <a href="/tabs/{data.tab._id}/versions" class="btn-secondary">キャンセル</a>
             {:else}
                 <a href="/tabs" class="btn-secondary">キャンセル</a>
-                <button type="submit" class="btn-primary form-submit">{isEdit ? '更新する' : '登録する'}</button>
+                {#if hasErrors}
+                    <button type="button" class="btn-error form-submit" onclick={() => viewMode = 'full-tex'}>エラーを確認</button>
+                {:else}
+                    <button type="submit" class="btn-primary form-submit">{isEdit ? '更新する' : '登録する'}</button>
+                {/if}
             {/if}
         </div>
     </form>
@@ -719,6 +823,7 @@ ${track.tex}`).join('\n')}`);
         background: #fffbeb;
         border-bottom: 1px solid #fef3c7;
     }
+
     .track-error-item.warning:hover {
         background: #fef3c7;
     }
@@ -805,5 +910,20 @@ ${track.tex}`).join('\n')}`);
         justify-content: center;
         gap: 15px;
         margin-top: 10px;
+    }
+
+    .btn-error {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        min-width: 140px;
+    }
+
+    .btn-error:hover {
+        background-color: #c82333;
     }
 </style>
