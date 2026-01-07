@@ -502,7 +502,14 @@ ${track.tex}`).join('\n\n')}`);
                 {#if viewMode !== 'preview' && viewMode !== 'full-tex'}
                     <div class="tex-editor">
                         <div class="tex-header">
-                            <span>{currentTrack?.name || `トラック ${selectedTrackIndex + 1}`} トラック の編集</span>
+                            <div class="header-left">
+                                <select bind:value={selectedTrackIndex} class="track-select">
+                                    {#each tracks as track, i}
+                                        <option value={i}>{track.name || `トラック ${i + 1}`}</option>
+                                    {/each}
+                                </select>
+                                <span>トラック の編集</span>
+                            </div>
                             {#if trackDiagnostics.length > 0}
                                 <span class="error-count-badge">{trackDiagnostics.length}</span>
                             {/if}
@@ -784,6 +791,23 @@ ${track.tex}`).join('\n\n')}`);
         border-bottom: 1px solid #dee2e6;
         font-weight: bold;
         font-size: 0.9rem;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .track-select {
+        padding: 2px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background: #fff;
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
     }
 
     .error-count-badge {
