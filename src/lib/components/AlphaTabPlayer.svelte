@@ -173,13 +173,16 @@
     .alphatab-player {
         position: relative;
         width: 100%;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
+        height: 100%;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 
     .alphatab-viewer-wrapper {
         width: 100%;
+        flex: 1;
+        min-height: 0;
     }
 
     /* 再生中のカーソルと選択範囲のスタイル（再生中のみ適用） */
@@ -200,7 +203,6 @@
     }
 
     .alphatab-controller {
-        position: absolute;
         z-index: 10;
         transition: all 0.3s ease;
         display: flex;
@@ -211,8 +213,7 @@
     }
 
     .alphatab-controller.open {
-        top: 0;
-        left: 0;
+        position: relative;
         width: 100%;
         border-top: none;
         border-left: none;
@@ -222,6 +223,7 @@
     }
 
     .alphatab-controller:not(.open) {
+        position: absolute;
         top: 10px;
         left: 10px;
         width: auto;

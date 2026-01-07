@@ -203,7 +203,13 @@ ${track.tex}`).join('\n')}`);
     }
 
     .player-container {
-        min-height: 400px;
+        height: 600px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
     }
 
     .view-mode-selector {

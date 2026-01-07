@@ -58,7 +58,7 @@
         width: 100%;
         background: #fff;
         overflow: auto;
-        height: 600px;
+        height: 100%;
         box-sizing: border-box;
     }
 </style>

@@ -900,6 +900,9 @@ ${track.tex}`).join('\n\n')}`);
     .preview-container {
         flex: 1;
         background: #fff;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
 
     .full-tex-editor {
