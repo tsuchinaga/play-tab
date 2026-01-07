@@ -1,30 +1,35 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import * as alphaTab from '@coderline/alphatab';
+    import { browser } from '$app/environment';
+    import type * as alphaTabType from '@coderline/alphatab';
 
     interface Props {
         tex?: string;
         tracks?: number[] | 'all';
-        api?: alphaTab.AlphaTabApi | null;
+        api?: alphaTabType.AlphaTabApi | null;
     }
 
     let { tex = '', tracks = 'all', api = $bindable(null) } = $props<Props>();
 
     let element: HTMLElement;
     let scrollElement: HTMLElement;
+    let alphaTabLib: typeof alphaTabType | null = null;
 
-    onMount(() => {
-        const settings: alphaTab.SettingsJson = {
+    onMount(async () => {
+        if (!browser) return;
+        alphaTabLib = await import('@coderline/alphatab');
+
+        const settings: alphaTabType.SettingsJson = {
             core: { fontDirectory: "/font/" },
             player: {
-                playerMode: alphaTab.PlayerMode.EnabledAutomatic,
+                playerMode: alphaTabLib.PlayerMode.EnabledAutomatic,
                 enableCursor: true,
                 soundFont: "/soundfont/sonivox.sf2",
                 scrollElement: scrollElement
             }
         };
 
-        api = new alphaTab.AlphaTabApi(element, settings);
+        api = new alphaTabLib.AlphaTabApi(element, settings);
 
         if (tex) {
             api.tex(tex, tracks);

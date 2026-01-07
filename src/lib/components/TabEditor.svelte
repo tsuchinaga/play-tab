@@ -1,9 +1,39 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import { onMount, untrack } from 'svelte';
+    import { browser } from '$app/environment';
     import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
     import { instrumentGroups } from '$lib/instruments';
+    import type * as alphaTabType from "@coderline/alphatab";
+    import type { EditorView } from 'codemirror';
+    import type { Diagnostic } from '@codemirror/lint';
 
     let { data, form, isEdit = false, readonly = false } = $props();
+
+    let alphaTabLib = $state<typeof alphaTabType | null>(null);
+    let cm = $state<any>(null);
+
+    onMount(async () => {
+        if (browser) {
+            const [at, cmModules] = await Promise.all([
+                import("@coderline/alphatab"),
+                Promise.all([
+                    import('codemirror'),
+                    import('@codemirror/state'),
+                    import('@codemirror/lint'),
+                    import('@codemirror/theme-one-dark')
+                ])
+            ]);
+            alphaTabLib = at;
+            const [
+                { EditorView, basicSetup },
+                { EditorState },
+                { lintGutter, setDiagnostics, linter },
+                { oneDark }
+            ] = cmModules;
+            cm = { EditorView, basicSetup, EditorState, lintGutter, setDiagnostics, linter, oneDark };
+        }
+    });
 
     let name = $state(form?.name ?? data.tab?.name ?? data.history?.name ?? '');
     let visibility = $state(form?.visibility ?? data.tab?.visibility ?? data.history?.visibility ?? 'private');
@@ -15,6 +45,7 @@
     let selectedTrackIndex = $state(0);
     let viewMode = $state('split'); // 'full-tex' | 'tex' | 'split' | 'preview'
     let versionComment = $state(form?.versionComment ?? data.history?.version_comment ?? (isEdit ? '' : '新規登録'));
+    let trackDiagnostics = $state<any[]>([]);
 
     // data.tab.tracks では isVisible という名前だが、このコンポーネント内では visible という名前を使っている箇所があったので統一する
     // サーバーサイドからのデータに合わせて isVisible に統一する
@@ -74,6 +105,150 @@ ${tracks.map(track => `\\track "${track.name}"
 \\instrument "${track.instrument}"
 \\tuning (${track.tuning}) {hide}
 ${track.tex}`).join('\n')}`);
+
+    let validatedTex = $state(fullTex);
+    let mainEditorContainer = $state<HTMLDivElement>();
+    let mainEditorView = $state<any>();
+    let fullTexEditorContainer = $state<HTMLDivElement>();
+    let fullTexEditorView = $state<any>();
+
+    // scrollToOffset 関数の実装
+    function scrollToOffset(offset: number) {
+        if (mainEditorView) {
+            mainEditorView.dispatch({
+                selection: { anchor: offset, head: offset },
+                scrollIntoView: true
+            });
+            mainEditorView.focus();
+        }
+    }
+
+    // メインエディタのライフサイクル
+    $effect(() => {
+        if (!cm || !mainEditorContainer) return;
+
+        const state = cm.EditorState.create({
+            doc: untrack(() => tracks[selectedTrackIndex].tex),
+            extensions: [
+                cm.basicSetup,
+                cm.EditorState.readOnly.of(readonly),
+                cm.EditorView.editable.of(!readonly),
+                cm.oneDark,
+                cm.EditorView.updateListener.of((update: any) => {
+                    if (update.docChanged) {
+                        const newValue = update.state.doc.toString();
+                        if (newValue !== tracks[selectedTrackIndex].tex) {
+                            tracks[selectedTrackIndex].tex = newValue;
+                        }
+                    }
+                }),
+                cm.linter(null),
+                cm.lintGutter(),
+                cm.EditorView.theme({
+                    "&": { height: "100%" },
+                    ".cm-scroller": { overflow: "auto" }
+                })
+            ]
+        });
+
+        mainEditorView = new cm.EditorView({
+            state,
+            parent: mainEditorContainer
+        });
+
+        return () => {
+            mainEditorView.destroy();
+            mainEditorView = undefined;
+        };
+    });
+
+    // 診断情報の反映 (メインエディタ用)
+    $effect(() => {
+        if (mainEditorView && cm) {
+            const converted = (trackDiagnostics || []).map((d: any) => ({
+                from: d.start ? d.start.offset : 0,
+                to: d.end ? d.end.offset : (d.start ? d.start.offset : 0),
+                severity: d.severity === 1 ? 'error' : (d.severity === 2 ? 'warning' : 'info'),
+                message: d.message
+            }));
+            mainEditorView.dispatch(cm.setDiagnostics(mainEditorView.state, converted));
+        }
+    });
+
+    // 値の同期 (メインエディタ用)
+    $effect(() => {
+        const value = tracks[selectedTrackIndex].tex;
+        if (mainEditorView && mainEditorView.state.doc.toString() !== value) {
+            mainEditorView.dispatch({
+                changes: { from: 0, to: mainEditorView.state.doc.length, insert: value }
+            });
+        }
+    });
+
+    // フルTexエディタのライフサイクル
+    $effect(() => {
+        if (!cm || !fullTexEditorContainer) return;
+
+        const state = cm.EditorState.create({
+            doc: untrack(() => fullTex),
+            extensions: [
+                cm.basicSetup,
+                cm.EditorState.readOnly.of(true),
+                cm.EditorView.editable.of(false),
+                cm.oneDark,
+                cm.EditorView.theme({
+                    "&": { height: "100%" },
+                    ".cm-scroller": { overflow: "auto" }
+                })
+            ]
+        });
+
+        fullTexEditorView = new cm.EditorView({
+            state,
+            parent: fullTexEditorContainer
+        });
+
+        return () => {
+            fullTexEditorView.destroy();
+            fullTexEditorView = undefined;
+        };
+    });
+
+    // フルTexエディタの値の同期
+    $effect(() => {
+        const value = fullTex;
+        if (fullTexEditorView && fullTexEditorView.state.doc.toString() !== value) {
+            fullTexEditorView.dispatch({
+                changes: { from: 0, to: fullTexEditorView.state.doc.length, insert: value }
+            });
+        }
+    });
+
+    $effect(() => {
+        if (!alphaTabLib) return;
+        const trackTex = currentTrack.tex;
+        const currentFullTex = fullTex;
+        const importer = new alphaTabLib.importer.AlphaTexImporter();
+        try {
+            importer.initFromString(trackTex, new alphaTabLib.Settings());
+            importer.readScore();
+            validatedTex = currentFullTex;
+        } catch (e) {
+            console.log('[AlphaTex Error]', e);
+        } finally {
+            const allDiagnostics = [
+                ...importer.lexerDiagnostics,
+                ...importer.parserDiagnostics,
+                ...importer.semanticDiagnostics
+            ];
+            trackDiagnostics = allDiagnostics.map(d => ({
+                start: d.start ? { line: d.start.line, col: d.start.col, offset: d.start.offset } : null,
+                end: d.end ? { line: d.end.line, col: d.end.col, offset: d.end.offset } : null,
+                severity: d.severity,
+                message: d.message
+            }));
+        }
+    });
 
 </script>
 
@@ -222,11 +397,7 @@ ${track.tex}`).join('\n')}`);
                     <div class="tex-header">
                         <span>tex全文</span>
                     </div>
-                    <textarea 
-                        readonly
-                        value={fullTex}
-                        spellcheck="false"
-                    ></textarea>
+                    <div class="code-editor-container" bind:this={fullTexEditorContainer}></div>
                 </div>
             {/if}
             <div class="editor-left">
@@ -234,13 +405,28 @@ ${track.tex}`).join('\n')}`);
                     <div class="tex-editor">
                         <div class="tex-header">
                             <span>{currentTrack?.name || `トラック ${selectedTrackIndex + 1}`} トラック の編集</span>
+                            {#if trackDiagnostics.length > 0}
+                                <span class="error-count-badge">{trackDiagnostics.length}</span>
+                            {/if}
                         </div>
-                        <textarea 
-                            name="tex-{selectedTrackIndex}"
-                            bind:value={tracks[selectedTrackIndex].tex}
-                            spellcheck="false"
-                            {readonly}
-                        ></textarea>
+                        {#if trackDiagnostics.length > 0}
+                            <div class="track-error-list">
+                                {#each trackDiagnostics as diag}
+                                    <button 
+                                        type="button"
+                                        class="track-error-item" 
+                                        class:error={diag.severity === 1} 
+                                        class:warning={diag.severity === 2}
+                                        onclick={() => scrollToOffset(diag.start?.offset || 0)}
+                                    >
+                                        <span class="error-pos">Line {diag.start?.line}:</span>
+                                        <span class="error-msg">{diag.message}</span>
+                                    </button>
+                                {/each}
+                            </div>
+                        {/if}
+                        <div class="code-editor-container" bind:this={mainEditorContainer}></div>
+                        <input type="hidden" name="tex-{selectedTrackIndex}" value={tracks[selectedTrackIndex].tex} />
                         {#each tracks as track, i}
                             {#if i !== selectedTrackIndex}
                                 <input type="hidden" name="tex-{i}" value={track.tex} />
@@ -257,7 +443,7 @@ ${track.tex}`).join('\n')}`);
                             <span>プレビュー</span>
                         </div>
                         <div class="preview-container">
-                            <AlphaTabPlayer tex={fullTex} tracks={visibleTrackIndices} defaultOpen={false} />
+                            <AlphaTabPlayer tex={validatedTex} tracks={visibleTrackIndices} defaultOpen={false} />
                         </div>
                     </div>
                 {/if}
@@ -482,9 +668,13 @@ ${track.tex}`).join('\n')}`);
         border-radius: 8px;
         overflow: hidden;
         background: #fff;
+        height: 700px;
     }
 
     .tex-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         padding: 10px;
         background: #f8f9fa;
         border-bottom: 1px solid #dee2e6;
@@ -492,23 +682,72 @@ ${track.tex}`).join('\n')}`);
         font-size: 0.9rem;
     }
 
-    .tex-editor textarea {
-        flex: 1;
-        width: 100%;
-        padding: 15px;
-        border: none;
-        resize: none;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 1rem;
-        line-height: 1.5;
-        min-height: 600px;
-        background-color: lightyellow;
-        box-sizing: border-box;
-        display: block;
+    .error-count-badge {
+        background: #dc3545;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
     }
 
-    .tex-editor textarea:focus {
-        outline: none;
+    .track-error-list {
+        max-height: 150px;
+        overflow-y: auto;
+        border-bottom: 1px solid #dee2e6;
+        background: #fff5f5;
+    }
+
+    .track-error-item {
+        display: flex;
+        width: 100%;
+        gap: 10px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #fee2e2;
+        background: transparent;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .track-error-item:hover {
+        background: #fecaca;
+    }
+
+    .track-error-item.warning {
+        background: #fffbeb;
+        border-bottom: 1px solid #fef3c7;
+    }
+    .track-error-item.warning:hover {
+        background: #fef3c7;
+    }
+
+    .error-pos {
+        font-weight: bold;
+        color: #dc3545;
+        white-space: nowrap;
+    }
+
+    .track-error-item.warning .error-pos {
+        color: #d97706;
+    }
+
+    .error-msg {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .code-editor-container {
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+    }
+
+    :global(.cm-editor) {
+        height: 100%;
     }
 
     .preview-editor {
@@ -518,6 +757,7 @@ ${track.tex}`).join('\n')}`);
         border-radius: 8px;
         overflow: hidden;
         background: #fff;
+        height: 700px;
     }
 
     .preview-header {
@@ -540,25 +780,7 @@ ${track.tex}`).join('\n')}`);
         border-radius: 8px;
         overflow: hidden;
         background: #fff;
-    }
-
-    .full-tex-editor textarea {
-        flex: 1;
-        width: 100%;
-        padding: 15px;
-        border: none;
-        resize: none;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 1rem;
-        line-height: 1.5;
-        min-height: 600px;
-        background-color: #f8f9fa;
-        box-sizing: border-box;
-        display: block;
-    }
-
-    .full-tex-editor textarea:focus {
-        outline: none;
+        height: 700px;
     }
 
     .version-section,
