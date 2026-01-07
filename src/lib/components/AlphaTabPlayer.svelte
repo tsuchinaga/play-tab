@@ -27,7 +27,6 @@
             });
 
             const scoreLoadedRemover = api.scoreLoaded.on((score) => {
-                console.log('[AlphaTabPlayer] score loaded', score);
                 if (score.tempo > 0) {
                     defaultBpm = score.tempo;
                     currentBpm = score.tempo;
