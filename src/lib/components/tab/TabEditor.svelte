@@ -361,8 +361,8 @@ ${track.tex}`).join('\n\n')}`);
             </FormGroup>
 
             {#each tracks as track, i}
-                <FormGroup label="" id="track-{i}" row>
-                    {#snippet label()}
+                <FormGroup id="track-{i}" row>
+                    {#snippet labelSnippet()}
                         <label for="track-{i}" class="track-label">
                             <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" disabled={readonly}/>
                             <input type="hidden" name="isVisible-{i}" value={track.isVisible}/>

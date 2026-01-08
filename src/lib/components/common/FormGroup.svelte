@@ -2,18 +2,23 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		label: string;
+		label?: string;
 		id: string;
 		error?: string;
+		labelSnippet?: Snippet;
 		children?: Snippet;
 		row?: boolean;
 	}
 
-	let { label, id, error, children, row = false }: Props = $props();
+	let { label, id, error, labelSnippet, children, row = false }: Props = $props();
 </script>
 
 <div class="form-group" class:row>
-	<label for={id}>{label}</label>
+	{#if labelSnippet}
+		{@render labelSnippet()}
+	{:else}
+		<label for={id}>{label}</label>
+	{/if}
 	<div class="input-container">
 		{@render children?.()}
 		{#if error}
