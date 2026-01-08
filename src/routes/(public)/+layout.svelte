@@ -747,4 +747,20 @@
 		padding: 2rem;
 		color: #6c757d;
 	}
+	@media print {
+		header,
+		footer,
+		.scroll-top {
+			display: none !important;
+		}
+
+		.app {
+			min-height: auto;
+		}
+
+		main {
+			padding: 0;
+			margin: 0;
+		}
+	}
 </style>
