@@ -1,6 +1,7 @@
 <script lang="ts">
 	let { data, children } = $props();
 	let isMenuOpen = $state(false);
+	let showScrollTop = $state(false);
 
 	function toggleMenu() {
 		isMenuOpen = !isMenuOpen;
@@ -9,7 +10,17 @@
 	function closeMenu() {
 		isMenuOpen = false;
 	}
+
+	function scrollToTop() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
+	function handleScroll() {
+		showScrollTop = window.scrollY > 100;
+	}
 </script>
+
+<svelte:window onscroll={handleScroll} />
 
 <div class="app">
 	<header>
@@ -67,6 +78,12 @@
 	<footer>
 		<p>&copy; {data.PUBLIC_COPYRIGHT_HOLDER || 'Play Tab'}</p>
 	</footer>
+
+	{#if showScrollTop}
+		<button class="scroll-top" onclick={scrollToTop} aria-label="トップに戻る">
+			<span class="arrow-up"></span>
+		</button>
+	{/if}
 </div>
 
 <style>
@@ -184,6 +201,41 @@
 		border: none;
 		padding: 0;
 		cursor: pointer;
+	}
+
+	.scroll-top {
+		position: fixed;
+		right: 20px;
+		bottom: 20px;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: #007bff;
+		border: none;
+		color: white;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		transition:
+			background-color 0.2s,
+			transform 0.2s;
+		z-index: 1000;
+	}
+
+	.scroll-top:hover {
+		background-color: #0056b3;
+		transform: translateY(-2px);
+	}
+
+	.arrow-up {
+		width: 0;
+		height: 0;
+		border-left: 8px solid transparent;
+		border-right: 8px solid transparent;
+		border-bottom: 12px solid white;
+		margin-bottom: 2px;
 	}
 
 	@media (max-width: 768px) {
