@@ -1,4 +1,8 @@
 <script lang="ts">
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import DataTable from '$lib/components/common/DataTable.svelte';
+
     let { data } = $props();
 
     function formatDate(date: string | Date) {
@@ -15,7 +19,7 @@
 </script>
 
 <svelte:head>
-    <title>TAB譜検索 - Play Tab</title>
+    <title>TAB譜検索 | Play Tab</title>
 </svelte:head>
 
 <div class="list-container">
@@ -25,14 +29,10 @@
 
     <div class="search-form-container">
         <form method="GET" class="search-form">
-            <div class="form-group row">
-                <label for="name">キーワード</label>
-                <div class="input-container">
-                    <input type="text" id="name" name="name" value={data.searchParams.name} placeholder="TAB譜名で検索" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label>楽器</label>
+            <FormGroup label="キーワード" id="name" row>
+                <input type="text" id="name" name="name" value={data.searchParams.name} placeholder="TAB譜名で検索" />
+            </FormGroup>
+            <FormGroup label="楽器" id="instruments" row>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="instruments" value="Guitar" checked={data.searchParams.instruments.includes('Guitar')} />
@@ -43,48 +43,30 @@
                         Bass
                     </label>
                 </div>
-            </div>
+            </FormGroup>
             <div class="form-actions">
-                <button type="submit" class="btn-search">検索</button>
-                <a href="/search" class="btn-clear">クリア</a>
+                <Button type="submit" variant="search">検索</Button>
+                <Button href="/search" variant="clear">クリア</Button>
             </div>
         </form>
     </div>
 
-    <div class="table-wrapper">
-        <table class="list-table">
-            <thead>
-                <tr>
-                    <th>TAB譜名</th>
-                    <th>作成者</th>
-                    <th>楽器</th>
-                    <th>更新日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#if data.tabs.length === 0}
-                    <tr>
-                        <td colspan="4" class="empty-message">該当するTAB譜が見つかりませんでした。</td>
-                    </tr>
-                {:else}
-                    {#each data.tabs as tab}
-                        <tr>
-                            <td><a href="/tab/{tab._id}">{tab.name}</a></td>
-                            <td><a href="/user/{tab.user._id}">{tab.user.username}</a></td>
-                            <td>
-                                <div class="instruments-badges">
-                                    {#each tab.instruments as inst}
-                                        <span class="status-badge status-instrument">{inst}</span>
-                                    {/each}
-                                </div>
-                            </td>
-                            <td>{formatDate(tab.updatedAt)}</td>
-                        </tr>
-                    {/each}
-                {/if}
-            </tbody>
-        </table>
-    </div>
+    <DataTable headers={['TAB譜名', '作成者', '楽器', '更新日時']} isEmpty={data.tabs.length === 0} emptyMessage="該当するTAB譜が見つかりませんでした。">
+        {#each data.tabs as tab}
+            <tr>
+                <td><a href="/tab/{tab._id}">{tab.name}</a></td>
+                <td><a href="/user/{tab.user._id}">{tab.user.username}</a></td>
+                <td>
+                    <div class="instruments-badges">
+                        {#each tab.instruments as inst}
+                            <span class="status-badge status-instrument">{inst}</span>
+                        {/each}
+                    </div>
+                </td>
+                <td>{formatDate(tab.updatedAt)}</td>
+            </tr>
+        {/each}
+    </DataTable>
 </div>
 
 <style>
@@ -110,28 +92,6 @@
 
     .checkbox-label input {
         width: auto;
-    }
-
-    .instruments-badges {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-
-    .status-instrument {
-        background-color: #e7f3ff;
-        color: #007bff;
-        border: 1px solid #b3d7ff;
-    }
-
-    .empty-message {
-        text-align: center;
-        padding: 40px;
-        color: #6c757d;
-    }
-
-    .table-wrapper {
-        margin-top: 1rem;
     }
 
     .list-table a {

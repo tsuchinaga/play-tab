@@ -2,7 +2,10 @@
     import {enhance} from '$app/forms';
     import {onMount, untrack} from 'svelte';
     import {browser} from '$app/environment';
-    import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
+    import AlphaTabPlayer from '$lib/components/tab/AlphaTabPlayer.svelte';
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import FormCard from '$lib/components/common/FormCard.svelte';
     import {instrumentGroups} from '$lib/instruments';
     import type * as alphaTabType from "@coderline/alphatab";
 
@@ -333,49 +336,39 @@ ${track.tex}`).join('\n\n')}`);
         {#if form?.message}
             <div class="error-message" bind:this={errorElement}>{form.message}</div>
         {/if}
-        <div class="form-top form-card">
-            <div class="form-group row">
-                <label for="name">名前</label>
-                <div class="input-container">
-                    <input type="text" id="name" name="name" bind:value={name} required placeholder="曲名など" {readonly}/>
-                </div>
-            </div>
+        <FormCard class="form-top">
+            <FormGroup label="名前" id="name" row>
+                <input type="text" id="name" name="name" bind:value={name} required placeholder="曲名など" {readonly}/>
+            </FormGroup>
 
-            <div class="form-group row">
-                <label for="visibility">公開設定</label>
-                <div class="input-container">
-                    <select id="visibility" name="visibility" bind:value={visibility} disabled={readonly}>
-                        <option value="public">公開</option>
-                        <option value="unlisted">限定公開</option>
-                        <option value="private">非公開</option>
-                    </select>
-                    {#if readonly}
-                        <input type="hidden" name="visibility" value={visibility}/>
-                    {/if}
-                </div>
-            </div>
+            <FormGroup label="公開設定" id="visibility" row>
+                <select id="visibility" name="visibility" bind:value={visibility} disabled={readonly}>
+                    <option value="public">公開</option>
+                    <option value="unlisted">限定公開</option>
+                    <option value="private">非公開</option>
+                </select>
+                {#if readonly}
+                    <input type="hidden" name="visibility" value={visibility}/>
+                {/if}
+            </FormGroup>
 
-            <div class="form-group row">
-                <label for="bpm">BPM</label>
-                <div class="input-container">
-                    <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required {readonly}/>
-                </div>
-            </div>
+            <FormGroup label="BPM" id="bpm" row>
+                <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required {readonly}/>
+            </FormGroup>
 
-            <div class="form-group row">
-                <label for="trackCount">トラック数</label>
-                <div class="input-container">
-                    <input type="number" id="trackCount" name="trackCount" bind:value={trackCount} min="1" max="6" required {readonly}/>
-                </div>
-            </div>
+            <FormGroup label="トラック数" id="trackCount" row>
+                <input type="number" id="trackCount" name="trackCount" bind:value={trackCount} min="1" max="6" required {readonly}/>
+            </FormGroup>
 
             {#each tracks as track, i}
-                <div class="form-group row">
-                    <label for="track-{i}" class="track-label">
-                        <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" disabled={readonly}/>
-                        <input type="hidden" name="isVisible-{i}" value={track.isVisible}/>
-                    </label>
-                    <div class="input-container track-inputs">
+                <FormGroup label="" id="track-{i}" row>
+                    {#snippet label()}
+                        <label for="track-{i}" class="track-label">
+                            <input type="checkbox" id="track-{i}" bind:checked={track.isVisible} title="表示/非表示" disabled={readonly}/>
+                            <input type="hidden" name="isVisible-{i}" value={track.isVisible}/>
+                        </label>
+                    {/snippet}
+                    <div class="track-inputs">
                         <input type="text" name="trackName-{i}" bind:value={track.name} placeholder="トラック名" {readonly}/>
                         <select name="instrument-{i}" bind:value={track.instrument} onchange={() => handleInstrumentChange(i)}
                                 disabled={readonly}>
@@ -401,9 +394,9 @@ ${track.tex}`).join('\n\n')}`);
                             選択
                         </button>
                     </div>
-                </div>
+                </FormGroup>
             {/each}
-        </div>
+        </FormCard>
 
         <div class="view-mode-selector">
             <button
@@ -555,64 +548,52 @@ ${track.tex}`).join('\n\n')}`);
             </div>
         </div>
 
-        <div class="public-settings-section form-card">
+        <FormCard class="public-settings-section">
             <h3>公開設定</h3>
-            <div class="form-group row">
-                <label for="texPublicSetting">texの公開</label>
-                <div class="input-container">
-                    <select id="texPublicSetting" name="texPublicSetting" bind:value={texPublicSetting} disabled={readonly}>
-                        <option value="private">非公開</option>
-                        <option value="login">ログイン済みユーザーにのみ公開</option>
-                        <option value="public">公開</option>
-                    </select>
-                    {#if readonly}
-                        <input type="hidden" name="texPublicSetting" value={texPublicSetting}/>
-                    {/if}
-                </div>
-            </div>
+            <FormGroup label="texの公開" id="texPublicSetting" row>
+                <select id="texPublicSetting" name="texPublicSetting" bind:value={texPublicSetting} disabled={readonly}>
+                    <option value="private">非公開</option>
+                    <option value="login">ログイン済みユーザーにのみ公開</option>
+                    <option value="public">公開</option>
+                </select>
+                {#if readonly}
+                    <input type="hidden" name="texPublicSetting" value={texPublicSetting}/>
+                {/if}
+            </FormGroup>
 
-            <div class="form-group row">
-                <label for="historyPublicSetting">バージョン履歴の公開</label>
-                <div class="input-container">
-                    <select id="historyPublicSetting" name="historyPublicSetting" bind:value={historyPublicSetting} disabled={readonly}>
-                        <option value="private">非公開</option>
-                        <option value="login">ログイン済みユーザーにのみ公開</option>
-                        <option value="public">公開</option>
-                    </select>
-                    {#if readonly}
-                        <input type="hidden" name="historyPublicSetting" value={historyPublicSetting}/>
-                    {/if}
-                </div>
-            </div>
-        </div>
+            <FormGroup label="バージョン履歴の公開" id="historyPublicSetting" row>
+                <select id="historyPublicSetting" name="historyPublicSetting" bind:value={historyPublicSetting} disabled={readonly}>
+                    <option value="private">非公開</option>
+                    <option value="login">ログイン済みユーザーにのみ公開</option>
+                    <option value="public">公開</option>
+                </select>
+                {#if readonly}
+                    <input type="hidden" name="historyPublicSetting" value={historyPublicSetting}/>
+                {/if}
+            </FormGroup>
+        </FormCard>
 
-        <div class="version-section form-card">
+        <FormCard class="version-section">
             <h3>バージョン</h3>
-            <div class="form-group row">
-                <label for="version">バージョン</label>
-                <div class="input-container">
-                    <input type="text" id="version" name="version" placeholder="自動生成" value={readonly ? data.history?.version : ''}
-                           {readonly}/>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="versionComment">内容</label>
-                <div class="input-container">
-                    <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required
-                           placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} {readonly}/>
-                </div>
-            </div>
-        </div>
+            <FormGroup label="バージョン" id="version" row>
+                <input type="text" id="version" name="version" placeholder="自動生成" value={readonly ? data.history?.version : ''}
+                       {readonly}/>
+            </FormGroup>
+            <FormGroup label="内容" id="versionComment" row>
+                <input type="text" id="versionComment" name="versionComment" bind:value={versionComment} required
+                       placeholder={isEdit ? "編集内容を入力してください" : "新規登録"} {readonly}/>
+            </FormGroup>
+        </FormCard>
 
         <div class="form-actions">
             {#if readonly}
-                <a href="/tabs/{data.tab._id}/versions" class="btn-secondary">キャンセル</a>
+                <Button href="/tabs/{data.tab._id}/versions" variant="secondary">キャンセル</Button>
             {:else}
-                <a href="/tabs" class="btn-secondary">キャンセル</a>
+                <Button href="/tabs" variant="secondary">キャンセル</Button>
                 {#if hasErrors}
-                    <button type="button" class="btn-error form-submit" onclick={() => viewMode = 'full-tex'}>エラーを確認</button>
+                    <Button type="button" variant="danger-outline" onclick={() => viewMode = 'full-tex'}>エラーを確認</Button>
                 {:else}
-                    <button type="submit" class="btn-primary form-submit">{isEdit ? '更新する' : '登録する'}</button>
+                    <Button type="submit" variant="primary">{isEdit ? '更新する' : '登録する'}</Button>
                 {/if}
             {/if}
         </div>
@@ -651,20 +632,6 @@ ${track.tex}`).join('\n\n')}`);
         padding: 10px;
         border-radius: 4px;
         border: 1px solid #f5c6cb;
-    }
-
-    .form-top {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .form-group.row {
-        gap: 20px;
-    }
-
-    .form-group.row label {
-        width: 120px;
     }
 
     .form-group.row label.track-label {
@@ -935,8 +902,8 @@ ${track.tex}`).join('\n\n')}`);
     .form-actions {
         display: flex;
         justify-content: center;
-        gap: 15px;
-        margin-top: 10px;
+        gap: 1rem;
+        margin-top: 1.5rem;
     }
 
     .btn-error {
@@ -963,12 +930,7 @@ ${track.tex}`).join('\n\n')}`);
             align-items: flex-start;
             gap: 1rem;
         }
-        .form-group.row {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 8px;
-        }
-        .form-group.row label, .form-group.row label.track-label {
+        .form-group.row label.track-label {
             width: 100%;
             justify-content: flex-start;
         }
@@ -988,7 +950,7 @@ ${track.tex}`).join('\n\n')}`);
             flex-direction: column;
             align-items: stretch;
         }
-        .form-actions .btn-secondary, .form-actions .form-submit, .form-actions .btn-error {
+        .form-actions :global(.btn-secondary), .form-actions :global(.btn-primary), .form-actions :global(.btn-danger-outline) {
             width: 100% !important;
         }
     }

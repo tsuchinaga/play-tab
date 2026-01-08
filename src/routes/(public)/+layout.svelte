@@ -302,6 +302,13 @@
 			font-size: 1.5rem;
 		}
 
+		:global(.list-header .btn-primary),
+		:global(.list-header .btn-secondary),
+		:global(.list-header .btn-outline),
+		:global(.list-header .btn-danger-outline) {
+			width: 100% !important;
+		}
+
 		:global(.table-wrapper) {
 			width: 100%;
 			overflow-x: auto;
@@ -315,13 +322,19 @@
 		}
 
 		:global(.actions) {
-			flex-direction: column;
-			align-items: stretch;
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
 		}
 
 		:global(.actions .btn-outline),
 		:global(.actions .btn-danger-outline),
-		:global(.actions form),
+		:global(.actions form) {
+			width: auto !important;
+			flex: 1;
+			min-width: 70px;
+		}
+
 		:global(.actions button) {
 			width: 100% !important;
 		}
@@ -376,6 +389,15 @@
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	}
 
+	:global(.form-card) {
+		background-color: #fff;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+
 	:global(.form-container h1) {
 		margin-top: 0;
 		margin-bottom: 1.5rem;
@@ -387,6 +409,12 @@
 		margin-bottom: 1rem;
 	}
 
+	:global(.form-group.row) {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+
 	:global(.form-group label) {
 		display: block;
 		margin-bottom: 0.5rem;
@@ -394,23 +422,38 @@
 		color: #495057;
 	}
 
-	:global(.form-group input) {
+	:global(.form-group.row label) {
+		width: 120px;
+		flex-shrink: 0;
+		margin-bottom: 0;
+	}
+
+	:global(.input-container) {
+		flex: 1;
+	}
+
+	:global(.form-group input),
+	:global(.form-group textarea),
+	:global(.form-group select) {
 		width: 100%;
 		padding: 0.5rem;
 		border: 1px solid #ced4da;
 		border-radius: 4px;
 		box-sizing: border-box;
+		font-size: 1rem;
 	}
 
-	:global(.form-group input:focus) {
+	:global(.form-group input:focus),
+	:global(.form-group textarea:focus),
+	:global(.form-group select:focus) {
 		outline: none;
-		border-color: #80bdff;
+		border-color: #007bff;
 		box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 	}
 
 	:global(.btn-primary) {
-		display: block;
-		width: 100%;
+		display: inline-block;
+		width: 140px;
 		padding: 0.75rem;
 		background-color: #007bff;
 		color: white;
@@ -419,10 +462,38 @@
 		font-size: 1rem;
 		cursor: pointer;
 		transition: background-color 0.2s;
+		text-align: center;
+		text-decoration: none;
 	}
 
 	:global(.btn-primary:hover) {
 		background-color: #0069d9;
+	}
+
+	:global(.btn-secondary) {
+		display: inline-block;
+		width: 140px;
+		padding: 0.75rem;
+		background-color: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: background-color 0.2s;
+		text-align: center;
+		text-decoration: none;
+	}
+
+	:global(.btn-secondary:hover) {
+		background-color: #5a6268;
+	}
+
+	:global(.form-actions) {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 1.5rem;
 	}
 
 	:global(.error-message) {
@@ -485,6 +556,7 @@
 		justify-content: center;
 		font-weight: bold;
 		box-sizing: border-box;
+		text-decoration: none;
 	}
 
 	:global(.btn-search:hover) {
@@ -511,85 +583,6 @@
 		background-color: #5a6268;
 	}
 
-	:global(.btn-primary.form-submit) {
-		width: 140px;
-		padding: 10px;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		font-weight: bold;
-		cursor: pointer;
-		text-align: center;
-		transition: background-color 0.2s;
-	}
-
-	:global(.btn-primary.form-submit:hover) {
-		background-color: #0069d9;
-	}
-
-	:global(.btn-secondary) {
-		display: inline-block;
-		width: 140px;
-		padding: 10px;
-		background-color: #6c757d;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		font-size: 1rem;
-		font-weight: bold;
-		text-decoration: none;
-		cursor: pointer;
-		text-align: center;
-		transition: background-color 0.2s;
-	}
-
-	:global(.btn-secondary:hover) {
-		background-color: #5a6268;
-	}
-
-	:global(.form-group.row) {
-		display: flex;
-		align-items: center;
-		margin-bottom: 1rem;
-		gap: 20px;
-	}
-
-	:global(.form-group.row label) {
-		width: 120px;
-		font-weight: bold;
-		color: #495057;
-		margin-bottom: 0;
-		display: block;
-	}
-
-	:global(.input-container) {
-		flex: 1;
-	}
-
-	:global(.input-container input),
-	:global(.input-container select),
-	:global(.input-container textarea) {
-		width: 100%;
-		padding: 0.5rem;
-		border: 1px solid #dee2e6;
-		border-radius: 4px;
-		box-sizing: border-box;
-		font-family: inherit;
-		font-size: 1rem;
-	}
-
-	:global(.form-card) {
-		background: #fff;
-		padding: 20px;
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		border: 1px solid #dee2e6;
-		display: flex;
-		flex-direction: column;
-		gap: 15px;
-	}
-
 	/* 一覧画面（テーブル）共通スタイル */
 	:global(.list-container) {
 		max-width: 1000px;
@@ -607,6 +600,15 @@
 		margin: 0;
 		font-size: 1.75rem;
 		color: #333;
+	}
+
+	:global(.list-header .btn-primary),
+	:global(.list-header .btn-secondary),
+	:global(.list-header .btn-outline),
+	:global(.list-header .btn-danger-outline) {
+		width: 140px;
+		font-size: 1rem;
+		padding: 0.75rem;
 	}
 
 	:global(.table-wrapper) {
@@ -652,6 +654,12 @@
 		border-bottom: none;
 	}
 
+	:global(.empty-message) {
+		text-align: left;
+		padding: 2rem;
+		color: #6c757d;
+	}
+
 	/* ステータスバッジ */
 	:global(.status-badge) {
 		display: inline-block;
@@ -671,9 +679,26 @@
 		color: #dc3545;
 	}
 
+	:global(.status-draft) {
+		background-color: #e9ecef;
+		color: #6c757d;
+	}
+
 	:global(.status-limited) {
 		background-color: #fff3cd;
 		color: #856404;
+	}
+
+	:global(.status-instrument) {
+		background-color: #e7f3ff;
+		color: #007bff;
+		border: 1px solid #b3d7ff;
+	}
+
+	:global(.instruments-badges) {
+		display: flex;
+		gap: 5px;
+		flex-wrap: wrap;
 	}
 
 	/* 操作ボタン */

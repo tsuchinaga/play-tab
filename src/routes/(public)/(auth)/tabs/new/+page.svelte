@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TabEditor from '$lib/components/TabEditor.svelte';
+    import TabEditor from '$lib/components/tab/TabEditor.svelte';
 
     let { data, form } = $props();
 </script>

@@ -16,7 +16,7 @@
         
         <div style="margin-top: 1rem; display: flex; gap: 1rem;">
             <form method="POST" action="/controller/logout">
-                <button type="submit" class="btn-admin-outline">ログアウト</button>
+                <button type="submit" class="btn-outline">ログアウト</button>
             </form>
         </div>
     </div>

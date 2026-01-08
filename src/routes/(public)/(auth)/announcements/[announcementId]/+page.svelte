@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Button from '$lib/components/common/Button.svelte';
+	import FormCard from '$lib/components/common/FormCard.svelte';
 	let { data } = $props();
 	const announcement = $derived(data.announcement);
 </script>
@@ -12,7 +14,7 @@
 		<h1>お知らせ詳細</h1>
 	</div>
 
-	<div class="form-card">
+	<FormCard>
 		<div class="announcement-detail-header">
 			<h2 class="title">{announcement.title}</h2>
 			<div class="meta">
@@ -23,10 +25,10 @@
 		<div class="content">
 			{announcement.content}
 		</div>
-	</div>
+	</FormCard>
 
 	<div class="form-actions" style="margin-top: 2rem;">
-		<a href="/announcements" class="btn-secondary">一覧へ戻る</a>
+		<Button href="/announcements" variant="secondary">一覧へ戻る</Button>
 	</div>
 </div>
 

@@ -1,4 +1,8 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import FormCard from '$lib/components/common/FormCard.svelte';
     let { form } = $props();
 </script>
 
@@ -12,43 +16,28 @@
     </div>
 
     {#if form?.message}
-        <div class="admin-error-message">{form.message}</div>
+        <p class="error-message">{form.message}</p>
     {/if}
 
-    <form method="POST">
-        <div class="form-card">
-            <div class="form-group row">
-                <label for="loginId">ログインID</label>
-                <div class="input-container">
-                    <input type="text" id="loginId" name="loginId" value={form?.loginId ?? ''} required />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="password">パスワード</label>
-                <div class="input-container">
-                    <input type="password" id="password" name="password" required />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="confirmPassword">パスワード（確認）</label>
-                <div class="input-container">
-                    <input type="password" id="confirmPassword" name="confirmPassword" required />
-                </div>
-            </div>
-        </div>
+    <form method="POST" use:enhance>
+        <FormCard>
+            <FormGroup label="ログインID" id="loginId" row>
+                <input type="text" id="loginId" name="loginId" value={form?.loginId ?? ''} required />
+            </FormGroup>
+            <FormGroup label="パスワード" id="password" row>
+                <input type="password" id="password" name="password" required />
+            </FormGroup>
+            <FormGroup label="パスワード（確認）" id="confirmPassword" row>
+                <input type="password" id="confirmPassword" name="confirmPassword" required />
+            </FormGroup>
+        </FormCard>
         
         <div class="form-actions">
-            <a href="/controller/administrators" class="btn-admin-secondary">キャンセル</a>
-            <button type="submit" class="btn-admin form-submit">登録</button>
+            <Button href="/controller/administrators" variant="secondary">キャンセル</Button>
+            <Button type="submit" variant="primary">登録</Button>
         </div>
     </form>
 </div>
 
 <style>
-    .form-actions {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
-    }
 </style>

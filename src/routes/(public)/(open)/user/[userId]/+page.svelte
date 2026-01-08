@@ -60,7 +60,13 @@
                         {#each data.registeredTabs as tab}
                             <tr>
                                 <td><a href="/tab/{tab._id}">{tab.name}</a></td>
-                                <td>{tab.instruments.join(', ')}</td>
+                                <td>
+                                    <div class="instruments-badges">
+                                        {#each tab.instruments as inst}
+                                            <span class="status-badge status-instrument">{inst}</span>
+                                        {/each}
+                                    </div>
+                                </td>
                                 <td>{formatDate(tab.updatedAt)}</td>
                             </tr>
                         {/each}
@@ -89,7 +95,13 @@
                             <tr>
                                 <td><a href="/tab/{f._id}">{f.name}</a></td>
                                 <td><a href="/user/{f.creator._id}">{f.creator.username}</a></td>
-                                <td>{f.instruments.join(', ')}</td>
+                                <td>
+                                    <div class="instruments-badges">
+                                        {#each f.instruments as inst}
+                                            <span class="status-badge status-instrument">{inst}</span>
+                                        {/each}
+                                    </div>
+                                </td>
                             </tr>
                         {/each}
                     </tbody>

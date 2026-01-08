@@ -1,5 +1,8 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import FormCard from '$lib/components/common/FormCard.svelte';
     import type { PageData, ActionData } from './$types';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
@@ -27,93 +30,59 @@
         {/if}
 
         <form method="POST" use:enhance>
-            <div class="form-card">
-                <div class="form-group row">
-                    <label for="username">ユーザー名</label>
-                    <div class="input-container">
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={form?.username ?? data.user.username}
-                            required
-                        />
-                    </div>
-                </div>
+            <FormCard>
+                <FormGroup label="ユーザー名" id="username" row>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={form?.username ?? data.user.username}
+                        required
+                    />
+                </FormGroup>
 
-                <div class="form-group row">
-                    <label for="email">メールアドレス</label>
-                    <div class="input-container">
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={form?.email ?? data.user.email}
-                            required
-                        />
-                    </div>
-                </div>
+                <FormGroup label="メールアドレス" id="email" row>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={form?.email ?? data.user.email}
+                        required
+                    />
+                </FormGroup>
 
-                <div class="form-group row">
-                    <label for="password">パスワード</label>
-                    <div class="input-container">
-                        <input type="password" id="password" name="password" placeholder="変更する場合のみ入力" />
-                    </div>
-                </div>
+                <FormGroup label="パスワード" id="password" row>
+                    <input type="password" id="password" name="password" placeholder="変更する場合のみ入力" />
+                </FormGroup>
 
-                <div class="form-group row">
-                    <label for="confirmPassword">確認用パスワード</label>
-                    <div class="input-container">
-                        <input type="password" id="confirmPassword" name="confirmPassword" />
-                    </div>
-                </div>
+                <FormGroup label="確認用パスワード" id="confirmPassword" row>
+                    <input type="password" id="confirmPassword" name="confirmPassword" />
+                </FormGroup>
 
-                <div class="form-group row">
-                    <label for="registeredTabsVisibility">更新したTAB譜の公開</label>
-                    <div class="input-container">
-                        <select id="registeredTabsVisibility" name="registeredTabsVisibility">
-                            <option value="private" selected={data.user.registeredTabsVisibility === 'private'}>非公開</option>
-                            <option value="logged_in" selected={data.user.registeredTabsVisibility === 'logged_in'}>ログイン済みユーザーにのみ公開</option>
-                            <option value="public" selected={data.user.registeredTabsVisibility === 'public'}>公開</option>
-                        </select>
-                    </div>
-                </div>
+                <FormGroup label="更新したTAB譜の公開" id="registeredTabsVisibility" row>
+                    <select id="registeredTabsVisibility" name="registeredTabsVisibility">
+                        <option value="private" selected={data.user.registeredTabsVisibility === 'private'}>非公開</option>
+                        <option value="logged_in" selected={data.user.registeredTabsVisibility === 'logged_in'}>ログイン済みユーザーにのみ公開</option>
+                        <option value="public" selected={data.user.registeredTabsVisibility === 'public'}>公開</option>
+                    </select>
+                </FormGroup>
 
-                <div class="form-group row">
-                    <label for="favoritedTabsVisibility">お気に入りしたTAB譜の公開</label>
-                    <div class="input-container">
-                        <select id="favoritedTabsVisibility" name="favoritedTabsVisibility">
-                            <option value="private" selected={data.user.favoritedTabsVisibility === 'private'}>非公開</option>
-                            <option value="logged_in" selected={data.user.favoritedTabsVisibility === 'logged_in'}>ログイン済みユーザーにのみ公開</option>
-                            <option value="public" selected={data.user.favoritedTabsVisibility === 'public'}>公開</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                <FormGroup label="お気に入りしたTAB譜の公開" id="favoritedTabsVisibility" row>
+                    <select id="favoritedTabsVisibility" name="favoritedTabsVisibility">
+                        <option value="private" selected={data.user.favoritedTabsVisibility === 'private'}>非公開</option>
+                        <option value="logged_in" selected={data.user.favoritedTabsVisibility === 'logged_in'}>ログイン済みユーザーにのみ公開</option>
+                        <option value="public" selected={data.user.favoritedTabsVisibility === 'public'}>公開</option>
+                    </select>
+                </FormGroup>
+            </FormCard>
 
             <div class="form-actions">
-                <a href="/user" class="btn-secondary">キャンセル</a>
-                <button type="submit" class="btn-primary form-submit">保存する</button>
+                <Button href="/user" variant="secondary">キャンセル</Button>
+                <Button type="submit" variant="primary">保存する</Button>
             </div>
         </form>
     </div>
 </div>
 
 <style>
-    .form-actions {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-    }
-
-    @media (max-width: 768px) {
-        .form-actions {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .form-actions a, .form-actions button {
-            width: 100% !important;
-        }
-    }
 </style>

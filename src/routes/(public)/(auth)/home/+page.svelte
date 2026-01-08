@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FormCard from '$lib/components/common/FormCard.svelte';
 	let { data } = $props();
 </script>
 
@@ -14,7 +15,7 @@
 	<div class="home-content">
 		<section class="announcement-section">
 			<h2>お知らせ</h2>
-			<div class="form-card">
+			<FormCard>
 				{#if data.announcements && data.announcements.length > 0}
 					<ul class="announcement-list">
 						{#each data.announcements as announcement}
@@ -30,23 +31,29 @@
 				{:else}
 					<p class="no-data">現在お知らせはありません。</p>
 				{/if}
-			</div>
+			</FormCard>
 		</section>
 
 		<section class="menu-section">
 			<h2>メニュー</h2>
 			<div class="menu-grid">
-				<a href="/tabs" class="menu-item form-card">
-					<span class="menu-icon">🎸</span>
-					<span class="menu-label">TAB譜管理</span>
+				<a href="/tabs" class="menu-item">
+					<FormCard class="menu-card">
+						<span class="menu-icon">🎸</span>
+						<span class="menu-label">TAB譜管理</span>
+					</FormCard>
 				</a>
-				<a href="/favorites" class="menu-item form-card">
-					<span class="menu-icon">⭐</span>
-					<span class="menu-label">お気に入り管理</span>
+				<a href="/favorites" class="menu-item">
+					<FormCard class="menu-card">
+						<span class="menu-icon">⭐</span>
+						<span class="menu-label">お気に入り管理</span>
+					</FormCard>
 				</a>
-				<a href="/user" class="menu-item form-card">
-					<span class="menu-icon">👤</span>
-					<span class="menu-label">ユーザー設定</span>
+				<a href="/user" class="menu-item">
+					<FormCard class="menu-card">
+						<span class="menu-icon">👤</span>
+						<span class="menu-label">ユーザー設定</span>
+					</FormCard>
 				</a>
 			</div>
 		</section>
@@ -58,11 +65,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2rem;
-	}
-
-	.welcome-message {
-		font-size: 1.1rem;
-		margin-bottom: 0;
 	}
 
 	h2 {
@@ -138,14 +140,18 @@
 	.menu-item {
 		text-decoration: none;
 		color: inherit;
+	}
+
+	:global(.menu-card) {
 		display: flex;
 		align-items: center;
 		flex-direction: row;
 		gap: 1.5rem;
 		transition: transform 0.2s, box-shadow 0.2s;
+		height: 100%;
 	}
 
-	.menu-item:hover {
+	.menu-item:hover :global(.menu-card) {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 		border-color: #007bff;

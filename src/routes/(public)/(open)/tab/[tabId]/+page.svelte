@@ -1,6 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
-    import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
+    import AlphaTabPlayer from '$lib/components/tab/AlphaTabPlayer.svelte';
 
     let { data } = $props();
     const { tab, user } = data;

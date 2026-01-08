@@ -1,4 +1,8 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import FormCard from '$lib/components/common/FormCard.svelte';
     let { data, form } = $props();
     let announcement = data.announcement;
 </script>
@@ -13,37 +17,25 @@
     </div>
 
     {#if form?.message}
-        <div class="admin-error-message">{form.message}</div>
+        <p class="error-message">{form.message}</p>
     {/if}
 
-    <form method="POST">
-        <div class="form-card">
-            <div class="form-group row">
-                <label for="title">タイトル</label>
-                <div class="input-container">
-                    <input type="text" id="title" name="title" value={form?.title ?? announcement.title} required />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="content">内容</label>
-                <div class="input-container">
-                    <textarea id="content" name="content" rows="10" required>{form?.content ?? announcement.content}</textarea>
-                </div>
-            </div>
-        </div>
+    <form method="POST" use:enhance>
+        <FormCard>
+            <FormGroup label="タイトル" id="title" row>
+                <input type="text" id="title" name="title" value={form?.title ?? announcement.title} required />
+            </FormGroup>
+            <FormGroup label="内容" id="content" row>
+                <textarea id="content" name="content" rows="10" required>{form?.content ?? announcement.content}</textarea>
+            </FormGroup>
+        </FormCard>
         
         <div class="form-actions">
-            <a href="/controller/announcements" class="btn-admin-secondary">キャンセル</a>
-            <button type="submit" class="btn-admin form-submit">更新</button>
+            <Button href="/controller/announcements" variant="secondary">キャンセル</Button>
+            <Button type="submit" variant="primary">更新</Button>
         </div>
     </form>
 </div>
 
 <style>
-    .form-actions {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
-    }
 </style>

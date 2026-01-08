@@ -1,4 +1,7 @@
 <script lang="ts">
+    import Button from '$lib/components/common/Button.svelte';
+    import DataTable from '$lib/components/common/DataTable.svelte';
+
     let { data } = $props();
 </script>
 
@@ -9,35 +12,24 @@
 <div class="list-container">
     <div class="list-header">
         <h1>管理者</h1>
-        <a href="/controller/administrators/new" class="btn-admin-outline">新規登録</a>
+        <Button href="/controller/administrators/new" variant="outline">新規登録</Button>
     </div>
 
-    <div class="table-wrapper">
-        <table class="list-table">
-            <thead>
-                <tr>
-                    <th>ログインID</th>
-                    <th>作成日</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each data.administrators as admin}
-                    <tr>
-                        <td>{admin.loginId}</td>
-                        <td>{new Date(admin.createdAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
-                        <td>
-                            <div class="actions">
-                                <a href="/controller/administrators/{admin._id}/edit" class="btn-admin-outline">編集</a>
-                                <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('本当に削除しますか？')) e.preventDefault(); }}>
-                                    <input type="hidden" name="adminId" value={admin._id} />
-                                    <button type="submit" class="btn-admin-danger-outline">削除</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
+    <DataTable headers={['ログインID', '作成日', '操作']} isEmpty={data.administrators.length === 0}>
+        {#each data.administrators as admin}
+            <tr>
+                <td>{admin.loginId}</td>
+                <td>{new Date(admin.createdAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
+                <td>
+                    <div class="actions">
+                        <Button href="/controller/administrators/{admin._id}/edit" variant="outline">編集</Button>
+                        <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('本当に削除しますか？')) e.preventDefault(); }}>
+                            <input type="hidden" name="adminId" value={admin._id} />
+                            <Button type="submit" variant="danger-outline">削除</Button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        {/each}
+    </DataTable>
 </div>

@@ -1,4 +1,9 @@
 <script lang="ts">
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import DataTable from '$lib/components/common/DataTable.svelte';
+    import StatusBadge from '$lib/components/common/StatusBadge.svelte';
+
     let { data } = $props();
 </script>
 
@@ -13,57 +18,35 @@
 
     <div class="search-form-container">
         <form method="GET" class="search-form">
-            <div class="form-group row">
-                <label for="name">TAB譜名</label>
-                <div class="input-container">
-                    <input type="text" id="name" name="name" value={data.searchParams.name} />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="username">ユーザー名</label>
-                <div class="input-container">
-                    <input type="text" id="username" name="username" value={data.searchParams.username} />
-                </div>
-            </div>
+            <FormGroup label="TAB譜名" id="name" row>
+                <input type="text" id="name" name="name" value={data.searchParams.name} />
+            </FormGroup>
+            <FormGroup label="ユーザー名" id="username" row>
+                <input type="text" id="username" name="username" value={data.searchParams.username} />
+            </FormGroup>
             <div class="form-actions">
-                <button type="submit" class="btn-search">検索</button>
-                <a href="/controller/tabs" class="btn-clear">クリア</a>
+                <Button type="submit" variant="search">検索</Button>
+                <Button href="/controller/tabs" variant="clear">クリア</Button>
             </div>
         </form>
     </div>
 
-    <div class="table-wrapper">
-        <table class="list-table">
-            <thead>
-                <tr>
-                    <th>TAB譜名</th>
-                    <th>ユーザー名</th>
-                    <th>公開設定</th>
-                    <th>閲覧数</th>
-                    <th>お気に入り数</th>
-                    <th>更新日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each data.tabs as tab}
-                    <tr>
-                        <td>
-                            <a href="/tab/{tab._id}" target="_blank">{tab.name}</a>
-                        </td>
-                        <td>
-                            <a href="/controller/users/{tab.userId}">{tab.user.username}</a>
-                        </td>
-                        <td>
-                            <span class="status-badge status-{tab.visibility}">
-                                {tab.visibility === 'public' ? '公開' : tab.visibility === 'private' ? '非公開' : '限定公開'}
-                            </span>
-                        </td>
-                        <td>{tab.viewCount ?? 0}</td>
-                        <td>{tab.favoriteCount ?? 0}</td>
-                        <td>{new Date(tab.updatedAt).toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
+    <DataTable headers={['TAB譜名', 'ユーザー名', '公開設定', '閲覧数', 'お気に入り数', '更新日時']} isEmpty={data.tabs.length === 0}>
+        {#each data.tabs as tab}
+            <tr>
+                <td>
+                    <a href="/tab/{tab._id}" target="_blank">{tab.name}</a>
+                </td>
+                <td>
+                    <a href="/controller/users/{tab.userId}">{tab.user.username}</a>
+                </td>
+                <td>
+                    <StatusBadge status={tab.visibility} />
+                </td>
+                <td>{tab.viewCount ?? 0}</td>
+                <td>{tab.favoriteCount ?? 0}</td>
+                <td>{new Date(tab.updatedAt).toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+            </tr>
+        {/each}
+    </DataTable>
 </div>

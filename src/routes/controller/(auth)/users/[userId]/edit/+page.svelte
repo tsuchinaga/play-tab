@@ -1,4 +1,8 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
+    import FormCard from '$lib/components/common/FormCard.svelte';
     let { data, form } = $props();
 </script>
 
@@ -12,52 +16,34 @@
     </div>
 
     {#if form?.message}
-        <div class="admin-error-message">{form.message}</div>
+        <p class="error-message">{form.message}</p>
     {/if}
 
-    <form method="POST">
-        <div class="form-card">
-            <div class="form-group row">
-                <label for="loginId">ログインID</label>
-                <div class="input-container">
-                    <input type="text" id="loginId" value={data.targetUser.loginId} readonly />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="username">ユーザー名</label>
-                <div class="input-container">
-                    <input type="text" id="username" value={data.targetUser.username} readonly />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="email">メールアドレス</label>
-                <div class="input-container">
-                    <input type="email" id="email" value={data.targetUser.email} readonly />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="isActive">ログイン有効</label>
-                <div class="input-container">
-                    <select id="isActive" name="isActive">
-                        <option value="true" selected={data.targetUser.isActive}>有効</option>
-                        <option value="false" selected={!data.targetUser.isActive}>無効</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+    <form method="POST" use:enhance>
+        <FormCard>
+            <FormGroup label="ログインID" id="loginId" row>
+                <input type="text" id="loginId" value={data.targetUser.loginId} readonly />
+            </FormGroup>
+            <FormGroup label="ユーザー名" id="username" row>
+                <input type="text" id="username" value={data.targetUser.username} readonly />
+            </FormGroup>
+            <FormGroup label="メールアドレス" id="email" row>
+                <input type="email" id="email" value={data.targetUser.email} readonly />
+            </FormGroup>
+            <FormGroup label="ログイン有効" id="isActive" row>
+                <select id="isActive" name="isActive">
+                    <option value="true" selected={data.targetUser.isActive}>有効</option>
+                    <option value="false" selected={!data.targetUser.isActive}>無効</option>
+                </select>
+            </FormGroup>
+        </FormCard>
         
         <div class="form-actions">
-            <a href="/controller/users" class="btn-admin-secondary">キャンセル</a>
-            <button type="submit" class="btn-admin form-submit">更新</button>
+            <Button href="/controller/users" variant="secondary">キャンセル</Button>
+            <Button type="submit" variant="primary">更新</Button>
         </div>
     </form>
 </div>
 
 <style>
-    .form-actions {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
-    }
 </style>

@@ -1,4 +1,7 @@
 <script lang="ts">
+    import Button from '$lib/components/common/Button.svelte';
+    import FormCard from '$lib/components/common/FormCard.svelte';
+    import DataTable from '$lib/components/common/DataTable.svelte';
     import type { PageData } from './$types';
 
     let { data } = $props();
@@ -21,10 +24,10 @@
 <div class="list-container">
     <div class="list-header">
         <h1>プロフィール</h1>
-        <a href="/user/edit" class="btn-primary add-button">プロフィール編集</a>
+        <Button href="/user/edit" variant="primary">プロフィール編集</Button>
     </div>
 
-    <div class="form-card">
+    <FormCard>
         <div class="profile-item">
             <span class="label">ユーザー名</span>
             <span class="value">{user.username}</span>
@@ -45,33 +48,28 @@
             <span class="label">お気に入り数</span>
             <span class="value">{favoriteCount}</span>
         </div>
-    </div>
+    </FormCard>
 
     {#if data.registeredTabs.length > 0}
         <section style="margin-top: 40px;">
             <div class="list-header">
                 <h1>最近更新したTAB譜</h1>
             </div>
-            <div class="table-wrapper">
-                <table class="list-table">
-                    <thead>
-                        <tr>
-                            <th>曲名</th>
-                            <th>楽器</th>
-                            <th>更新日</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each data.registeredTabs as tab}
-                            <tr>
-                                <td><a href="/tab/{tab._id}">{tab.name}</a></td>
-                                <td>{tab.instruments.join(', ')}</td>
-                                <td>{formatDate(tab.updatedAt)}</td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
+            <DataTable headers={['曲名', '楽器', '更新日']} isEmpty={data.registeredTabs.length === 0}>
+                {#each data.registeredTabs as tab}
+                    <tr>
+                        <td><a href="/tab/{tab._id}">{tab.name}</a></td>
+                        <td>
+                            <div class="instruments-badges">
+                                {#each tab.instruments as inst}
+                                    <span class="status-badge status-instrument">{inst}</span>
+                                {/each}
+                            </div>
+                        </td>
+                        <td>{formatDate(tab.updatedAt)}</td>
+                    </tr>
+                {/each}
+            </DataTable>
         </section>
     {/if}
 
@@ -80,26 +78,21 @@
             <div class="list-header">
                 <h1>最近お気に入り登録したTAB譜</h1>
             </div>
-            <div class="table-wrapper">
-                <table class="list-table">
-                    <thead>
-                        <tr>
-                            <th>曲名</th>
-                            <th>投稿者</th>
-                            <th>楽器</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each data.favoriteTabs as f}
-                            <tr>
-                                <td><a href="/tab/{f._id}">{f.name}</a></td>
-                                <td><a href="/user/{f.creator._id}">{f.creator.username}</a></td>
-                                <td>{f.instruments.join(', ')}</td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
+            <DataTable headers={['曲名', '投稿者', '楽器']} isEmpty={data.favoriteTabs.length === 0}>
+                {#each data.favoriteTabs as f}
+                    <tr>
+                        <td><a href="/tab/{f._id}">{f.name}</a></td>
+                        <td><a href="/user/{f.creator._id}">{f.creator.username}</a></td>
+                        <td>
+                            <div class="instruments-badges">
+                                {#each f.instruments as inst}
+                                    <span class="status-badge status-instrument">{inst}</span>
+                                {/each}
+                            </div>
+                        </td>
+                    </tr>
+                {/each}
+            </DataTable>
         </section>
     {/if}
 </div>

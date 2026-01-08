@@ -9,7 +9,7 @@
 <div class="list-container">
     <div class="list-header">
         <h1>{data.targetUser.username} のプロフィール</h1>
-        <a href="/controller/users" class="btn-admin-outline">一覧に戻る</a>
+        <a href="/controller/users" class="btn-outline">一覧に戻る</a>
     </div>
 
     <div class="form-card" style="margin-bottom: 2rem;">

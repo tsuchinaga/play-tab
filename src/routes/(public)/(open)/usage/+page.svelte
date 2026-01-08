@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/common/Button.svelte';
 </script>
 
 <svelte:head>
@@ -63,9 +64,9 @@
 			詳細な記法やリファレンスについては、下記の公式ドキュメントを参照してください。
 		</p>
 		<div class="external-link">
-			<a href="https://alphatab.net/docs/alphatex/introduction" target="_blank" rel="noopener noreferrer" class="btn-outline">
+			<Button href="https://alphatab.net/docs/alphatex/introduction" variant="outline" class="btn-doc">
 				alphaTex 公式ドキュメント
-			</a>
+			</Button>
 		</div>
 	</div>
 </div>
@@ -80,7 +81,7 @@
 		margin-top: 0;
 		margin-bottom: 1.5rem;
 		padding-bottom: 0.5rem;
-		border-bottom: 2px solid #f07c22;
+		border-bottom: 2px solid #007bff;
 		color: #333;
 		font-size: 1.5rem;
 	}
@@ -103,11 +104,13 @@
 
 	.external-link {
 		margin-top: 1.5rem;
+		display: flex;
+		justify-content: center;
 	}
 
-	.btn-outline {
-		display: inline-block;
-		text-align: center;
-		padding: 0.75rem 1.5rem; /* 公式ドキュメントへのリンクなので少し目立たせる */
+	:global(.btn-doc) {
+		width: auto !important;
+		min-width: 200px;
+		padding: 0.75rem 2rem !important;
 	}
 </style>

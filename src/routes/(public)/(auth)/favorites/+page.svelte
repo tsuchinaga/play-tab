@@ -2,6 +2,8 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { enhance } from '$app/forms';
+    import Button from '$lib/components/common/Button.svelte';
+    import DataTable from '$lib/components/common/DataTable.svelte';
 
     let { data } = $props();
 
@@ -40,6 +42,19 @@
     }
 </script>
 
+{#snippet header_name()}
+    <th onclick={() => toggleSort('name')} class="sortable">TAB譜 {getSortIcon('name')}</th>
+{/snippet}
+{#snippet header_username()}
+    <th onclick={() => toggleSort('username')} class="sortable">作成ユーザー {getSortIcon('username')}</th>
+{/snippet}
+{#snippet header_updatedAt()}
+    <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
+{/snippet}
+{#snippet header_favoritedAt()}
+    <th onclick={() => toggleSort('favoritedAt')} class="sortable">お気に入り日時 {getSortIcon('favoritedAt')}</th>
+{/snippet}
+
 <svelte:head>
     <title>お気に入り管理 | Play Tab</title>
 </svelte:head>
@@ -49,61 +64,26 @@
         <h1>お気に入り管理</h1>
     </div>
 
-    <div class="table-wrapper">
-        <table class="list-table">
-            <thead>
-                <tr>
-                    <th onclick={() => toggleSort('name')} class="sortable">TAB譜 {getSortIcon('name')}</th>
-                    <th onclick={() => toggleSort('username')} class="sortable">作成ユーザー {getSortIcon('username')}</th>
-                    <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
-                    <th onclick={() => toggleSort('favoritedAt')} class="sortable">お気に入り日時 {getSortIcon('favoritedAt')}</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#if data.favorites.length === 0}
-                    <tr>
-                        <td colspan="5" class="empty-message">お気に入りは登録されていません。</td>
-                    </tr>
-                {:else}
-                    {#each data.favorites as favorite}
-                        <tr>
-                            <td>
-                                <a href="/tab/{favorite.id}">{favorite.name}</a>
-                            </td>
-                            <td>
-                                <a href="/user/{favorite.creatorId}">{favorite.creatorName}</a>
-                            </td>
-                            <td>{formatDate(favorite.updatedAt)}</td>
-                            <td>{formatDate(favorite.favoritedAt)}</td>
-                            <td class="actions">
-                                <form method="POST" action="?/removeFavorite" use:enhance>
-                                    <input type="hidden" name="tabId" value={favorite.id} />
-                                    <button type="submit" class="btn-danger-outline">解除</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {/each}
-                {/if}
-            </tbody>
-        </table>
-    </div>
+    <DataTable headers={[header_name, header_username, header_updatedAt, header_favoritedAt, '操作']} isEmpty={data.favorites.length === 0} emptyMessage="お気に入りは登録されていません。">
+        {#each data.favorites as favorite}
+            <tr>
+                <td>
+                    <a href="/tab/{favorite.id}">{favorite.name}</a>
+                </td>
+                <td>
+                    <a href="/user/{favorite.creatorId}">{favorite.creatorName}</a>
+                </td>
+                <td>{formatDate(favorite.updatedAt)}</td>
+                <td>{formatDate(favorite.favoritedAt)}</td>
+                <td>
+                    <div class="actions">
+                        <form method="POST" action="?/removeFavorite" use:enhance>
+                            <input type="hidden" name="tabId" value={favorite.id} />
+                            <Button type="submit" variant="danger-outline">解除</Button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        {/each}
+    </DataTable>
 </div>
-
-<style>
-    .actions {
-        white-space: nowrap;
-    }
-
-    .list-table a {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .list-table a:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 768px) {
-    }
-</style>

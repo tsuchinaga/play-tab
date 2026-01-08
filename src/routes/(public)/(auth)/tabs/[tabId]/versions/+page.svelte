@@ -1,6 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import Button from '$lib/components/common/Button.svelte';
+    import DataTable from '$lib/components/common/DataTable.svelte';
 
     let { data } = $props();
 
@@ -44,6 +46,13 @@
     }
 </script>
 
+{#snippet header_version()}
+    <th onclick={() => toggleSort('version')} class="sortable">バージョン {getSortIcon('version')}</th>
+{/snippet}
+{#snippet header_updatedAt()}
+    <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
+{/snippet}
+
 <svelte:head>
     <title>{data.tab.name}の履歴 | Play Tab</title>
 </svelte:head>
@@ -51,46 +60,18 @@
 <div class="list-container">
     <div class="list-header">
         <h1>{data.tab.name}の履歴</h1>
-        <a href="/tabs" class="btn-outline">一覧に戻る</a>
+        <Button href="/tabs" variant="outline">一覧に戻る</Button>
     </div>
 
-    <div class="table-wrapper">
-        <table class="list-table">
-            <thead>
-                <tr>
-                    <th onclick={() => toggleSort('version')} class="sortable">バージョン {getSortIcon('version')}</th>
-                    <th>コメント</th>
-                    <th onclick={() => toggleSort('updatedAt')} class="sortable">更新日時 {getSortIcon('updatedAt')}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each data.histories as history}
-                    <tr>
-                        <td>
-                            <a href="/tabs/{data.tab._id}/versions/{history.version}">{history.version}</a>
-                        </td>
-                        <td>{history.version_comment}</td>
-                        <td>{formatDate(history.updatedAt)}</td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
+    <DataTable headers={[header_version, 'コメント', header_updatedAt]} isEmpty={data.histories.length === 0}>
+        {#each data.histories as history}
+            <tr>
+                <td>
+                    <a href="/tabs/{data.tab._id}/versions/{history.version}">{history.version}</a>
+                </td>
+                <td>{history.version_comment}</td>
+                <td>{formatDate(history.updatedAt)}</td>
+            </tr>
+        {/each}
+    </DataTable>
 </div>
-
-<style>
-    .btn-outline {
-        text-decoration: none;
-        display: inline-block;
-        line-height: 1.5;
-    }
-
-    .sortable {
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .sortable:hover {
-        background-color: #f0f0f0;
-    }
-</style>

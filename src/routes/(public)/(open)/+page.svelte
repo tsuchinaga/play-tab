@@ -78,7 +78,13 @@
 						<tr>
 							<td><a href="/tab/{tab._id}">{tab.name}</a></td>
 							<td><a href="/user/{tab.user._id}">{tab.user.username}</a></td>
-							<td>{tab.instruments.join(', ')}</td>
+							<td>
+								<div class="instruments-badges">
+									{#each tab.instruments as inst}
+										<span class="status-badge status-instrument">{inst}</span>
+									{/each}
+								</div>
+							</td>
 							<td>{formatDate(tab.updatedAt)}</td>
 						</tr>
 					{/each}
@@ -111,7 +117,13 @@
 						<tr>
 							<td><a href="/tab/{tab._id}">{tab.name}</a></td>
 							<td><a href="/user/{tab.user._id}">{tab.user.username}</a></td>
-							<td>{tab.instruments.join(', ')}</td>
+							<td>
+								<div class="instruments-badges">
+									{#each tab.instruments as inst}
+										<span class="status-badge status-instrument">{inst}</span>
+									{/each}
+								</div>
+							</td>
 							<td>{tab.favoriteCount}</td>
 						</tr>
 					{/each}

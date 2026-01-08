@@ -1,5 +1,7 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import Button from '$lib/components/common/Button.svelte';
+    import FormGroup from '$lib/components/common/FormGroup.svelte';
     let { form } = $props();
 
     let errorElement = $state<HTMLElement | null>(null);
@@ -22,15 +24,13 @@
     {/if}
 
     <form method="POST" use:enhance>
-        <div class="form-group">
-            <label for="loginId">ログインID</label>
+        <FormGroup label="ログインID" id="loginId">
             <input type="text" id="loginId" name="loginId" required value={form?.loginId ?? ''} />
-        </div>
-        <div class="form-group">
-            <label for="password">パスワード</label>
+        </FormGroup>
+        <FormGroup label="パスワード" id="password">
             <input type="password" id="password" name="password" required />
-        </div>
-        <button type="submit" class="btn-primary">ログイン</button>
+        </FormGroup>
+        <Button type="submit" variant="primary">ログイン</Button>
     </form>
 
     <div class="form-footer">

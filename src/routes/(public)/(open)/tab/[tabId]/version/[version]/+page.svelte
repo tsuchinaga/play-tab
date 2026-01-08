@@ -1,5 +1,5 @@
 <script lang="ts">
-    import AlphaTabPlayer from '$lib/components/AlphaTabPlayer.svelte';
+    import AlphaTabPlayer from '$lib/components/tab/AlphaTabPlayer.svelte';
 
     let { data } = $props();
     const { tab, history } = data;
