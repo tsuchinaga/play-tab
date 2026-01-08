@@ -46,7 +46,7 @@
                 {/each}
                 {#if histories.length === 0}
                     <tr>
-                        <td colspan="3" style="text-align: center;">履歴がありません。</td>
+                        <td colspan="3" class="empty-message">履歴がありません。</td>
                     </tr>
                 {/if}
             </tbody>

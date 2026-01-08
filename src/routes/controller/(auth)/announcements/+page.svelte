@@ -53,7 +53,7 @@
                     </tr>
                 {:else}
                     <tr>
-                        <td colspan="3" style="text-align: center;">お知らせがありません</td>
+                        <td colspan="3" class="empty-message">お知らせがありません</td>
                     </tr>
                 {/each}
             </tbody>

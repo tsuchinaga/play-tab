@@ -1,5 +1,14 @@
 <script lang="ts">
 	let { data, children } = $props();
+	let isMenuOpen = $state(false);
+
+	function toggleMenu() {
+		isMenuOpen = !isMenuOpen;
+	}
+
+	function closeMenu() {
+		isMenuOpen = false;
+	}
 </script>
 
 <div class="app">
@@ -7,32 +16,47 @@
 		<div class="header-content">
 			<div class="header-left">
 				<div class="site-name">
-					<a href="/">
+					<a href="/" onclick={closeMenu}>
 						<img src="/img/logo.png" alt="Logo" class="logo" />
 						Play Tab
 					</a>
 				</div>
-				<nav>
-					<a href="/search">検索</a>
-					<a href="/usage">使い方</a>
-				</nav>
 			</div>
-			<div class="header-right">
-				<nav>
-					{#if data.user}
-						<a href="/home">ホーム</a>
-						<a href="/tabs">TAB譜</a>
-						<a href="/favorites">お気に入り</a>
-						<a href="/user">{data.user.username}</a>
-						<form method="POST" action="/logout">
-							<button type="submit" class="link-button">ログアウト</button>
-						</form>
-					{:else}
-						<a href="/login">ログイン</a>
-						<a href="/register">登録</a>
-					{/if}
-				</nav>
+
+			<button class="burger-menu" onclick={toggleMenu} aria-label="メニュー開閉">
+				<span class="burger-bar" class:open={isMenuOpen}></span>
+				<span class="burger-bar" class:open={isMenuOpen}></span>
+				<span class="burger-bar" class:open={isMenuOpen}></span>
+			</button>
+
+			<div class="header-nav-container" class:open={isMenuOpen}>
+				<div class="header-left-nav">
+					<nav>
+						<a href="/search" onclick={closeMenu}>検索</a>
+						<a href="/usage" onclick={closeMenu}>使い方</a>
+					</nav>
+				</div>
+				<div class="header-right-nav">
+					<nav>
+						{#if data.user}
+							<a href="/home" onclick={closeMenu}>ホーム</a>
+							<a href="/tabs" onclick={closeMenu}>TAB譜</a>
+							<a href="/favorites" onclick={closeMenu}>お気に入り</a>
+							<a href="/user" onclick={closeMenu}>{data.user.username}</a>
+							<form method="POST" action="/logout">
+								<button type="submit" class="link-button">ログアウト</button>
+							</form>
+						{:else}
+							<a href="/login" onclick={closeMenu}>ログイン</a>
+							<a href="/register" onclick={closeMenu}>登録</a>
+						{/if}
+					</nav>
+				</div>
 			</div>
+
+			{#if isMenuOpen}
+				<button class="overlay" onclick={closeMenu} aria-label="メニューを閉じる"></button>
+			{/if}
 		</div>
 	</header>
 
@@ -46,10 +70,15 @@
 </div>
 
 <style>
+	* {
+		box-sizing: border-box;
+	}
+
 	.app {
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
+		overflow-x: hidden;
 	}
 
 	header {
@@ -65,12 +94,25 @@
 		max-width: 1200px;
 		margin: 0 auto;
 		width: 100%;
+		position: relative;
 	}
 
-	.header-left, .header-right {
+	.header-left {
 		display: flex;
 		align-items: center;
-		gap: 2rem;
+	}
+
+	.header-nav-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex: 1;
+		margin-left: 2rem;
+	}
+
+	.header-left-nav, .header-right-nav {
+		display: flex;
+		align-items: center;
 	}
 
 	.site-name a {
@@ -81,6 +123,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+		white-space: nowrap;
 	}
 
 	.logo {
@@ -92,6 +135,144 @@
 		display: flex;
 		gap: 1rem;
 		align-items: center;
+	}
+
+	/* バーガーメニュー */
+	.burger-menu {
+		display: none;
+		flex-direction: column;
+		justify-content: space-around;
+		width: 30px;
+		height: 24px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		z-index: 1001;
+	}
+
+	.burger-bar {
+		width: 30px;
+		height: 3px;
+		background-color: #333;
+		border-radius: 10px;
+		transition: all 0.3s linear;
+		position: relative;
+		transform-origin: 1px;
+	}
+
+	.burger-bar.open:nth-child(1) {
+		transform: rotate(45deg);
+	}
+
+	.burger-bar.open:nth-child(2) {
+		opacity: 0;
+	}
+
+	.burger-bar.open:nth-child(3) {
+		transform: rotate(-45deg);
+	}
+
+	.overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 999;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	@media (max-width: 768px) {
+		.burger-menu {
+			display: flex;
+		}
+
+		.header-nav-container {
+			position: fixed;
+			top: 0;
+			right: -100%;
+			width: 250px;
+			height: 100vh;
+			background-color: #f8f9fa;
+			flex-direction: column;
+			justify-content: flex-start;
+			align-items: flex-start;
+			padding: 80px 20px 20px;
+			transition: right 0.3s ease-in-out;
+			z-index: 1000;
+			margin-left: 0;
+			box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+		}
+
+		.header-nav-container.open {
+			right: 0;
+		}
+
+		.header-left-nav, .header-right-nav {
+			width: 100%;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		nav {
+			flex-direction: column;
+			align-items: flex-start;
+			width: 100%;
+			gap: 1.5rem;
+			margin-bottom: 1.5rem;
+		}
+
+		nav a, .link-button {
+			font-size: 1.1rem;
+		}
+
+		:global(.form-group.row) {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 8px;
+		}
+
+		:global(.form-group.row label) {
+			width: 100%;
+		}
+
+		:global(.list-header) {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+		}
+
+		:global(.list-header h1) {
+			font-size: 1.5rem;
+		}
+
+		:global(.table-wrapper) {
+			width: 100%;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		:global(.list-table) {
+			width: auto;
+			min-width: 600px;
+			display: table;
+		}
+
+		:global(.actions) {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		:global(.actions .btn-outline),
+		:global(.actions .btn-danger-outline),
+		:global(.actions form),
+		:global(.actions button) {
+			width: 100% !important;
+		}
 	}
 
 	main {
@@ -377,11 +558,13 @@
 	}
 
 	:global(.table-wrapper) {
+		width: 100%;
 		background: white;
 		border: 1px solid #dee2e6;
 		border-radius: 8px;
-		overflow: hidden;
+		overflow-x: auto;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+		-webkit-overflow-scrolling: touch;
 	}
 
 	:global(.list-table) {
@@ -394,6 +577,7 @@
 	:global(.list-table td) {
 		padding: 1rem;
 		border-bottom: 1px solid #dee2e6;
+		white-space: nowrap;
 	}
 
 	:global(.list-table th) {
@@ -446,17 +630,24 @@
 		gap: 0.5rem;
 	}
 
-	:global(.btn-outline) {
+	:global(.btn-outline),
+	:global(.btn-danger-outline) {
 		display: inline-block;
 		padding: 0.4rem 0.8rem;
-		border: 1px solid #007bff;
-		color: #007bff;
-		background: none;
 		border-radius: 4px;
 		text-decoration: none;
 		font-size: 0.9rem;
 		transition: all 0.2s;
 		cursor: pointer;
+		width: 80px;
+		text-align: center;
+		box-sizing: border-box;
+	}
+
+	:global(.btn-outline) {
+		border: 1px solid #007bff;
+		color: #007bff;
+		background: none;
 	}
 
 	:global(.btn-outline:hover) {
@@ -465,20 +656,18 @@
 	}
 
 	:global(.btn-danger-outline) {
-		display: inline-block;
-		padding: 0.4rem 0.8rem;
 		border: 1px solid #dc3545;
 		color: #dc3545;
 		background: none;
-		border-radius: 4px;
-		text-decoration: none;
-		font-size: 0.9rem;
-		transition: all 0.2s;
-		cursor: pointer;
 	}
 
 	:global(.btn-danger-outline:hover) {
 		background-color: #dc3545;
 		color: white;
+	}
+	:global(.empty-message) {
+		text-align: left;
+		padding: 2rem;
+		color: #6c757d;
 	}
 </style>

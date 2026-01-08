@@ -953,4 +953,43 @@ ${track.tex}`).join('\n\n')}`);
     .btn-error:hover {
         background-color: #c82333;
     }
+
+    @media (max-width: 768px) {
+        .tabs-editor-container {
+            padding: 10px;
+        }
+        .list-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .form-group.row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+        .form-group.row label, .form-group.row label.track-label {
+            width: 100%;
+            justify-content: flex-start;
+        }
+        .track-inputs {
+            grid-template-columns: 1fr;
+        }
+        .editor-main {
+            grid-template-columns: 1fr;
+        }
+        .tex-editor, .preview-editor, .full-tex-editor {
+            height: 500px;
+        }
+        .editor-left, .editor-right {
+            width: 100%;
+        }
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .form-actions .btn-secondary, .form-actions .form-submit, .form-actions .btn-error {
+            width: 100% !important;
+        }
+    }
 </style>

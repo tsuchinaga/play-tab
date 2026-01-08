@@ -31,10 +31,15 @@
 </div>
 
 <style>
+	* {
+		box-sizing: border-box;
+	}
+
 	.app {
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
+		overflow-x: hidden;
 	}
 
 	header {
@@ -318,11 +323,37 @@
 	}
 
 	:global(.table-wrapper) {
+		width: 100%;
 		background: white;
 		border: 1px solid #dee2e6;
 		border-radius: 8px;
-		overflow: hidden;
+		overflow-x: auto;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+		-webkit-overflow-scrolling: touch;
+	}
+
+	@media (max-width: 768px) {
+		:global(.list-table) {
+			width: auto;
+			min-width: 600px;
+			display: table;
+		}
+
+		:global(.form-group.row) {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 8px;
+		}
+
+		:global(.form-group.row label) {
+			width: 100%;
+		}
+
+		:global(.list-header) {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+		}
 	}
 
 	:global(.list-table) {
@@ -335,6 +366,7 @@
 	:global(.list-table td) {
 		padding: 1rem;
 		border-bottom: 1px solid #dee2e6;
+		white-space: nowrap;
 	}
 
 	:global(.list-table th) {
@@ -417,5 +449,10 @@
 	:global(.btn-admin-danger-outline:hover) {
 		background-color: #dc3545;
 		color: white;
+	}
+	:global(.empty-message) {
+		text-align: left;
+		padding: 2rem;
+		color: #6c757d;
 	}
 </style>

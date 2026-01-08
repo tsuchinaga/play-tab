@@ -160,21 +160,42 @@ ${track.tex}`).join('\n')}`);
         align-items: center;
     }
 
-    .header-actions button {
+    @media (max-width: 768px) {
+        .header-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+        .header-actions a, .header-actions form, .header-actions button {
+            width: 100% !important;
+        }
+        .title-with-badge {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .info-row {
+            flex-direction: column;
+            gap: 4px;
+        }
+        .label {
+            width: 100%;
+        }
+        .player-container {
+            height: 400px;
+        }
+    }
+
+    .header-actions button, .header-actions .btn-outline {
         margin: 0;
         width: 140px;
         height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-sizing: border-box;
     }
 
     .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 16px;
-        height: 40px;
         border: 1px solid #007bff;
         background: transparent;
         color: #007bff;

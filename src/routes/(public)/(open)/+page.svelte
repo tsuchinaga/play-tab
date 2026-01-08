@@ -84,7 +84,7 @@
 					{/each}
 					{#if data.recentTabs.length === 0}
 						<tr>
-							<td colspan="4" style="text-align: center;">TAB譜がありません。</td>
+							<td colspan="4" class="empty-message">TAB譜がありません。</td>
 						</tr>
 					{/if}
 				</tbody>
@@ -117,7 +117,7 @@
 					{/each}
 					{#if data.topFavoritedTabs.length === 0}
 						<tr>
-							<td colspan="4" style="text-align: center;">TAB譜がありません。</td>
+							<td colspan="4" class="empty-message">TAB譜がありません。</td>
 						</tr>
 					{/if}
 				</tbody>
@@ -143,6 +143,24 @@
 		font-size: 1.2rem;
 		color: #6c757d;
 		line-height: 1.6;
+	}
+
+	@media (max-width: 768px) {
+		.overview {
+			padding: 20px 10px;
+			margin-bottom: 20px;
+		}
+		.overview h1 {
+			font-size: 1.75rem;
+			margin-bottom: 15px;
+		}
+		.overview p {
+			font-size: 1rem;
+		}
+		.checkbox-group {
+			flex-direction: column;
+			gap: 10px;
+		}
 	}
 	section {
 		margin-bottom: 40px;

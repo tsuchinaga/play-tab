@@ -2,13 +2,14 @@
     import { enhance } from '$app/forms';
     import type { PageData, ActionData } from './$types';
 
-    export let data: PageData;
-    export let form: ActionData;
+    let { data, form }: { data: PageData, form: ActionData } = $props();
 
-    let errorElement: HTMLElement;
-    $: if (form?.error && errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    let errorElement = $state<HTMLElement | null>(null);
+    $effect(() => {
+        if (form?.error && errorElement) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 </script>
 
 <svelte:head>
@@ -104,5 +105,15 @@
         justify-content: center;
         gap: 15px;
         margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .form-actions a, .form-actions button {
+            width: 100% !important;
+        }
     }
 </style>

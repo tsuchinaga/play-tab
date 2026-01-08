@@ -31,7 +31,7 @@
 					{/each}
 				{:else}
 					<tr>
-						<td colspan="2" style="text-align: center;">お知らせはありません。</td>
+						<td colspan="2" class="empty-message">お知らせはありません。</td>
 					</tr>
 				{/if}
 			</tbody>

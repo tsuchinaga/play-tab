@@ -148,6 +148,26 @@ ${track.tex}`).join('\n')}`);
         align-items: center;
     }
 
+    @media (max-width: 768px) {
+        .header-actions {
+            width: 100%;
+        }
+        .header-actions a {
+            width: 100% !important;
+            text-align: center;
+        }
+        .info-row {
+            flex-direction: column;
+            gap: 4px;
+        }
+        .label {
+            width: 100%;
+        }
+        .player-container {
+            height: 400px;
+        }
+    }
+
     .tab-info-card {
         margin-bottom: 2rem;
         display: flex;

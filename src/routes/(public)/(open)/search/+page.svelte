@@ -93,6 +93,13 @@
         gap: 20px;
     }
 
+    @media (max-width: 768px) {
+        .checkbox-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+
     .checkbox-label {
         display: flex;
         align-items: center;

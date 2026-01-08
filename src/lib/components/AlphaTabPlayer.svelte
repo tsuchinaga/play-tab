@@ -432,6 +432,8 @@
         display: flex;
         align-items: center;
         width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .main-controls {
@@ -441,14 +443,41 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     @media (max-width: 768px) {
+        .track-controller {
+            width: 100%;
+            border-right: none;
+        }
+
+        .alphatab-controller {
+            padding: 8px;
+        }
+
+        .controller-content {
+            justify-content: space-between;
+        }
+
         .main-controls {
             position: static;
             transform: none;
             flex: 1;
             justify-content: center;
+            width: 100%;
+        }
+
+        .tempo-controls {
+            width: 100%;
+            justify-content: center;
+            order: 10;
+        }
+
+        .bpm-slider {
+            flex: 1;
+            min-width: 0;
         }
     }
 

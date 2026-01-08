@@ -115,11 +115,6 @@
                         <td>
                             <div class="name-cell">
                                 <a href="/tab/{tab.id}" class="tab-name">{tab.name}</a>
-                                {#if tab.version}
-                                    <div class="version-badge-container">
-                                        <span class="version-badge">v{tab.version}</span>
-                                    </div>
-                                {/if}
                             </div>
                         </td>
                         <td>
@@ -140,6 +135,10 @@
                             <button type="button" class="btn-danger-outline" onclick={() => handleDelete(tab.id, tab.name)}>削除</button>
                         </td>
                     </tr>
+                {:else}
+                    <tr>
+                        <td colspan="6" class="empty-message">TAB譜が登録されていません。</td>
+                    </tr>
                 {/each}
             </tbody>
         </table>
@@ -147,17 +146,15 @@
 </div>
 
 <style>
-    .btn-outline {
-        text-decoration: none;
-        display: inline-block;
-        line-height: 1.5;
-    }
-
     .add-button {
         width: auto;
         padding: 0.5rem 1.5rem;
         text-decoration: none;
         text-align: center;
+    }
+
+    .btn-outline {
+        line-height: 1.5;
     }
 
     .message {
@@ -185,8 +182,9 @@
 
     .name-cell {
         display: flex;
-        flex-direction: column;
-        gap: 2px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
     }
 
     .tab-name {
@@ -199,17 +197,6 @@
         text-decoration: underline;
     }
 
-    .version-badge-container {
-        display: block;
-    }
-
-    .version-badge {
-        font-size: 0.75rem;
-        background-color: #e9ecef;
-        color: #495057;
-        padding: 1px 6px;
-        border-radius: 4px;
-        border: 1px solid #dee2e6;
-        display: inline-block;
+    @media (max-width: 768px) {
     }
 </style>

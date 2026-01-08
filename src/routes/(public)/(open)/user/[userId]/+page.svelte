@@ -106,6 +106,16 @@
         border-bottom: 1px solid #dee2e6;
     }
 
+    @media (max-width: 768px) {
+        .profile-item {
+            flex-direction: column;
+            gap: 4px;
+        }
+        .label {
+            width: 100%;
+        }
+    }
+
     .profile-item:last-child {
         border-bottom: none;
     }

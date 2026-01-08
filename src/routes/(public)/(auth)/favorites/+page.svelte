@@ -63,7 +63,7 @@
             <tbody>
                 {#if data.favorites.length === 0}
                     <tr>
-                        <td colspan="5" style="text-align: center;">お気に入りは登録されていません。</td>
+                        <td colspan="5" class="empty-message">お気に入りは登録されていません。</td>
                     </tr>
                 {:else}
                     {#each data.favorites as favorite}
@@ -102,5 +102,8 @@
 
     .list-table a:hover {
         text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
     }
 </style>
