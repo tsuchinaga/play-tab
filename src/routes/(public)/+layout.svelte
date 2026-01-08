@@ -684,6 +684,11 @@
 		color: #6c757d;
 	}
 
+	:global(.status-unlisted) {
+		background-color: #fff3cd;
+		color: #856404;
+	}
+
 	:global(.status-limited) {
 		background-color: #fff3cd;
 		color: #856404;

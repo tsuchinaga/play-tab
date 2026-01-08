@@ -113,7 +113,7 @@
                     </div>
                 </td>
                 <td>
-                    <StatusBadge status={tab.status === 'unlisted' ? 'limited' : tab.status} label={tab.status === 'public' ? '公開' : tab.status === 'private' ? '非公開' : '限定公開'} />
+                    <StatusBadge status={tab.status} />
                 </td>
                 <td>{formatDate(tab.updatedAt)}</td>
                 <td>{tab.viewCount}</td>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import StatusBadge from '$lib/components/common/StatusBadge.svelte';
     let { data } = $props();
 </script>
 
@@ -48,9 +49,7 @@
                             <a href="/tab/{tab._id}" target="_blank">{tab.name}</a>
                         </td>
                         <td>
-                            <span class="status-badge status-{tab.visibility}">
-                                {tab.visibility === 'public' ? '公開' : tab.visibility === 'private' ? '非公開' : '限定公開'}
-                            </span>
+                            <StatusBadge status={tab.visibility} />
                         </td>
                         <td>{new Date(tab.updatedAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
                     </tr>
