@@ -113,6 +113,14 @@
         api.changeTrackVolume([track], ratio);
     }
 
+    function renderActiveTracks() {
+        if (!api || !api.score) return;
+        const tracksToRender = api.score.tracks.filter(t => 
+            t.staves[0]?.showStandardNotation || t.staves[0]?.showTablature
+        );
+        api.renderTracks(tracksToRender);
+    }
+
     function toggleStave(track: alphaTab.Track) {
         if (!api) return;
         const newState = !track.staves[0]?.showStandardNotation;
@@ -120,7 +128,7 @@
         if (trackStates[track.index]) {
             trackStates[track.index].showStandardNotation = newState;
         }
-        api.renderTracks([track]);
+        renderActiveTracks();
     }
 
     function toggleTab(track: alphaTab.Track) {
@@ -130,7 +138,7 @@
         if (trackStates[track.index]) {
             trackStates[track.index].showTablature = newState;
         }
-        api.renderTracks([track]);
+        renderActiveTracks();
     }
 </script>
 
