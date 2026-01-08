@@ -26,7 +26,7 @@
 	<header>
 		<div class="header-content">
 			<div class="site-name">
-				<a href="/controller/home" onclick={closeMenu}>Play Tab Admin</a>
+				<a href="/controller/users" onclick={closeMenu}>Play Tab Admin</a>
 			</div>
 
 			<button class="burger-menu" onclick={toggleMenu} aria-label="メニュー開閉">

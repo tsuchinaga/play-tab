@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt';
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (locals.admin) {
-        throw redirect(303, '/controller/home');
+        throw redirect(303, '/controller/users');
     }
 };
 
@@ -61,6 +61,6 @@ export const actions: Actions = {
             maxAge: 60 * 60 * 24 * 7 // 7 days
         });
 
-        throw redirect(303, '/controller/home');
+        throw redirect(303, '/controller/users');
     }
 };
