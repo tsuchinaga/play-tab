@@ -37,6 +37,56 @@ ${track.tex}`).join('\n')}`);
             minute: '2-digit'
         });
     }
+
+    let copyStatus = $state('');
+
+    async function handleShare() {
+        const shareData = {
+            title: `${tab.name} | Play Tab`,
+            text: `${tab.name} のTAB譜をチェックしよう！`,
+            url: window.location.href
+        };
+
+        if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                if ((err as Error).name !== 'AbortError') {
+                    console.error('Share failed:', err);
+                }
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                copyStatus = 'URLをコピーしました';
+                setTimeout(() => {
+                    copyStatus = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Clipboard copy failed:', err);
+                copyStatus = 'コピーに失敗しました';
+                setTimeout(() => {
+                    copyStatus = '';
+                }, 2000);
+            }
+        }
+    }
+
+    async function copyToClipboard() {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            copyStatus = 'URLをコピーしました';
+            setTimeout(() => {
+                copyStatus = '';
+            }, 2000);
+        } catch (err) {
+            console.error('Clipboard copy failed:', err);
+            copyStatus = 'コピーに失敗しました';
+            setTimeout(() => {
+                copyStatus = '';
+            }, 2000);
+        }
+    }
 </script>
 
 <svelte:head>
@@ -56,6 +106,14 @@ ${track.tex}`).join('\n')}`);
             {/if}
         </div>
         <div class="header-actions">
+            <button type="button" class="btn-outline" onclick={handleShare}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                    <polyline points="16 6 12 2 8 6"></polyline>
+                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                </svg>
+                共有
+            </button>
             {#if data.canViewHistory}
                 <a href="/tab/{tab._id}/versions" class="btn-outline">バージョン履歴</a>
             {/if}
@@ -72,6 +130,12 @@ ${track.tex}`).join('\n')}`);
             {/if}
         </div>
     </div>
+
+    {#if copyStatus}
+        <div class="status-message-container">
+            <div class="status-message">{copyStatus}</div>
+        </div>
+    {/if}
 
     <div class="tab-info-card form-card">
         <div class="info-row">
@@ -285,6 +349,32 @@ ${track.tex}`).join('\n')}`);
         justify-content: center;
         gap: 10px;
         margin-bottom: 20px;
+    }
+
+    .status-message-container {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    .status-message {
+        background: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        font-size: 0.9rem;
+        animation: fadeInOut 2s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(-10px); }
+        15% { opacity: 1; transform: translateY(0); }
+        85% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
     }
 
     .view-mode-selector button {
