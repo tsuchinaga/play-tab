@@ -106,7 +106,9 @@
 
     function changeTrackVolume(track: alphaTab.Track, volume: number) {
         if (!api) return;
-        api.changeTrackVolume([track], volume);
+        // alphaTab.changeTrackVolume は倍率 (1.0 = 100%) を期待する。
+        // UIは 0-16 の範囲なので、16で割って 0.0-1.0 の範囲にする。
+        api.changeTrackVolume([track], volume / 16);
     }
 
     function toggleStave(track: alphaTab.Track) {
