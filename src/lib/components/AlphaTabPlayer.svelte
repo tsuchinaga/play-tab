@@ -107,8 +107,10 @@
     function changeTrackVolume(track: alphaTab.Track, volume: number) {
         if (!api) return;
         // alphaTab.changeTrackVolume は倍率 (1.0 = 100%) を期待する。
-        // UIは 0-16 の範囲なので、16で割って 0.0-1.0 の範囲にする。
-        api.changeTrackVolume([track], volume / 16);
+        // UIは 0-15 の範囲（MIDIの標準的な16段階に合わせる）。
+        // デフォルトが15である可能性が高いため、15で割って倍率を算出する。
+        const ratio = Math.min(1.0, volume / 15);
+        api.changeTrackVolume([track], ratio);
     }
 
     function toggleStave(track: alphaTab.Track) {
@@ -249,7 +251,7 @@
                                 </div>
                             </div>
                             <div class="track-volume">
-                                <input type="range" min="0" max="16" step="1" value={track.playbackInfo.volume}
+                                <input type="range" min="0" max="15" step="1" value={track.playbackInfo.volume > 15 ? 15 : track.playbackInfo.volume}
                                        oninput={(e) => changeTrackVolume(track, parseInt(e.currentTarget.value))}/>
                             </div>
                         </div>
