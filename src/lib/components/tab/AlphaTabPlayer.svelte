@@ -150,15 +150,21 @@
 <div class="alphatab-player">
     <div class="alphatab-controller">
         <div class="controller-content">
-            <button type="button" class="btn-icon" onclick={toggleTrackController} title="トラック設定">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <path d="M9 18V5l12-2v13"></path>
-                    <circle cx="6" cy="18" r="3"></circle>
-                    <circle cx="18" cy="16" r="3"></circle>
-                </svg>
-            </button>
             <div class="main-controls">
+                <button type="button" class="btn-icon" onclick={toggleTrackController} title="トラック設定">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="2" y1="14" x2="6" y2="14"></line>
+                        <line x1="10" y1="8" x2="14" y2="8"></line>
+                        <line x1="18" y1="16" x2="22" y2="16"></line>
+                    </svg>
+                </button>
                 <button type="button" class="btn-icon" onclick={stop} title="停止">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                         <rect x="6" y="6" width="12" height="12"></rect>
@@ -465,11 +471,9 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
         flex-wrap: wrap;
         justify-content: center;
+        margin: 0 auto;
     }
 
     @media (max-width: 768px) {
@@ -487,8 +491,6 @@
         }
 
         .main-controls {
-            position: static;
-            transform: none;
             flex: 1;
             justify-content: center;
             width: 100%;
