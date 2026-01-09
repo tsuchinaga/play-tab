@@ -2,7 +2,7 @@
     import Button from '$lib/components/common/Button.svelte';
     import FormGroup from '$lib/components/common/FormGroup.svelte';
     import DataTable from '$lib/components/common/DataTable.svelte';
-    import StatusBadge from '$lib/components/common/StatusBadge.svelte';
+    import VisibilityBadge from '$lib/components/common/VisibilityBadge.svelte';
 
     let { data } = $props();
 </script>
@@ -43,7 +43,7 @@
                 </td>
                 <td>{user.email}</td>
                 <td>
-                    <StatusBadge status={user.isActive ? 'public' : 'private'} label={user.isActive ? '有効' : '無効'} />
+                    <VisibilityBadge status={user.isActive ? 'public' : 'private'} label={user.isActive ? '有効' : '無効'} />
                 </td>
                 <td>{new Date(user.createdAt).toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                 <td>

@@ -4,7 +4,7 @@
     import Button from '$lib/components/common/Button.svelte';
     import FormGroup from '$lib/components/common/FormGroup.svelte';
     import DataTable from '$lib/components/common/DataTable.svelte';
-    import StatusBadge from '$lib/components/common/StatusBadge.svelte';
+   	import VisibilityBadge from '$lib/components/common/VisibilityBadge.svelte';
 
     let { data } = $props();
 
@@ -113,7 +113,7 @@
                     </div>
                 </td>
                 <td>
-                    <StatusBadge status={tab.status} />
+                    <VisibilityBadge status={tab.status} />
                 </td>
                 <td>{formatDate(tab.updatedAt)}</td>
                 <td>{tab.viewCount}</td>

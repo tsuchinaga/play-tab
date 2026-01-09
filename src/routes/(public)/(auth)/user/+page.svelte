@@ -2,6 +2,7 @@
     import Button from '$lib/components/common/Button.svelte';
     import FormCard from '$lib/components/common/FormCard.svelte';
     import DataTable from '$lib/components/common/DataTable.svelte';
+    import InstrumentBadge from '$lib/components/common/InstrumentBadge.svelte';
     import type { PageData } from './$types';
 
     let { data } = $props();
@@ -62,7 +63,7 @@
                         <td>
                             <div class="instruments-badges">
                                 {#each tab.instruments as inst}
-                                    <span class="status-badge status-instrument">{inst}</span>
+                                    <InstrumentBadge instrument={inst} />
                                 {/each}
                             </div>
                         </td>
@@ -86,7 +87,7 @@
                         <td>
                             <div class="instruments-badges">
                                 {#each f.instruments as inst}
-                                    <span class="status-badge status-instrument">{inst}</span>
+                                    <InstrumentBadge instrument={inst} />
                                 {/each}
                             </div>
                         </td>

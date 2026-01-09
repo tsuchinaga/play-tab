@@ -2,6 +2,7 @@
     import Button from '$lib/components/common/Button.svelte';
     import FormGroup from '$lib/components/common/FormGroup.svelte';
     import DataTable from '$lib/components/common/DataTable.svelte';
+    import InstrumentBadge from '$lib/components/common/InstrumentBadge.svelte';
 
     let { data } = $props();
 
@@ -59,7 +60,7 @@
                 <td>
                     <div class="instruments-badges">
                         {#each tab.instruments as inst}
-                            <span class="status-badge status-instrument">{inst}</span>
+                            <InstrumentBadge instrument={inst} />
                         {/each}
                     </div>
                 </td>

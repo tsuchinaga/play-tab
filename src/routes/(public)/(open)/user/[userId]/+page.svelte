@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types';
+    import InstrumentBadge from '$lib/components/common/InstrumentBadge.svelte';
 
     let { data } = $props();
     const { profileUser, publicTabCount, favoriteCount } = data;
@@ -63,7 +64,7 @@
                                 <td>
                                     <div class="instruments-badges">
                                         {#each tab.instruments as inst}
-                                            <span class="status-badge status-instrument">{inst}</span>
+                                            <InstrumentBadge instrument={inst} />
                                         {/each}
                                     </div>
                                 </td>
@@ -98,7 +99,7 @@
                                 <td>
                                     <div class="instruments-badges">
                                         {#each f.instruments as inst}
-                                            <span class="status-badge status-instrument">{inst}</span>
+                                            <InstrumentBadge instrument={inst} />
                                         {/each}
                                     </div>
                                 </td>

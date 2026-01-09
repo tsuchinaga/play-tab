@@ -660,8 +660,8 @@
 		color: #6c757d;
 	}
 
-	/* ステータスバッジ */
-	:global(.status-badge) {
+	/* 公開状況バッジ */
+	:global(.visibility-badge) {
 		display: inline-block;
 		padding: 0.25rem 0.5rem;
 		border-radius: 4px;
@@ -692,12 +692,6 @@
 	:global(.status-limited) {
 		background-color: #fff3cd;
 		color: #856404;
-	}
-
-	:global(.status-instrument) {
-		background-color: #e7f3ff;
-		color: #007bff;
-		border: 1px solid #b3d7ff;
 	}
 
 	:global(.instruments-badges) {

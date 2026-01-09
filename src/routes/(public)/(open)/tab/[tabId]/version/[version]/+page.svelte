@@ -1,5 +1,6 @@
 <script lang="ts">
     import AlphaTabPlayer from '$lib/components/tab/AlphaTabPlayer.svelte';
+    import InstrumentBadge from '$lib/components/common/InstrumentBadge.svelte';
 
     let { data } = $props();
     const { tab, history } = data;
@@ -73,7 +74,7 @@ ${track.tex}`).join('\n')}`);
                     <ul class="instruments-list">
                         {#each history.tracks as track}
                             <li>
-                                {track.name} <span class="instrument-badge">{track.instrument} ({track.tuning})</span>
+                                {track.name} <InstrumentBadge instrument="{track.instrument} ({track.tuning})" />
                             </li>
                         {/each}
                     </ul>
@@ -212,14 +213,6 @@ ${track.tex}`).join('\n')}`);
         list-style: none;
         padding: 0;
         margin: 0;
-    }
-
-    .instrument-badge {
-        background: #e9ecef;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        color: #495057;
     }
 
     .player-container {

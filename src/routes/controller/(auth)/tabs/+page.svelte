@@ -2,7 +2,7 @@
     import Button from '$lib/components/common/Button.svelte';
     import FormGroup from '$lib/components/common/FormGroup.svelte';
     import DataTable from '$lib/components/common/DataTable.svelte';
-    import StatusBadge from '$lib/components/common/StatusBadge.svelte';
+    import VisibilityBadge from '$lib/components/common/VisibilityBadge.svelte';
 
     let { data } = $props();
 </script>
@@ -41,7 +41,7 @@
                     <a href="/controller/users/{tab.userId}">{tab.user.username}</a>
                 </td>
                 <td>
-                    <StatusBadge status={tab.visibility} />
+                    <VisibilityBadge status={tab.visibility} />
                 </td>
                 <td>{tab.viewCount ?? 0}</td>
                 <td>{tab.favoriteCount ?? 0}</td>

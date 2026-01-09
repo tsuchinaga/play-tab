@@ -464,7 +464,7 @@
 		color: white;
 	}
 
-	:global(.status-badge) {
+	:global(.visibility-badge) {
 		display: inline-block;
 		padding: 0.25rem 0.5rem;
 		border-radius: 4px;
