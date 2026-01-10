@@ -1,6 +1,8 @@
 <script lang="ts">
     import AlphaTabPlayer from '$lib/components/tab/AlphaTabPlayer.svelte';
     import InstrumentBadge from '$lib/components/common/InstrumentBadge.svelte';
+    import { instrumentGroups } from '$lib/instruments';
+    import { generateFullTex } from '$lib/utils/alphatex';
 
     let { data } = $props();
     const { tab, history } = data;
@@ -10,14 +12,12 @@
         history.tracks.map((track: any, index: number) => track.isVisible ? index : -1).filter((index: number) => index !== -1)
     );
 
-    const fullTex = $derived(`\\title "${history.name}"
-\\artist "${tab.user?.username || 'Guest'}"
-\\tempo ${history.bpm}
-
-${history.tracks.map((track: any) => `\\track "${track.name}"
-\\instrument "${track.instrument}"
-\\tuning (${track.tuning}) {hide}
-${track.tex}`).join('\n')}`);
+    const fullTex = $derived(generateFullTex({
+        name: history.name,
+        bpm: history.bpm,
+        username: tab.user?.username || 'Guest',
+        tracks: history.tracks
+    }));
 
     function formatDate(dateString: string) {
         if (!dateString) return '';

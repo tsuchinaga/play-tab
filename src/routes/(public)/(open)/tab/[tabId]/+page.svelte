@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
+    import {enhance} from '$app/forms';
     import AlphaTabPlayer from '$lib/components/tab/AlphaTabPlayer.svelte';
     import InstrumentBadge from '$lib/components/common/InstrumentBadge.svelte';
     import VisibilityBadge from '$lib/components/common/VisibilityBadge.svelte';
+    import {generateFullTex} from '$lib/utils/alphatex';
 
     let { data } = $props();
     const { tab, user } = data;
@@ -20,14 +21,12 @@
         tab.tracks.map((track: any, index: number) => track.isVisible ? index : -1).filter((index: number) => index !== -1)
     );
 
-    const fullTex = $derived(`\\title "${tab.name}"
-\\artist "${tab.user?.username || 'Guest'}"
-\\tempo ${tab.bpm}
-
-${tab.tracks.map((track: any) => `\\track "${track.name}"
-\\instrument "${track.instrument}"
-\\tuning (${track.tuning}) {hide}
-${track.tex}`).join('\n')}`);
+    const fullTex = $derived(generateFullTex({
+        name: tab.name,
+        bpm: tab.bpm,
+        username: tab.user?.username || 'Guest',
+        tracks: tab.tracks
+    }));
 
     function formatDate(dateString: string) {
         const date = new Date(dateString);

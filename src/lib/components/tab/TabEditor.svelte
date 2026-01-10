@@ -7,6 +7,7 @@
     import FormGroup from '$lib/components/common/FormGroup.svelte';
     import FormCard from '$lib/components/common/FormCard.svelte';
     import {instrumentGroups} from '$lib/instruments';
+    import {generateFullTex} from '$lib/utils/alphatex';
     import type * as alphaTabType from "@coderline/alphatab";
 
     let {data, form, isEdit = false, readonly = false} = $props();
@@ -113,14 +114,12 @@
             .filter(index => index !== -1)
     );
 
-    const fullTex = $derived(`\\title "${name}"
-\\artist "${username}"
-\\tempo ${bpm}
-
-${tracks.filter(track => track.tex.trim() !== '').map(track => `\\track "${track.name}"
-\\instrument "${track.instrument}"
-\\tuning (${track.tuning}) {hide}
-${track.tex}`).join('\n\n')}`);
+    const fullTex = $derived(generateFullTex({
+        name,
+        bpm,
+        username,
+        tracks
+    }));
 
     let validatedTex = $state(fullTex);
     let mainEditorContainer = $state<HTMLDivElement>();
