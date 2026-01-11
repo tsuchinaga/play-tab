@@ -39,7 +39,9 @@
         <FormGroup label="確認用パスワード" id="confirmPassword">
             <input type="password" id="confirmPassword" name="confirmPassword" required />
         </FormGroup>
-        <Button type="submit" variant="primary">登録</Button>
+        <div class="form-actions">
+            <Button type="submit" variant="primary">登録</Button>
+        </div>
     </form>
 
     <div class="form-footer">

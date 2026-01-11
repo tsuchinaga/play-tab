@@ -30,7 +30,9 @@
         <FormGroup label="パスワード" id="password">
             <input type="password" id="password" name="password" required />
         </FormGroup>
-        <Button type="submit" variant="primary">ログイン</Button>
+        <div class="form-actions">
+            <Button type="submit" variant="primary">ログイン</Button>
+        </div>
     </form>
 
     <div class="form-footer">
