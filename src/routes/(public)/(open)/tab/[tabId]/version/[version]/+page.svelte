@@ -67,6 +67,12 @@
             <span class="label">BPM</span>
             <span class="value">{history.bpm}</span>
         </div>
+        {#if history.description}
+            <div class="info-row">
+                <span class="label">説明</span>
+                <span class="value" style="white-space: pre-wrap;">{history.description}</span>
+            </div>
+        {/if}
         {#if history.tracks.length > 0}
             <div class="info-row">
                 <span class="label">楽器</span>

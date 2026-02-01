@@ -42,6 +42,7 @@
     let texPublicSetting = $state(form?.texPublicSetting ?? data.tab?.texPublicSetting ?? data.history?.texPublicSetting ?? 'private');
     let historyPublicSetting = $state(form?.historyPublicSetting ?? data.tab?.historyPublicSetting ?? data.history?.historyPublicSetting ?? 'private');
     let bpm = $state(form?.bpm ?? data.tab?.bpm ?? data.history?.bpm ?? 120);
+    let description = $state(form?.description ?? data.tab?.description ?? data.history?.description ?? '');
     let trackCount = $state(form?.trackCount ?? data.tab?.tracks?.length ?? data.history?.tracks?.length ?? 1);
     let tracks = $state(form?.tracks ?? data.tab?.tracks ?? data.history?.tracks ?? [{
         name: 'Guitar',
@@ -353,6 +354,10 @@
 
             <FormGroup label="BPM" id="bpm" row>
                 <input type="number" id="bpm" name="bpm" bind:value={bpm} min="60" max="240" required {readonly}/>
+            </FormGroup>
+
+            <FormGroup label="説明" id="description" row>
+                <textarea id="description" name="description" bind:value={description} {readonly} rows="3"></textarea>
             </FormGroup>
 
             <FormGroup label="トラック数" id="trackCount" row>

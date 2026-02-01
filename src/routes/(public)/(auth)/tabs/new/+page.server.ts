@@ -16,6 +16,7 @@ export const actions: Actions = {
         const texPublicSetting = formData.get('texPublicSetting') as 'public' | 'login' | 'private';
         const historyPublicSetting = formData.get('historyPublicSetting') as 'public' | 'login' | 'private';
         const bpm = parseInt(formData.get('bpm') as string);
+        const description = formData.get('description') as string;
         const trackCount = parseInt(formData.get('trackCount') as string);
         const version = formData.get('version') as string || undefined;
         const versionComment = formData.get('versionComment') as string;
@@ -38,7 +39,7 @@ export const actions: Actions = {
         }
 
         if (!name) {
-            return fail(400, { message: '名前を入力してください', name, visibility, texPublicSetting, historyPublicSetting, bpm, trackCount, tracks });
+            return fail(400, { message: '名前を入力してください', name, visibility, texPublicSetting, historyPublicSetting, bpm, description, trackCount, tracks });
         }
 
         try {
@@ -49,12 +50,13 @@ export const actions: Actions = {
                 texPublicSetting,
                 historyPublicSetting,
                 bpm,
+                description,
                 tracks
             }, versionComment, version);
         } catch (e: any) {
             console.error(e);
             const message = e.message === 'DUPLICATE_VERSION' ? 'このバージョンは既に存在します' : '保存に失敗しました';
-            return fail(e.message === 'DUPLICATE_VERSION' ? 400 : 500, { message, name, visibility, texPublicSetting, historyPublicSetting, bpm, trackCount, tracks, versionComment });
+            return fail(e.message === 'DUPLICATE_VERSION' ? 400 : 500, { message, name, visibility, texPublicSetting, historyPublicSetting, bpm, description, trackCount, tracks, versionComment });
         }
 
         throw redirect(303, '/tabs');

@@ -147,6 +147,12 @@
             <span class="label">BPM</span>
             <span class="value">{tab.bpm}</span>
         </div>
+        {#if tab.description}
+            <div class="info-row">
+                <span class="label">説明</span>
+                <span class="value" style="white-space: pre-wrap;">{tab.description}</span>
+            </div>
+        {/if}
         {#if tab.tracks.length > 0}
             <div class="info-row">
                 <span class="label">楽器</span>

@@ -147,6 +147,7 @@ try {
             texPublicSetting: 'public',
             historyPublicSetting: 'public',
             bpm: 120,
+            description: 'ギターの運指練習用クロマチックスケールです。',
             tracks: [
                 {
                     name: 'Guitar',
@@ -180,6 +181,7 @@ try {
             texPublicSetting: 'public',
             historyPublicSetting: 'public',
             bpm: 120,
+            description: 'ベースの運指練習用クロマチックスケールです。',
             tracks: [
                 {
                     name: 'Bass',
@@ -209,6 +211,7 @@ try {
             texPublicSetting: 'public',
             historyPublicSetting: 'public',
             bpm: 120,
+            description: '基本的なメジャースケールの練習用TAB譜です。ギターとベースのユニゾンになっています。',
             tracks: [
                 {
                     name: 'Guitar',

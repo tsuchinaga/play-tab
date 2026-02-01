@@ -30,6 +30,7 @@ export interface Tab {
     texPublicSetting: 'private' | 'login' | 'public';
     historyPublicSetting: 'private' | 'login' | 'public';
     bpm: number;
+    description: string;
     tracks: Track[];
     instruments: string[];
     alphaTabVersion: string;
