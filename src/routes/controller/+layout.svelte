@@ -633,6 +633,24 @@
 		gap: 15px;
 	}
 
+	:global(.message) {
+		padding: 1rem;
+		border-radius: 4px;
+		margin-bottom: 2rem;
+	}
+
+	:global(.message.success) {
+		background-color: #d4edda;
+		color: #155724;
+		border: 1px solid #c3e6cb;
+	}
+
+	:global(.message.error) {
+		background-color: #f8d7da;
+		color: #721c24;
+		border: 1px solid #f5c6cb;
+	}
+
 	:global(.actions) {
 		display: flex;
 		gap: 0.5rem;

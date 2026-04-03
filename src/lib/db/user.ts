@@ -26,9 +26,13 @@ export async function findUserByLoginId(loginId: string) {
     return user;
 }
 
-export async function findUserById(id: ObjectId) {
+export async function findUserById(id: ObjectId, includeDeleted = false) {
     const db = await getDb();
-    const user = await db.collection<User>('users').findOne({ _id: id, isDeleted: false });
+    const filter: any = { _id: id };
+    if (!includeDeleted) {
+        filter.isDeleted = false;
+    }
+    const user = await db.collection<User>('users').findOne(filter);
     if (user) {
         user.registeredTabsVisibility = user.registeredTabsVisibility ?? 'public';
         user.favoritedTabsVisibility = user.favoritedTabsVisibility ?? 'public';
@@ -51,9 +55,12 @@ export async function createUser(user: { loginId: string; username: string; emai
     return result;
 }
 
-export async function searchUsers(query: { loginId?: string; username?: string; email?: string }) {
+export async function searchUsers(query: { loginId?: string; username?: string; email?: string; includeDeleted?: boolean }) {
     const db = await getDb();
-    const filter: any = { isDeleted: false };
+    const filter: any = {};
+    if (!query.includeDeleted) {
+        filter.isDeleted = false;
+    }
     if (query.loginId) {
         filter.loginId = { $regex: query.loginId, $options: 'i' };
     }
@@ -67,6 +74,44 @@ export async function searchUsers(query: { loginId?: string; username?: string; 
         user.isActive = user.isActive ?? true;
         return user;
     });
+}
+
+export async function deleteUser(id: ObjectId) {
+    const db = await getDb();
+    const result = await db.collection<User>('users').updateOne(
+        { _id: id },
+        {
+            $set: {
+                isDeleted: true,
+                updatedAt: new Date()
+            }
+        }
+    );
+    return result;
+}
+
+export async function hardDeleteUser(id: ObjectId) {
+    const db = await getDb();
+
+    // ユーザーに紐付くTAB譜を取得
+    const tabs = await db.collection('tabs').find({ userId: id }).toArray();
+    const tabIds = tabs.map(tab => tab._id);
+
+    // TAB譜に紐付くデータの削除
+    if (tabIds.length > 0) {
+        await db.collection('favorite_tabs').deleteMany({ tabId: { $in: tabIds } });
+        await db.collection('tab_histories').deleteMany({ tabId: { $in: tabIds } });
+        await db.collection('tab_summaries').deleteMany({ tabId: { $in: tabIds } });
+    }
+
+    // ユーザーに直接紐付くデータの削除
+    await db.collection('tabs').deleteMany({ userId: id });
+    await db.collection('favorite_tabs').deleteMany({ userId: id });
+    await db.collection('sessions').deleteMany({ 'data.user.id': id.toString() });
+
+    // ユーザー自身の削除
+    const result = await db.collection<User>('users').deleteOne({ _id: id });
+    return result;
 }
 
 export async function updateUser(id: ObjectId, user: Partial<Pick<User, 'username' | 'email' | 'hashedPassword' | 'registeredTabsVisibility' | 'favoritedTabsVisibility' | 'isActive'>>) {
