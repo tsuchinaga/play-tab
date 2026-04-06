@@ -1,6 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { findUserByLoginId, createUser } from '$lib/db/user';
+import { createEmailVerificationToken } from '$lib/db/emailVerification';
+import { sendMail } from '$lib/server/mail';
+import { env } from '$env/dynamic/private';
 import bcrypt from 'bcrypt';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -32,8 +35,36 @@ export const actions: Actions = {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        await createUser({ loginId, username, email, hashedPassword });
+        const result = await createUser({ loginId, username, email, hashedPassword });
 
-        throw redirect(303, '/login');
+        if (result.insertedId) {
+            const { token, code } = await createEmailVerificationToken(result.insertedId);
+            const verificationUrl = `${env.ORIGIN}/verify-email?token=${token}`;
+            
+            const subject = '【Play Tab】メールアドレスの確認';
+            const text = `Play Tab をご利用いただきありがとうございます。
+以下のURLにアクセスして、認証コードを入力し、メールアドレスの確認を完了してください。
+
+認証コード: ${code}
+
+${verificationUrl}
+
+このURLの有効期限は24時間です。
+もし、このメールに心当たりがない場合は、このメールを無視してください。`;
+
+            const html = `
+                <p>Play Tab をご利用いただきありがとうございます。</p>
+                <p>以下のURLにアクセスして、認証コードを入力し、メールアドレスの確認を完了してください。</p>
+                <p><strong>認証コード: ${code}</strong></p>
+                <p><a href="${verificationUrl}">${verificationUrl}</a></p>
+                <p>このURLの有効期限は24時間です。</p>
+                <hr>
+                <p><small>もし、このメールに心当たりがない場合は、このメールを無視してください。</small></p>
+            `;
+
+            await sendMail(email, subject, text, html);
+        }
+
+        return { success: true };
     }
 };

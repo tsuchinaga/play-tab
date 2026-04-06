@@ -505,6 +505,15 @@
 		margin-bottom: 1rem;
 	}
 
+	:global(.success-message) {
+		color: #155724;
+		background-color: #d4edda;
+		border: 1px solid #c3e6cb;
+		padding: 0.75rem;
+		border-radius: 4px;
+		margin-bottom: 1rem;
+	}
+
 	:global(.form-footer) {
 		margin-top: 1.5rem;
 		text-align: center;

@@ -24,6 +24,7 @@ try {
 try {
     db.users.createIndex({loginId: 1}, {unique: true});
     db.users.createIndex({username: 1});
+    db.users.createIndex({expiresAt: 1}, {expireAfterSeconds: 0});
 } catch (e) {
     print('[init] users へのインデックス追加に失敗しました:', e.message);
 }

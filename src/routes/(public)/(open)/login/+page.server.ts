@@ -5,10 +5,18 @@ import { findUserByLoginId } from '$lib/db/user';
 import { createSession, getSession, updateSession } from '$lib/db/session';
 import bcrypt from 'bcrypt';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
     if (locals.user) {
         throw redirect(303, '/');
     }
+
+    const messageType = url.searchParams.get('message');
+    let message = '';
+    if (messageType === 'password_updated') {
+        message = 'パスワードを更新しました。';
+    }
+
+    return { message };
 };
 
 export const actions: Actions = {
@@ -35,6 +43,10 @@ export const actions: Actions = {
 
         if (!user.isActive) {
             return fail(401, { loginId, error: 'ログインIDまたはパスワードが正しくありません' });
+        }
+
+        if (!user.isEmailVerified) {
+            return fail(401, { loginId, error: 'メールアドレスの確認が完了していません。送信されたメールを確認してください。' });
         }
 
         let sessionId = cookies.get('sessionId');

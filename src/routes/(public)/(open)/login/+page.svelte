@@ -2,7 +2,7 @@
     import { enhance } from '$app/forms';
     import Button from '$lib/components/common/Button.svelte';
     import FormGroup from '$lib/components/common/FormGroup.svelte';
-    let { form } = $props();
+    let { data, form } = $props();
 
     let errorElement = $state<HTMLElement | null>(null);
     $effect(() => {
@@ -18,6 +18,10 @@
 
 <div class="form-container">
     <h1>ログイン</h1>
+
+    {#if data.message}
+        <p class="success-message">{data.message}</p>
+    {/if}
 
     {#if form?.error}
         <p class="error-message" bind:this={errorElement}>{form.error}</p>
@@ -36,6 +40,7 @@
     </form>
 
     <div class="form-footer">
+        <a href="/forgot-password">パスワードを忘れた方はこちら</a><br>
         <a href="/register">新規登録はこちら</a>
     </div>
 </div>

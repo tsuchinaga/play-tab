@@ -24,7 +24,12 @@
     {/if}
 
     <form method="POST" use:enhance>
-        <FormGroup label="ログインID" id="loginId">
+        {#if form?.success}
+            <div class="success-message">
+                <p>登録を受け付けました。入力されたメールアドレスに確認メールを送信しました。メール内のリンクをクリックして登録を完了してください。</p>
+            </div>
+        {:else}
+            <FormGroup label="ログインID" id="loginId">
             <input type="text" id="loginId" name="loginId" required value={form?.loginId ?? ''} />
         </FormGroup>
         <FormGroup label="ユーザー名" id="username">
@@ -42,6 +47,7 @@
         <div class="form-actions">
             <Button type="submit" variant="primary">登録</Button>
         </div>
+        {/if}
     </form>
 
     <div class="form-footer">
