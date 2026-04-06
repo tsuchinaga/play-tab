@@ -47,7 +47,7 @@ export function generateFullTex(tab: TabData): string {
 \\tempo ${tab.bpm}`;
 
     const tracksTex = tab.tracks
-        .filter(track => track.tex.trim() !== '')
+        .filter(track => track.tex && track.tex.trim() !== '')
         .map(track => generateTrackTex(track))
         .join('\n\n');
 

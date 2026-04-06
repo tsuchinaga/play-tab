@@ -102,9 +102,9 @@ try {
     }
 
     [
-        {loginId: 'user1', username: 'テストユーザー1', email: 'user1@example.com', isActive: true},
-        {loginId: 'user2', username: 'テストユーザー2', email: 'user2@example.com', isActive: true},
-        {loginId: 'user3', username: 'テストユーザー3', email: 'user3@example.com', isActive: true}
+        {loginId: 'user1', username: 'テストユーザー1', email: 'user1@example.com', isActive: true, isEmailVerified: true},
+        {loginId: 'user2', username: 'テストユーザー2', email: 'user2@example.com', isActive: true, isEmailVerified: true},
+        {loginId: 'user3', username: 'テストユーザー3', email: 'user3@example.com', isActive: true, isEmailVerified: true}
     ].forEach(user => {
         // bcrypt hash for string 'password'
         db.users.insertOne({
@@ -113,6 +113,9 @@ try {
             email: user.email,
             hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
             isDeleted: false,
+            isActive: user.isActive,
+            isEmailVerified: user.isEmailVerified,
+            expiresAt: null,
             createdAt: new Date(),
             updatedAt: new Date()
         });

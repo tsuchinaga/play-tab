@@ -110,7 +110,7 @@
 
     const visibleTrackIndices = $derived(
         tracks
-            .filter(track => track.tex.trim() !== '')
+            .filter(track => track.tex && track.tex.trim() !== '')
             .map((track, index) => track.isVisible ? index : -1)
             .filter(index => index !== -1)
     );
@@ -280,14 +280,14 @@
         // トラック個別のチェック
         const trackImporter = new alphaTabLib.importer.AlphaTexImporter();
         try {
-            if (trackTex.trim() !== '') {
+            if (trackTex && trackTex.trim() !== '') {
                 trackImporter.initFromString(trackTex, new alphaTabLib.Settings());
                 trackImporter.readScore();
             }
         } catch (e) {
             console.log('[AlphaTex Track Error]', e);
         } finally {
-            const allDiagnostics = trackTex.trim() === '' ? [] : [
+            const allDiagnostics = (trackTex && trackTex.trim() === '') || !trackTex ? [] : [
                 ...trackImporter.lexerDiagnostics,
                 ...trackImporter.parserDiagnostics,
                 ...trackImporter.semanticDiagnostics
