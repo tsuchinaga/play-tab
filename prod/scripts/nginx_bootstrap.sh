@@ -11,7 +11,7 @@ CONF_DIR=/etc/nginx/conf.d
 SSL_CONF="$CONF_DIR/ssl.conf"
 LE_BASE="/etc/letsencrypt"
 LE_LIVE="$LE_BASE/live/$DOMAIN"
-WEB_UPSTREAM="http://web:3000"
+WEB_UPSTREAM="http://app:3000"
 
 log() { echo "[nginx-bootstrap] $(date '+%Y-%m-%d %H:%M:%S') $*"; }
 
