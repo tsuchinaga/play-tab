@@ -42,10 +42,10 @@ docker compose --env-file .env -f prod/docker-compose.prod.yml up -d --build
 ソースコードを変更した後に本番環境へ反映させるには、以下のコマンドを実行してイメージの再ビルドとコンテナの再起動を行います。
 
 ```bash
-docker compose --env-file .env -f prod/docker-compose.prod.yml up -d --build web
+docker compose --env-file .env -f prod/docker-compose.prod.yml up -d --build app
 ```
 
-特定のサービス（例: `web`）のみを指定して再ビルドすることで、他のサービス（`db` や `proxy` など）を停止させずに更新を反映させることができます。
+特定のサービス（例: `app`）のみを指定して再ビルドすることで、他のサービス（`db` や `proxy` など）を停止させずに更新を反映させることができます。
 
 ## 機能
 
