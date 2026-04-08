@@ -28,8 +28,9 @@ log "nginx 起動 (PID=$NGINX_PID)。証明書の有無を監視します..."
         log "証明書を検出 ($LE_LIVE)。HTTPS 設定を生成します: $SSL_CONF"
         cat > "$SSL_CONF" <<EOF
 server {
-  listen 443 ssl http2;
-  listen [::]:443 ssl http2;
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  http2 on;
   server_name $DOMAIN;
 
   ssl_certificate     $LE_LIVE/fullchain.pem;
