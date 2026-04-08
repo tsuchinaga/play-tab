@@ -1,5 +1,5 @@
 services:
-  web:
+  app:
     build:
       context: ..
       dockerfile: prod/app/Dockerfile
@@ -11,6 +11,8 @@ services:
       - MONGODB_URI=${MONGODB_URI}
       - ORIGIN=${ORIGIN}
       - PUBLIC_COPYRIGHT_HOLDER=${PUBLIC_COPYRIGHT_HOLDER}
+    env_file:
+      - ../.env
 
   db:
     image: mongo:8
