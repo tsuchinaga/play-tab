@@ -4,6 +4,7 @@ import { getDb } from './client';
 export interface Administrator {
     _id?: ObjectId;
     loginId: string;
+    email: string;
     hashedPassword: string;
     isDeleted: boolean;
     createdAt: Date;
@@ -25,7 +26,7 @@ export async function getAllAdministrators() {
     return await db.collection<Administrator>('administrators').find({ isDeleted: false }).sort({ createdAt: 1 }).toArray();
 }
 
-export async function createAdministrator(admin: { loginId: string; hashedPassword: string }) {
+export async function createAdministrator(admin: { loginId: string; email: string; hashedPassword: string }) {
     const db = await getDb();
     return await db.collection<Administrator>('administrators').insertOne({
         ...admin,
@@ -35,7 +36,7 @@ export async function createAdministrator(admin: { loginId: string; hashedPasswo
     });
 }
 
-export async function updateAdministrator(id: ObjectId, admin: Partial<Pick<Administrator, 'hashedPassword'>>) {
+export async function updateAdministrator(id: ObjectId, admin: Partial<Pick<Administrator, 'hashedPassword' | 'email'>>) {
     const db = await getDb();
     return await db.collection<Administrator>('administrators').updateOne(
         { _id: id },

@@ -78,6 +78,7 @@ try {
     // Note: This is a precomputed bcrypt hash. Application side uses bcrypt.compare() to verify.
     db.administrators.insertOne({
         loginId: 'admin',
+        email: 'admin@example.com',
         hashedPassword: '$2b$10$T4UlyI7zQvKeqYb0DX.Xre6rOngHAEpkFZE9hdU6H/p8oO.N3/GUm',
         isDeleted: false,
         createdAt: new Date(),

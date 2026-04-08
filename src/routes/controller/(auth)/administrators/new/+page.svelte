@@ -24,6 +24,9 @@
             <FormGroup label="ログインID" id="loginId" row>
                 <input type="text" id="loginId" name="loginId" value={form?.loginId ?? ''} required />
             </FormGroup>
+            <FormGroup label="メールアドレス" id="email" row>
+                <input type="email" id="email" name="email" value={form?.email ?? ''} required />
+            </FormGroup>
             <FormGroup label="パスワード" id="password" row>
                 <input type="password" id="password" name="password" required />
             </FormGroup>

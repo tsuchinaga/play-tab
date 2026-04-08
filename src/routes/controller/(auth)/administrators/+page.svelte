@@ -15,10 +15,11 @@
         <Button href="/controller/administrators/new" variant="outline">新規登録</Button>
     </div>
 
-    <DataTable headers={['ログインID', '作成日', '操作']} isEmpty={data.administrators.length === 0}>
+    <DataTable headers={['ログインID', 'メールアドレス', '作成日', '操作']} isEmpty={data.administrators.length === 0}>
         {#each data.administrators as admin}
             <tr>
                 <td>{admin.loginId}</td>
+                <td>{admin.email}</td>
                 <td>{new Date(admin.createdAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
                 <td>
                     <div class="actions">

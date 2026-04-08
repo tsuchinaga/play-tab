@@ -24,6 +24,9 @@
             <FormGroup label="ログインID" id="loginId" row>
                 <input type="text" id="loginId" value={data.targetAdmin.loginId} disabled />
             </FormGroup>
+            <FormGroup label="メールアドレス" id="email" row>
+                <input type="email" id="email" name="email" value={form?.email ?? data.targetAdmin.email} required />
+            </FormGroup>
             <FormGroup label="新しいパスワード" id="password" row>
                 <input type="password" id="password" name="password" placeholder="変更する場合のみ入力" />
             </FormGroup>

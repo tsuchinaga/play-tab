@@ -32,17 +32,25 @@ export const actions: Actions = {
         }
 
         const formData = await request.formData();
+        const email = formData.get('email') as string;
         const password = formData.get('password') as string;
         const confirmPassword = formData.get('confirmPassword') as string;
+
+        if (!email) {
+            return fail(400, { message: 'メールアドレスを入力してください' });
+        }
+
+        const updateData: any = { email };
 
         if (password || confirmPassword) {
             if (password !== confirmPassword) {
                 return fail(400, { message: 'パスワードが一致しません' });
             }
             
-            const hashedPassword = await bcrypt.hash(password, 10);
-            await updateAdministrator(adminId, { hashedPassword });
+            updateData.hashedPassword = await bcrypt.hash(password, 10);
         }
+
+        await updateAdministrator(adminId, updateData);
 
         throw redirect(303, '/controller/administrators');
     }
