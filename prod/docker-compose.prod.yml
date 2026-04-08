@@ -34,7 +34,7 @@ services:
     container_name: play-tab-proxy
     restart: unless-stopped
     depends_on:
-      - web
+      - app
     environment:
       - DOMAIN=${DOMAIN}
     ports:
