@@ -15,6 +15,16 @@
 
     <div class="form-card" style="margin-bottom: 2rem;">
         <div class="form-group row">
+            <label>状態</label>
+            <div>
+                {#if data.targetUser.isDeleted}
+                    <span style="color: #dc3545; font-weight: bold;">削除済み</span>
+                {:else}
+                    <span style="color: #28a745; font-weight: bold;">有効</span>
+                {/if}
+            </div>
+        </div>
+        <div class="form-group row">
             <label>ログインID</label>
             <div>{data.targetUser.loginId}</div>
         </div>

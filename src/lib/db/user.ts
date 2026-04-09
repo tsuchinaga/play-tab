@@ -79,7 +79,7 @@ export async function createUser(user: { loginId: string; username: string; emai
     return result;
 }
 
-export async function searchUsers(query: { loginId?: string; username?: string; email?: string; includeDeleted?: boolean }) {
+export async function searchUsers(query: { loginId?: string; username?: string; email?: string; includeDeleted?: boolean; isEmailVerified?: boolean }) {
     const db = await getDb();
     const filter: any = {};
     if (!query.includeDeleted) {
@@ -93,6 +93,9 @@ export async function searchUsers(query: { loginId?: string; username?: string; 
     }
     if (query.email) {
         filter.email = { $regex: query.email, $options: 'i' };
+    }
+    if (query.isEmailVerified !== undefined) {
+        filter.isEmailVerified = query.isEmailVerified;
     }
     return (await db.collection<User>('users').find(filter).sort({ createdAt: -1 }).toArray()).map(user => {
         user.isActive = user.isActive ?? true;

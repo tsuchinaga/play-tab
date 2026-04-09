@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params }) => {
         throw error(400, 'Invalid user ID');
     }
 
-    const user = await findUserById(userId);
+    const user = await findUserById(userId, true);
     if (!user) {
         throw error(404, 'User not found');
     }

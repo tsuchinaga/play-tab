@@ -53,6 +53,13 @@
             <FormGroup label="メールアドレス" id="email" row>
                 <input type="email" id="email" name="email" value={data.searchParams.email} />
             </FormGroup>
+            <FormGroup label="メール認証" id="isEmailVerified" row>
+                <select id="isEmailVerified" name="isEmailVerified">
+                    <option value="" selected={data.searchParams.isEmailVerified === undefined}>すべて</option>
+                    <option value="true" selected={data.searchParams.isEmailVerified === true}>認証済み</option>
+                    <option value="false" selected={data.searchParams.isEmailVerified === false}>未認証</option>
+                </select>
+            </FormGroup>
             <FormGroup label="削除済み" id="includeDeleted" row>
                 <select id="includeDeleted" name="includeDeleted">
                     <option value="false" selected={!data.searchParams.includeDeleted}>非表示</option>
@@ -66,7 +73,7 @@
         </form>
     </div>
 
-    <DataTable headers={['ログインID', 'ユーザー名', 'メールアドレス', '状態', '登録日時', '操作']} isEmpty={data.users.length === 0}>
+    <DataTable headers={['ログインID', 'ユーザー名', 'メールアドレス', '状態', 'メール認証', '登録日時', '操作']} isEmpty={data.users.length === 0}>
         {#each data.users as user}
             <tr>
                 <td>{user.loginId}</td>
@@ -79,6 +86,13 @@
                         <VisibilityBadge status="draft" label="削除済" />
                     {:else}
                         <VisibilityBadge status={user.isActive ? 'public' : 'private'} label={user.isActive ? '有効' : '無効'} />
+                    {/if}
+                </td>
+                <td>
+                    {#if user.isEmailVerified}
+                        <VisibilityBadge status="public" label="認証済み" />
+                    {:else}
+                        <VisibilityBadge status="draft" label="未認証" />
                     {/if}
                 </td>
                 <td>{new Date(user.createdAt).toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>

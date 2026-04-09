@@ -6,8 +6,10 @@ export const load: PageServerLoad = async ({ url }) => {
     const username = url.searchParams.get('username') || '';
     const email = url.searchParams.get('email') || '';
     const includeDeleted = url.searchParams.get('includeDeleted') === 'true';
+    const isEmailVerifiedParam = url.searchParams.get('isEmailVerified');
+    const isEmailVerified = isEmailVerifiedParam === 'true' ? true : isEmailVerifiedParam === 'false' ? false : undefined;
 
-    const users = await searchUsers({ loginId, username, email, includeDeleted });
+    const users = await searchUsers({ loginId, username, email, includeDeleted, isEmailVerified });
 
     const success = url.searchParams.get('success');
     const errorParam = url.searchParams.get('error');
@@ -32,7 +34,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
     return {
         users: JSON.parse(JSON.stringify(users)),
-        searchParams: { loginId, username, email, includeDeleted },
+        searchParams: { loginId, username, email, includeDeleted, isEmailVerified },
         message,
         messageType
     };
