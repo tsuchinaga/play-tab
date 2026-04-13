@@ -19,13 +19,26 @@
         if (!browser) return;
         alphaTabLib = await import('@coderline/alphatab');
 
+        // サンプリングレートの固定化 (負荷軽減のため)
+        if (alphaTabLib.AlphaSynthWebAudioOutputBase) {
+            alphaTabLib.AlphaSynthWebAudioOutputBase.PreferredSampleRate = 44100;
+        }
+        if (alphaTabLib.AlphaSynthWorkerSynthOutput) {
+            alphaTabLib.AlphaSynthWorkerSynthOutput.preferredSampleRate = 44100;
+        }
+
         const settings: alphaTabType.SettingsJson = {
-            core: { fontDirectory: "/font/" },
+            core: {
+                fontDirectory: "/font/",
+                useWorkers: true
+            },
             player: {
                 playerMode: alphaTabLib.PlayerMode.EnabledAutomatic,
                 enableCursor: true,
                 soundFont: "/soundfont/sonivox.sf2",
-                scrollElement: scrollElement
+                scrollElement: scrollElement,
+                scrollMode: alphaTabLib.ScrollMode.OffScreen,
+                bufferTimeInMilliseconds: 1000
             }
         };
 

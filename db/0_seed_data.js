@@ -174,7 +174,7 @@ try {
                 }
             ],
             instruments: ['Guitar'],
-            alphaTabVersion: '1.7.1',
+            alphaTabVersion: '1.8.2',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -204,7 +204,7 @@ try {
                 }
             ],
             instruments: ['Bass'],
-            alphaTabVersion: '1.7.1',
+            alphaTabVersion: '1.8.2',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -240,7 +240,7 @@ try {
                 }
             ],
             instruments: ['Guitar', 'Bass'],
-            alphaTabVersion: '1.7.1',
+            alphaTabVersion: '1.8.2',
             version: yyyymmdd + '-001',
             createdAt: new Date(),
             updatedAt: new Date()
