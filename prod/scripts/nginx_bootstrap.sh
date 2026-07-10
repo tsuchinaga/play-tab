@@ -22,8 +22,11 @@ log "nginx 起動 (PID=$NGINX_PID)。証明書の有無を監視します..."
 
 # バックグラウンドで証明書監視
 (
+  LAST_RELOAD_TIME=0
   while :; do
     if [ -n "$DOMAIN" ] && [ -d "$LE_LIVE" ] && [ -f "$LE_LIVE/fullchain.pem" ] && [ -f "$LE_LIVE/privkey.pem" ]; then
+      CURRENT_CERT_TIME=$(date -r "$LE_LIVE/fullchain.pem" +%s)
+      
       if [ ! -f "$SSL_CONF" ]; then
         log "証明書を検出 ($LE_LIVE)。HTTPS 設定を生成します: $SSL_CONF"
         cat > "$SSL_CONF" <<EOF
@@ -63,15 +66,25 @@ server {
   }
 }
 EOF
-        # リロード（失敗してもループを継続）
+        # リロード
         if nginx -s reload; then
           log "nginx をリロードしました（HTTPS 有効化）。"
+          LAST_RELOAD_TIME=$CURRENT_CERT_TIME
         else
           log "警告: nginx リロードに失敗しました。数秒後に再試行します。"
         fi
+      elif [ "$CURRENT_CERT_TIME" -gt "$LAST_RELOAD_TIME" ]; then
+        # 証明書が更新された場合
+        log "証明書の更新を検出しました。nginx をリロードします。"
+        if nginx -s reload; then
+          log "nginx をリロードしました（証明書更新反映）。"
+          LAST_RELOAD_TIME=$CURRENT_CERT_TIME
+        else
+          log "警告: 証明書更新後の nginx リロードに失敗しました。"
+        fi
       fi
     fi
-    sleep 5
+    sleep 10
   done
 ) &
 

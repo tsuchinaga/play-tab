@@ -67,10 +67,9 @@ renew_loop() {
     log "証明書の更新チェックを実行します..."
     certbot renew --webroot -w "${WEBROOT}" --quiet || log "renew コマンドでエラーが発生しました（無視して継続）"
 
-    # ベストエフォートで nginx リロードを試みる
-    # 別コンテナのため直接実行はできない。ホスト側からの reload を推奨。
-    # ここではログ出力のみに留める。
-    log "（注意）nginx のリロードが必要な場合があります。ホストから: docker compose -f prod/docker-compose.prod.yml exec proxy nginx -s reload"
+    # nginx 側の監視スクリプトが証明書の更新（ファイルのタイムスタンプ変更）を検知して
+    # 自動的にリロードを行うため、ここではログ出力のみに留める。
+    log "証明書の更新チェックが完了しました。更新があった場合、proxy コンテナで自動的にリロードされます。"
 
     sleep "$SLEEP_SECONDS"
   done
